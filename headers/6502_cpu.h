@@ -115,6 +115,7 @@ struct CPU {
     static constexpr uint8_t INS_LDA_IND_Y = 0xB1;
 
     static constexpr uint8_t INS_JSR = 0x20;
+    static constexpr uint8_t _asad = 0x21;
 
     /* @return number of cycles used */
     int32_t Execute(int32_t cycles, Mem& memory){
