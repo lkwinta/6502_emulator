@@ -3,7 +3,9 @@
 //
 #include "6502_cpu.h"
 #include <gtest/gtest.h>
-//https://web.archive.org/web/20210604074847/http://obelisk.me.uk/6502/
+
+
+using namespace MOS6502;
 
 class M6502LDYTest : public testing::Test {
 public:

@@ -4,7 +4,7 @@
 
 #include "6502_cpu.h"
 
-void CPU::LoadLookupTable(){
+void MOS6502::CPU::LoadLookupTable(){
     lookupTable = {
         /////////////////////////////////// LOAD ACCUMULATOR INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
         {INSTRUCTIONS::INS_LDA_IM,      [this](int32_t& cycles, Memory& memory) { LoadRegister(IMMEDIATE, cycles, memory, A);}},

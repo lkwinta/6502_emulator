@@ -19,7 +19,7 @@ if(NOT googletest_POPULATED)
 endif()
 enable_testing()
 
-add_executable(6502_tests cpu_tests.cpp lda_tests.cpp ldx_tests.cpp ldy_tests.cpp)
+add_executable(6502_tests tests/cpu_tests.cpp tests/lda_tests.cpp tests/ldx_tests.cpp tests/ldy_tests.cpp)
 
 target_link_libraries(6502_tests 6502_lib gtest_main gmock_main)
 include_directories(${CMAKE_SOURCE_DIR}/6502_lib/headers)

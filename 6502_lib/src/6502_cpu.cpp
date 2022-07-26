@@ -3,7 +3,7 @@
 //
 #include "6502_cpu.h"
 
-void CPU::Reset(Memory& memory) {
+void MOS6502::CPU::Reset(Memory& memory) {
     PC = 0xFFFC;
     S = 0x0100;
     P.C = P.Z = P.I = P.D = P.B = P.V = P.N = 0;
@@ -11,14 +11,14 @@ void CPU::Reset(Memory& memory) {
     memory.Initialise();
 }
 
-uint16_t CPU::Fetch8Bits(int32_t& cycles, Memory& memory){
+uint16_t MOS6502::CPU::Fetch8Bits(int32_t& cycles, Memory& memory){
     uint8_t byte = memory[PC];
     PC++;
     cycles--;
     return byte;
 }
 
-uint16_t CPU::Fetch16Bits(int32_t& cycles, Memory& memory){
+uint16_t MOS6502::CPU::Fetch16Bits(int32_t& cycles, Memory& memory){
     uint8_t lowByte = memory.Data[PC];
     PC++;
     uint8_t highByte = memory.Data[PC];
@@ -32,13 +32,13 @@ uint16_t CPU::Fetch16Bits(int32_t& cycles, Memory& memory){
     return result;
 }
 
-uint8_t CPU::Read8Bits(int32_t& cycles, Memory& memory, uint16_t address){
+uint8_t MOS6502::CPU::Read8Bits(int32_t& cycles, Memory& memory, uint16_t address){
     uint8_t byte = memory.Data[address];
     cycles--;
     return byte;
 }
 
-uint16_t CPU::Read16Bits(int32_t& cycles, Memory& memory, uint16_t address){
+uint16_t MOS6502::CPU::Read16Bits(int32_t& cycles, Memory& memory, uint16_t address){
     uint8_t lowByte = memory.Data[address];
     uint8_t highByte = memory.Data[address + 1];
 
@@ -50,12 +50,12 @@ uint16_t CPU::Read16Bits(int32_t& cycles, Memory& memory, uint16_t address){
     return result;
 }
 
-void CPU::LDSetStatus(uint8_t& reg){
+void MOS6502::CPU::LDSetStatus(uint8_t& reg){
     P.Z = (reg == 0);
     P.N = (reg & 0b10000000) > 0;
 }
 
-void CPU::LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, Memory& memory, uint8_t& reg){
+void MOS6502::CPU::LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, Memory& memory, uint8_t& reg){
     switch(mode){
         case IMMEDIATE: {
             reg = Fetch8Bits(cycles, memory);
@@ -127,7 +127,7 @@ void CPU::LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, Memory& memory, u
 }
 
 /* return number of cycles used */
-int32_t CPU::Execute(int32_t cycles, Memory& memory){
+int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){
     int32_t totalCycles = cycles;
 
     while(cycles > 0){
