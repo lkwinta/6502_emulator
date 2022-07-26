@@ -85,72 +85,72 @@ namespace MOS6502 {
 
         //contains possible instructions
         enum INSTRUCTIONS : uint8_t {
-            //args: 8-bit value
+            //cycles: 2  |    args: 8-bit value
             INS_LDA_IM = 0xA9,
-            //args: 8-bit zero-page address
+            //cycles: 3  |    args: 8-bit zero-page address
             INS_LDA_ZP = 0xA5,
-            //args: 8-bit zero-page address, X register offset
+            //cycles: 4  |    args: 8-bit zero-page address, X register offset
             INS_LDA_ZP_X = 0xB5,
-            //args: 16-bit absolute address
+            //cycles: 4  |    args: 16-bit absolute address
             INS_LDA_ABS = 0xAD,
-            //args: 16-bit absolute address, X register offset
+            //cycles: 4-5|    args: 16-bit absolute address, X register offset
             INS_LDA_ABS_X = 0xBD,
-            //args: 16-bit absolute address, Y register offset
+            //cycles: 4-5|    args: 16-bit absolute address, Y register offset
             INS_LDA_ABS_Y = 0xB9,
-            //args: (8-bit zero-page address, X register offset)
+            //cycles: 6  |    args: (8-bit zero-page address, X register offset)
             INS_LDA_IND_X = 0xA1,
-            //args: (8-bit zero-page address), Y register offset
+            //cycles: 5-6|    args: (8-bit zero-page address), Y register offset
             INS_LDA_IND_Y = 0xB1,
 
-            //args: 8-bit value
+            //cycles: 2  |    args: 8-bit value
             INS_LDX_IM = 0xA2,
-            //args: 8-bit zero-page address
+            //cycles: 3  |    args: 8-bit zero-page address
             INS_LDX_ZP = 0xA6,
-            //args: 8-bit zero-page address, Y register offset
+            //cycles: 4  |    args: 8-bit zero-page address, Y register offset
             INS_LDX_ZP_Y = 0xB6,
-            //args: 16-bit absolute address
+            //cycles: 4  |    args: 16-bit absolute address
             INS_LDX_ABS = 0xAE,
-            //args: 16-bit absolute address, Y register offset
+            //cycles: 4-5|    args: 16-bit absolute address, Y register offset
             INS_LDX_ABS_Y = 0xBE,
 
-            //args: 8-bit value
+            //cycles: 2  |    args: 8-bit value
             INS_LDY_IM = 0xA0,
-            //args: 8-bit zero-page address
+            //cycles: 3  |    args: 8-bit zero-page address
             INS_LDY_ZP = 0xA4,
-            //args: 8-bit zero-page address, X register offset
+            //cycles: 4  |    args: 8-bit zero-page address, X register offset
             INS_LDY_ZP_X = 0xB4,
-            //args: 16-bit absolute address
+            //cycles: 4  |    args: 16-bit absolute address
             INS_LDY_ABS = 0xAC,
-            //args: 16-bit absolute address, Y register offset
+            //cycles: 4-5|    args: 16-bit absolute address, Y register offset
             INS_LDY_ABS_X = 0xBC,
 
-            //args: 8-bit zero-page address
+            //cycles: 3  |    args: 8-bit zero-page address
             INS_STA_ZP = 0x85,
-            //args: 8-bit zero-page address, X register offset
+            //cycles: 4  |    args: 8-bit zero-page address, X register offset
             INS_STA_ZP_X = 0x95,
-            //args: 16-bit absolute address
+            //cycles: 4  |    args: 16-bit absolute address
             INS_STA_ABS = 0x8D,
-            //args: 16-bit absolute address, X register offset
+            //cycles: 5  |    args: 16-bit absolute address, X register offset
             INS_STA_ABS_X = 0x9D,
-            //args: 16-bit absolute address, Y register offset
+            //cycles: 5  |    args: 16-bit absolute address, Y register offset
             INS_STA_ABS_Y = 0x99,
-            //args: (8-bit zero-page address, X register offset)
+            //cycles: 6  |    args: (8-bit zero-page address, X register offset)
             INS_STA_IND_X = 0x81,
-            //args: (8-bit zero-page address), Y register offset
+            //cycles: 6  |    args: (8-bit zero-page address), Y register offset
             INS_STA_IND_Y = 0x91,
 
-            //args: 8-bit zero-page address
+            //cycles: 3  |    args: 8-bit zero-page address
             INS_STX_ZP = 0x86,
-            //args: 8-bit zero-page address, X register offset
+            //cycles: 4  |    args: 8-bit zero-page address, X register offset
             INS_STX_ZP_Y = 0x96,
-            //args: 16-bit absolute address
+            //cycles: 4  |    args: 16-bit absolute address
             INS_STX_ABS = 0x8E,
 
-            //args: 8-bit zero-page address
+            //cycles: 3  |    args: 8-bit zero-page address
             INS_STY_ZP = 0x84,
-            //args: 8-bit zero-page address, X register offset
+            //cycles: 4  |    args: 8-bit zero-page address, X register offset
             INS_STY_ZP_X = 0x94,
-            //args: 16-bit absolute address
+            //cycles: 4  |    args: 16-bit absolute address
             INS_STY_ABS = 0x8C,
 
             INS_JSR = 0x20
