@@ -40,17 +40,19 @@ struct CPU {
     uint8_t X; //8-bit X register
     uint8_t Y; //8-bit Y register
 
+    //8-bit bit field
     struct PS {
         uint8_t C : 1; //1-bit carry flag
         uint8_t Z : 1; //1-bit zero flag
         uint8_t I : 1; //1-bit interrupt disable
         uint8_t D : 1; //1-bit decimal mode
-        uint8_t B : 1; //1-bit break command
+        uint8_t B : 1; //1-bit break command FLAG
+        uint8_t UNUSED : 1; //1-bit unused flag
         uint8_t V : 1; //1-bit overflow flag
         uint8_t N : 1; //1-bit negative flag
     };
 
-    PS P; //8-bit Processor status
+    PS P; //8-bit field Processor status
 
     //reset function
     void Reset(Mem& memory) {
