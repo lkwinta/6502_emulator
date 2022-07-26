@@ -117,10 +117,11 @@ void MOS6502::CPU::LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, Memory& 
             if(targetAddressY - targetAddress >= 0xFF)
                 cycles--;
             LDSetStatus(reg);
+            break;
         }
         default: {
             printf("Unhandled addressing mode: %d", mode);
-            break;
+            return;
         }
     }
     LDSetStatus(reg);
