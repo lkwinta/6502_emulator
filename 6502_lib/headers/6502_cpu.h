@@ -100,9 +100,9 @@ struct CPU {
         return result;
     }
 
-    void LDSetStatus(){
-        P.Z = (A == 0);
-        P.N = (A & 0b10000000) > 0;
+    void LDSetStatus(uint8_t& reg){
+        P.Z = (reg == 0);
+        P.N = (reg & 0b10000000) > 0;
     }
 
     enum ADDRESSING_MODES{
@@ -137,9 +137,9 @@ struct CPU {
     /////////////////////////////////// LOAD X REGISTER INSTRUCTIONS OPCODES ///////////////////////////////////////
     static constexpr uint8_t    INS_LDY_IM = 0xA0,
                                 INS_LDY_ZP = 0xA4,
-                                INS_LDY_ZP_Y = 0xB4,
+                                INS_LDY_ZP_X = 0xB4,
                                 INS_LDY_ABS = 0xAC,
-                                INS_LDY_ABS_Y = 0xBC;
+                                INS_LDY_ABS_X = 0xBC;
     /////////////////////////////////// LOAD X REGISTER INSTRUCTIONS OPCODES ///////////////////////////////////////
 
     static constexpr uint8_t INS_JSR = 0x20;
@@ -195,7 +195,7 @@ struct CPU {
                 return;
             }
         }
-        LDSetStatus();
+        LDSetStatus(reg);
     }
 
     /* @return number of cycles used */
@@ -237,7 +237,7 @@ struct CPU {
                     cycles--; //add X register value
                     uint16_t targetAddress = Read16Bits(cycles, memory, zeroPageAddress);
                     A = Read8Bits(cycles, memory, targetAddress);
-                    LDSetStatus();
+                    LDSetStatus(A);
                     break;
                 }
                 case INS_LDA_IND_Y: {
@@ -248,7 +248,7 @@ struct CPU {
                     //crossing page boundary
                     if(targetAddressY - targetAddress >= 0xFF)
                         cycles--;
-                    LDSetStatus();
+                    LDSetStatus(A);
                     break;
                 }
                 /////////////////////////////////// LOAD ACCUMULATOR INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
@@ -260,6 +260,7 @@ struct CPU {
                 }
                 case INS_LDX_ZP: {
                     LoadRegister(ZERO_PAGE, cycles, memory, X);
+                    break;
                 }
                 case INS_LDX_ZP_Y: {
                     LoadRegister(ZERO_PAGE_Y, cycles, memory, X);
@@ -271,6 +272,7 @@ struct CPU {
                 }
                 case INS_LDX_ABS_Y: {
                     LoadRegister(ABSOLUTE_Y, cycles, memory, X);
+                    break;
                 }
                 /////////////////////////////////// LOAD X REGISTER INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
 
@@ -281,17 +283,19 @@ struct CPU {
                 }
                 case INS_LDY_ZP: {
                     LoadRegister(ZERO_PAGE, cycles, memory, Y);
+                    break;
                 }
-                case INS_LDY_ZP_Y: {
-                    LoadRegister(ZERO_PAGE_Y, cycles, memory, Y);
+                case INS_LDY_ZP_X: {
+                    LoadRegister(ZERO_PAGE_X, cycles, memory, Y);
                     break;
                 }
                 case INS_LDY_ABS: {
                     LoadRegister(ABSOLUTE, cycles, memory, Y);
                     break;
                 }
-                case INS_LDY_ABS_Y: {
-                    LoadRegister(ABSOLUTE_Y, cycles, memory, Y);
+                case INS_LDY_ABS_X: {
+                    LoadRegister(ABSOLUTE_X, cycles, memory, Y);
+                    break;
                 }
                 /////////////////////////////////// LOAD Y REGISTER INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
 
