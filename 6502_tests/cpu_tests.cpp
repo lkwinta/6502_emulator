@@ -4,7 +4,7 @@
 
 class M6502CPUTest : public testing::Test {
 public:
-    Mem mem{};
+    Memory mem{};
     CPU cpu{};
 
     virtual void SetUp(){
@@ -26,9 +26,11 @@ TEST_F(M6502CPUTest, CPUDoesNothingWhenExecutedWithZeroCycles){
     EXPECT_EQ(cyclesUsed, NUM_CYCLES);
 }
 
+
+
 TEST_F(M6502CPUTest, CPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstruction){
     //given:
-    mem[0xFFFC] = CPU::INS_LDA_IM;
+    mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDA_IM;
     mem[0xFFFD] = 0x84;
 
     //when:

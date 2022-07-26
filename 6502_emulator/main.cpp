@@ -2,7 +2,7 @@
 #include "6502_cpu.h"
 
 int main(){
-    Mem mem{};
+    Memory mem{};
     CPU cpu{};
     cpu.Reset(mem);
 
