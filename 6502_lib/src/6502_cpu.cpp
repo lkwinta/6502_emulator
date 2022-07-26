@@ -11,14 +11,14 @@ void MOS6502::CPU::Reset(Memory& memory) {
     memory.Initialise();
 }
 
-uint16_t MOS6502::CPU::Fetch8Bits(int32_t& cycles, Memory& memory){
+uint16_t MOS6502::CPU::Fetch8Bits(int32_t& cycles, const Memory& memory){
     uint8_t byte = memory[PC];
     PC++;
     cycles--;
     return byte;
 }
 
-uint16_t MOS6502::CPU::Fetch16Bits(int32_t& cycles, Memory& memory){
+uint16_t MOS6502::CPU::Fetch16Bits(int32_t& cycles, const Memory& memory){
     uint8_t lowByte = memory.Data[PC];
     PC++;
     uint8_t highByte = memory.Data[PC];
@@ -32,13 +32,13 @@ uint16_t MOS6502::CPU::Fetch16Bits(int32_t& cycles, Memory& memory){
     return result;
 }
 
-uint8_t MOS6502::CPU::Read8Bits(int32_t& cycles, Memory& memory, uint16_t address){
+uint8_t MOS6502::CPU::Read8Bits(int32_t& cycles, const Memory& memory, uint16_t address){
     uint8_t byte = memory.Data[address];
     cycles--;
     return byte;
 }
 
-uint16_t MOS6502::CPU::Read16Bits(int32_t& cycles, Memory& memory, uint16_t address){
+uint16_t MOS6502::CPU::Read16Bits(int32_t& cycles, const Memory& memory, uint16_t address){
     uint8_t lowByte = memory.Data[address];
     uint8_t highByte = memory.Data[address + 1];
 
@@ -50,73 +50,102 @@ uint16_t MOS6502::CPU::Read16Bits(int32_t& cycles, Memory& memory, uint16_t addr
     return result;
 }
 
+void MOS6502::CPU::Write8Bits(int32_t& cycles, Memory& memory, uint16_t address, uint8_t value){
+    memory[address] = value;
+    cycles--;
+}
+
+void MOS6502::CPU::Write16Bits(int32_t& cycles, Memory& memory, uint16_t address, uint16_t value){
+    memory[address] = (value & 0xFF);
+    memory[address + 1] = (value >> 8);
+    cycles -= 2;
+}
+
 void MOS6502::CPU::LDSetStatus(uint8_t& reg){
     P.Z = (reg == 0);
     P.N = (reg & 0b10000000) > 0;
 }
 
-void MOS6502::CPU::LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, Memory& memory, uint8_t& reg){
+uint8_t MOS6502::CPU::getZeroPageAddress(int32_t& cycles, const Memory &memory){
+    return Fetch8Bits(cycles, memory);
+}
+
+uint8_t MOS6502::CPU::getZeroPageAddressX(int32_t &cycles, const Memory &memory) {
+    cycles--; // add X register to address
+    return getZeroPageAddress(cycles, memory) + X;
+}
+
+uint8_t MOS6502::CPU::getZeroPageAddressY(int32_t &cycles, const Memory &memory) {
+    cycles--; // add Y register to address
+    return getZeroPageAddress(cycles, memory) + Y;
+}
+
+uint16_t MOS6502::CPU::getAbsoluteAddress(int32_t& cycles, const Memory& memory){
+    return Fetch16Bits(cycles, memory);
+}
+
+uint16_t MOS6502::CPU::getAbsoluteAddressX(int32_t& cycles, const Memory& memory, bool checkPageCrossing){
+    uint16_t absoluteAddress = getAbsoluteAddress(cycles, memory);
+    if(checkPageCrossing &&(absoluteAddress & 0xFF) + X > 0xFF)
+        cycles--; // page crossed
+    return absoluteAddress + X;
+}
+
+uint16_t MOS6502::CPU::getAbsoluteAddressY(int32_t& cycles, const Memory& memory, bool checkPageCrossing){
+    uint16_t absoluteAddress = getAbsoluteAddress(cycles, memory);
+    if(checkPageCrossing &&(absoluteAddress & 0xFF) + Y > 0xFF)
+        cycles--; // page crossed
+    return absoluteAddress + Y;
+}
+
+uint16_t MOS6502::CPU::getIndirectIndexedAddressX(int32_t &cycles, const MOS6502::Memory &memory) {
+    cycles--; // add X register to address
+    return Read16Bits(cycles, memory, getZeroPageAddress(cycles, memory) + X);
+}
+
+uint16_t MOS6502::CPU::getIndexedIndirectAddressY(int32_t &cycles, const MOS6502::Memory &memory, bool checkPageCrossing) {
+    uint16_t targetAddress = Read16Bits(cycles, memory, Fetch8Bits(cycles, memory));
+    if(checkPageCrossing && (targetAddress & 0xFF) + Y >= 0xFF)
+        cycles--; //page crossed
+    return targetAddress + Y;
+}
+
+void MOS6502::CPU::LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, const Memory& memory, uint8_t& reg){
     switch(mode){
         case IMMEDIATE: {
             reg = Fetch8Bits(cycles, memory);
             break;
         }
         case ZERO_PAGE: {
-            reg = Read8Bits(cycles, memory, Fetch8Bits(cycles, memory));
+            reg = Read8Bits(cycles, memory, getZeroPageAddress(cycles, memory));
             break;
         }
         case ZERO_PAGE_X: {
-            uint8_t zeroPageAddress = Fetch8Bits(cycles, memory);
-            zeroPageAddress += X;
-            cycles--;
-            reg = Read8Bits(cycles, memory, zeroPageAddress);
+            reg = Read8Bits(cycles, memory, getZeroPageAddressX(cycles, memory));
             break;
         }
         case ZERO_PAGE_Y: {
-            uint8_t zeroPageAddress = Fetch8Bits(cycles, memory);
-            zeroPageAddress += Y;
-            cycles--;
-            reg = Read8Bits(cycles, memory, zeroPageAddress);
+            reg = Read8Bits(cycles, memory, getZeroPageAddressY(cycles, memory));
             break;
         }
         case ABSOLUTE: {
-            reg = Read8Bits(cycles, memory, Fetch16Bits(cycles, memory));
+            reg = Read8Bits(cycles, memory, getAbsoluteAddress(cycles, memory));
             break;
         }
         case ABSOLUTE_X: {
-            uint16_t absoluteAddress = Fetch16Bits(cycles, memory);
-            uint16_t absoluteAddressX = absoluteAddress + X;
-            reg = Read8Bits(cycles, memory, absoluteAddressX);
-            //crossing page boundary
-            if(absoluteAddressX - absoluteAddress >= 0xFF)
-                cycles--;
+            reg = Read8Bits(cycles, memory, getAbsoluteAddressX(cycles, memory, true));
             break;
         }
         case ABSOLUTE_Y: {
-            uint16_t absoluteAddress = Fetch16Bits(cycles, memory);
-            uint16_t absoluteAddressY = absoluteAddress + Y;
-            reg = Read8Bits(cycles, memory, absoluteAddressY);
-            //crossing page boundary
-            if(absoluteAddressY - absoluteAddress >= 0xFF)
-                cycles--;
+            reg = Read8Bits(cycles, memory, getAbsoluteAddressY(cycles, memory, true));
             break;
         }
         case INDIRECT_X: {
-            uint8_t zeroPageAddress = Fetch8Bits(cycles, memory);
-            zeroPageAddress += X;
-            cycles--; //add X register value
-            reg = Read8Bits(cycles, memory, Read16Bits(cycles, memory, zeroPageAddress));
-            LDSetStatus(reg);
+            reg = Read8Bits(cycles, memory, getIndirectIndexedAddressX(cycles, memory));
             break;
         }
         case INDIRECT_Y: {
-            uint16_t targetAddress = Read16Bits(cycles, memory, Fetch8Bits(cycles, memory));
-            uint16_t targetAddressY = targetAddress + Y;
-            reg = Read8Bits(cycles, memory, targetAddressY);
-            //crossing page boundary
-            if(targetAddressY - targetAddress >= 0xFF)
-                cycles--;
-            LDSetStatus(reg);
+            reg = Read8Bits(cycles, memory, getIndexedIndirectAddressY(cycles, memory, true));
             break;
         }
         default: {
@@ -127,13 +156,61 @@ void MOS6502::CPU::LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, Memory& 
     LDSetStatus(reg);
 }
 
+void MOS6502::CPU::StoreRegister(ADDRESSING_MODES mode, int32_t &cycles, Memory &memory, uint8_t &reg) {
+    switch(mode) {
+        case ZERO_PAGE: {
+            Write8Bits(cycles, memory, getZeroPageAddress(cycles, memory), reg);
+            break;
+        }
+        case ZERO_PAGE_X: {
+            Write8Bits(cycles, memory, getZeroPageAddressX(cycles, memory), reg);
+            break;
+        }
+        case ZERO_PAGE_Y: {
+            Write8Bits(cycles, memory, getZeroPageAddressY(cycles, memory), reg);
+            break;
+        }
+        case ABSOLUTE: {
+            Write8Bits(cycles, memory, getAbsoluteAddress(cycles, memory), reg);
+            break;
+        }
+        case ABSOLUTE_X: {
+            Write8Bits(cycles, memory, getAbsoluteAddressX(cycles, memory, false), reg);
+            cycles--; //write to absolute
+            break;
+        }
+        case ABSOLUTE_Y: {
+            Write8Bits(cycles, memory, getAbsoluteAddressY(cycles, memory, false), reg);
+            cycles--; //write to absolute
+            break;
+        }
+        case INDIRECT_X: {
+            Write8Bits(cycles, memory, getIndirectIndexedAddressX(cycles, memory), reg);
+            break;
+        }
+        case INDIRECT_Y: {
+            Write8Bits(cycles, memory, getIndexedIndirectAddressY(cycles, memory, false), reg);
+            cycles--; //write to absolute
+            break;
+        }
+        default: {
+
+        }
+    }
+}
+
 /* return number of cycles used */
 int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){
     int32_t totalCycles = cycles;
 
     while(cycles > 0){
         uint8_t instruction = Fetch8Bits(cycles, memory);
-        lookupTable[(INSTRUCTIONS)instruction](cycles, memory);
+        if(lookupTable.find((INSTRUCTIONS)instruction) != lookupTable.end())
+            lookupTable[(INSTRUCTIONS)instruction](cycles, memory);
+        else {
+            printf("Unknown Instruction!");
+            return -1;
+        }
     }
 
     return totalCycles - cycles;

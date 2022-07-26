@@ -34,6 +34,8 @@ TEST_F(M6502LDYTest, LDYImmediateCanLoadAValueIntoARegister){
     mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDY_IM;
     mem[0xFFFD] = 0x84;
     CPU CPUCopy = cpu;
+    cpu.P.N = 1;
+    cpu.P.Z = 1;
 
     //when:
     int32_t cyclesUsed = cpu.Execute(2, mem);
@@ -52,6 +54,8 @@ TEST_F(M6502LDYTest, LDYZeroPageCanLoadAValueIntoARegister){
     mem[0xFFFD] = 0x42;
     mem[0x0042] = 0x37;
     CPU CPUCopy = cpu;
+    cpu.P.N = 1;
+    cpu.P.Z = 1;
 
     //when:
     int32_t cyclesUsed = cpu.Execute(3, mem);
@@ -67,6 +71,8 @@ TEST_F(M6502LDYTest, LDYZeroPageCanLoadAValueIntoARegister){
 TEST_F(M6502LDYTest, LDYZeroPageXCanLoadAValueIntoARegister){
     //given:
     cpu.X = 5;
+    cpu.P.N = 1;
+    cpu.P.Z = 1;
 
     mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDY_ZP_X;
     mem[0xFFFD] = 0x42;
@@ -88,6 +94,8 @@ TEST_F(M6502LDYTest, LDYZeroPageXCanLoadAValueIntoARegister){
 TEST_F(M6502LDYTest, LDYZeroPageXCanLoadAValueIntoARegisterWhenItWraps){
     //given:
     cpu.X = 0xFF;
+    cpu.P.N = 1;
+    cpu.P.Z = 1;
 
     mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDY_ZP_X;
     mem[0xFFFD] = 0x80;
@@ -110,6 +118,8 @@ TEST_F(M6502LDYTest, LDYZeroPageXCanLoadAValueIntoARegisterWhenItWraps){
 TEST_F(M6502LDYTest, LDYAbsolutCanLoadAValueIntoARegister){
     //given:
     constexpr int32_t NUM_CYCLES = 4;
+    cpu.P.N = 1;
+    cpu.P.Z = 1;
 
     mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDY_ABS;
     mem[0xFFFD] = 0x80;
@@ -133,6 +143,8 @@ TEST_F(M6502LDYTest, LDYAbsolutCanLoadAValueIntoARegister){
 TEST_F(M6502LDYTest, LDYAbsolutXCanLoadAValueIntoARegister){
     //given:
     constexpr int32_t NUM_CYCLES = 4;
+    cpu.P.N = 1;
+    cpu.P.Z = 1;
 
     cpu.X = 0x40;
     mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDY_ABS_X;
@@ -157,6 +169,8 @@ TEST_F(M6502LDYTest, LDYAbsolutXCanLoadAValueIntoARegister){
 TEST_F(M6502LDYTest, LDYAbsolutXCanLoadAValueIntoARegisterWhenItCrossesPageBoundary){
     //given:
     constexpr int32_t NUM_CYCLES = 5;
+    cpu.P.N = 1;
+    cpu.P.Z = 1;
 
     cpu.X = 0xFF;
     mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDY_ABS_X;
