@@ -27,8 +27,11 @@ static void VerifyUnmodifiedFlagsLDA(CPU& cpu, CPU& CPUCopy){
 
 TEST_F(M6502LDXTest, LDXImmediateCanLoadAValueIntoARegister){
     //given:
-    mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDX_IM;
-    mem[0xFFFD] = 0x84;
+    mem[0xFFFC] = 0x00;
+    mem[0xFFFD] = 0x80;
+
+    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDX_IM;
+    mem[0x8001] = 0x84;
     CPU CPUCopy = cpu;
     cpu.P.N = 1;
     cpu.P.Z = 1;
@@ -46,8 +49,12 @@ TEST_F(M6502LDXTest, LDXImmediateCanLoadAValueIntoARegister){
 }
 TEST_F(M6502LDXTest, LDXZeroPageCanLoadAValueIntoARegister){
     //given:
-    mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDX_ZP;
-    mem[0xFFFD] = 0x42;
+    mem[0xFFFC] = 0x00;
+    mem[0xFFFD] = 0x80;
+
+    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDX_ZP;
+    mem[0x8001] = 0x42;
+
     mem[0x0042] = 0x37;
     CPU CPUCopy = cpu;
     cpu.P.N = 1;
@@ -67,9 +74,12 @@ TEST_F(M6502LDXTest, LDXZeroPageCanLoadAValueIntoARegister){
 TEST_F(M6502LDXTest, LDXZeroPageYCanLoadAValueIntoARegister){
     //given:
     cpu.Y = 5;
+    mem[0xFFFC] = 0x00;
+    mem[0xFFFD] = 0x80;
 
-    mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDX_ZP_Y;
-    mem[0xFFFD] = 0x42;
+    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDX_ZP_Y;
+    mem[0x8001] = 0x42;
+
     mem[0x0047] = 0x37;
     cpu.P.N = 1;
     cpu.P.Z = 1;
@@ -91,8 +101,11 @@ TEST_F(M6502LDXTest, LDXZeroPageYCanLoadAValueIntoARegisterWhenItWraps){
     //given:
     cpu.Y = 0xFF;
 
-    mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDX_ZP_Y;
+    mem[0xFFFC] = 0x00;
     mem[0xFFFD] = 0x80;
+
+    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDX_ZP_Y;
+    mem[0x8001] = 0x80;
     mem[0x007F] = 0x37;
     cpu.P.N = 1;
     cpu.P.Z = 1;
@@ -114,10 +127,13 @@ TEST_F(M6502LDXTest, LDXZeroPageYCanLoadAValueIntoARegisterWhenItWraps){
 TEST_F(M6502LDXTest, LDXAbsolutCanLoadAValueIntoARegister){
     //given:
     constexpr int32_t NUM_CYCLES = 4;
-
-    mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDX_ABS;
+    mem[0xFFFC] = 0x00;
     mem[0xFFFD] = 0x80;
-    mem[0xFFFE] = 0x44; //0x4480
+
+    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDX_ABS;
+    mem[0x8001] = 0x80;
+    mem[0x8002] = 0x44; //0x4480
+
     mem[0x4480] = 0x37;
     cpu.P.N = 1;
     cpu.P.Z = 1;
@@ -139,11 +155,15 @@ TEST_F(M6502LDXTest, LDXAbsolutCanLoadAValueIntoARegister){
 TEST_F(M6502LDXTest, LDXAbsolutYCanLoadAValueIntoARegister){
     //given:
     constexpr int32_t NUM_CYCLES = 4;
-
     cpu.Y = 0x40;
-    mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDX_ABS_Y;
+
+    mem[0xFFFC] = 0x00;
     mem[0xFFFD] = 0x80;
-    mem[0xFFFE] = 0x44; //0x4480
+
+    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDX_ABS_Y;
+    mem[0x8001] = 0x80;
+    mem[0x8002] = 0x44; //0x4480
+
     mem[0x44C0] = 0x37; //0x4480 + 0x0040 = 0x44C0
     cpu.P.N = 1;
     cpu.P.Z = 1;
@@ -165,12 +185,17 @@ TEST_F(M6502LDXTest, LDXAbsolutYCanLoadAValueIntoARegister){
 TEST_F(M6502LDXTest, LDXAbsolutYCanLoadAValueIntoARegisterWhenItCrossesPageBoundary){
     //given:
     constexpr int32_t NUM_CYCLES = 5;
-
     cpu.Y = 0xFF;
-    mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDX_ABS_Y;
-    mem[0xFFFD] = 0x02;
-    mem[0xFFFE] = 0x44; //0x4402
+
+    mem[0xFFFC] = 0x00;
+    mem[0xFFFD] = 0x80;
+
+    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDX_ABS_Y;
+    mem[0x8001] = 0x02;
+    mem[0x8002] = 0x44; //0x4402
+
     mem[0x4501] = 0x37; //0x4402 + 0x00FF = 0x4501
+
     cpu.P.N = 1;
     cpu.P.Z = 1;
 

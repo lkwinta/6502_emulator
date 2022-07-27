@@ -5,10 +5,16 @@
 
 void MOS6502::CPU::Reset(Memory& memory) {
     PC = 0xFFFC;
-    S = 0x0100;
+
+    S = 0xFF;
     P.C = P.Z = P.I = P.D = P.B = P.V = P.N = 0;
     A = X = Y = 0;
+
     memory.Initialise();
+}
+
+MOS6502::CPU::CPU() {
+    fillInstructionsLookupTable();
 }
 
 uint16_t MOS6502::CPU::Fetch8Bits(int32_t& cycles, const Memory& memory){
@@ -61,10 +67,28 @@ void MOS6502::CPU::Write16Bits(int32_t& cycles, Memory& memory, uint16_t address
     cycles -= 2;
 }
 
-void MOS6502::CPU::LDSetStatus(uint8_t& reg){
-    P.Z = (reg == 0);
-    P.N = (reg & 0b10000000) > 0;
+void MOS6502::CPU::StackPush8Bits(int32_t &cycles, MOS6502::Memory &memory, uint8_t value) {
+    Write8Bits(cycles, memory, stackLocation + S, value);
+    S -= 1;
 }
+
+void MOS6502::CPU::StackPush16Bits(int32_t &cycles, MOS6502::Memory &memory, uint16_t value) {
+    Write16Bits(cycles, memory, stackLocation + S - 1, value);
+    S -= 2;
+}
+
+uint8_t MOS6502::CPU::StackPop8Bits(int32_t &cycles, Memory& memory) {
+    uint8_t value = Read8Bits(cycles, memory, stackLocation + S);
+    S += 1;
+    return value;
+}
+
+uint16_t MOS6502::CPU::StackPop16Bits(int32_t &cycles, Memory& memory) {
+    uint16_t value = Read16Bits(cycles, memory, stackLocation + S + 1);
+    S += 2;
+    return value;
+}
+
 
 uint8_t MOS6502::CPU::getZeroPageAddress(int32_t& cycles, const Memory &memory){
     return Fetch8Bits(cycles, memory);
@@ -110,6 +134,11 @@ uint16_t MOS6502::CPU::getIndexedIndirectAddressY(int32_t &cycles, const MOS6502
     return targetAddress + Y;
 }
 
+void MOS6502::CPU::LDSetStatus(uint8_t& reg){
+    P.Z = (reg == 0);
+    P.N = (reg & 0b10000000) > 0;
+}
+
 void MOS6502::CPU::LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, const Memory& memory, uint8_t& reg){
     switch(mode){
         case IMMEDIATE: {
@@ -149,7 +178,7 @@ void MOS6502::CPU::LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, const Me
             break;
         }
         default: {
-            printf("Unhandled addressing mode: %d", mode);
+            printf("Unhandled load addressing mode: %d", mode);
             return;
         }
     }
@@ -194,19 +223,23 @@ void MOS6502::CPU::StoreRegister(ADDRESSING_MODES mode, int32_t &cycles, Memory 
             break;
         }
         default: {
-
+            printf("Unhandled store addressing mode: %d", mode);
+            return;
         }
     }
 }
 
-/* return number of cycles used */
 int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){
     int32_t totalCycles = cycles;
 
+    int32_t c = 2;
+    uint16_t firstInstructionAddress = Fetch16Bits(c, memory);
+    PC = firstInstructionAddress;
+
     while(cycles > 0){
         uint8_t instruction = Fetch8Bits(cycles, memory);
-        if(lookupTable.find((INSTRUCTIONS)instruction) != lookupTable.end())
-            lookupTable[(INSTRUCTIONS)instruction](cycles, memory);
+        if(instructionsLookupTable.find((INSTRUCTIONS)instruction) != instructionsLookupTable.end())
+            instructionsLookupTable[(INSTRUCTIONS)instruction](cycles, memory);
         else {
             printf("Unknown Instruction!");
             return -1;

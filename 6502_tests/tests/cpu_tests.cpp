@@ -31,8 +31,11 @@ TEST_F(M6502CPUTest, CPUDoesNothingWhenExecutedWithZeroCycles){
 
 TEST_F(M6502CPUTest, CPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstruction){
     //given:
-    mem[0xFFFC] = CPU::INSTRUCTIONS::INS_LDA_IM;
-    mem[0xFFFD] = 0x84;
+    mem[0xFFFC] = 0x00;
+    mem[0xFFFD] = 0x80;
+
+    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_IM;
+    mem[0x8001] = 0x84;
 
     //when:
     CPU CPUCopy = cpu;

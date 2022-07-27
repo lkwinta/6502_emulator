@@ -20,11 +20,13 @@ int main(){
      * Now assuming that cell 0x8312 = 0x15 we will load 0x15 into accumulator
      *
      * */
+    mem[0xFFFC] = 0x00;
+    mem[0xFFFD] = 0x80; //location of the first instruction (little endian)
 
-    mem[0xFFFC] = CPU::INS_LDX_IM; // 2 cycles
-    mem[0xFFFD] = 0x12; // X = 20
-    mem[0xFFFE] = CPU::INS_LDA_IND_X; // 6 cycles
-    mem[0xFFFF] = 0x10;
+    mem[0x8000] = CPU::INS_LDX_IM; // 2 cycles
+    mem[0x8001] = 0x12; // X = 20
+    mem[0x8002] = CPU::INS_LDA_IND_X; // 6 cycles
+    mem[0x8003] = 0x10;
 
     mem[0x0022] = 0x12;
     mem[0x0023] = 0x83; //little endian address 0x8312
@@ -34,6 +36,6 @@ int main(){
     //We specify number of CPU cycles we want to execute
     cpu.Execute(8, mem);
 
-    printf("X: 0x%X\n", cpu.X);
-    printf("A: 0x%X\n", cpu.A);
+    printf("X: 0x%X\n", cpu.X); //0x12
+    printf("A: 0x%X\n", cpu.A); //0x15
 }

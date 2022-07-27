@@ -40,8 +40,12 @@ public:
 void M6502STTest::STAZeroPageStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::* Register) {
     //given:
     cpu.*Register = 0x2F;
-    mem[0xFFFC] = instruction;
+    mem[0xFFFC] = 0x00;
     mem[0xFFFD] = 0x80;
+
+    mem[0x8000] = instruction;
+    mem[0x8001] = 0x80;
+
     mem[0x0080] = 0x31;
 
     constexpr int32_t NUM_OF_CYCLES = 3;
@@ -61,8 +65,12 @@ void M6502STTest::STAZeroPageXYStore(CPU::INSTRUCTIONS instruction, uint8_t CPU:
     cpu.*Register = 0x42;
     cpu.*RegisterXY = 0x0F;
 
-    mem[0xFFFC] = instruction;
+    mem[0xFFFC] = 0x00;
     mem[0xFFFD] = 0x80;
+
+    mem[0x8000] = instruction;
+    mem[0x8001] = 0x80;
+
     mem[0x008F] = 0x31;
 
     constexpr int32_t NUM_OF_CYCLES = 4;
@@ -80,10 +88,13 @@ void M6502STTest::STAZeroPageXYStore(CPU::INSTRUCTIONS instruction, uint8_t CPU:
 void M6502STTest::STAAbsoluteStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::*Register) {
     //given:
     cpu.*Register = 0x2F;
-    mem[0xFFFC] = instruction;
-    mem[0xFFFD] = 0x00;
-    mem[0xFFFE] = 0x80;
-    mem[0x8000] = 0x31;
+    mem[0xFFFC] = 0x00;
+    mem[0xFFFD] = 0x80;
+
+    mem[0x8000] = instruction;
+    mem[0x8001] = 0x00;
+    mem[0x8002] = 0x40;
+    mem[0x4000] = 0x31;
 
     constexpr int32_t NUM_OF_CYCLES = 4;
     CPU CPUCopy = cpu;
@@ -93,7 +104,7 @@ void M6502STTest::STAAbsoluteStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::*
 
     //then:
     EXPECT_EQ(totalCycles, NUM_OF_CYCLES);
-    EXPECT_EQ(mem[0x8000], cpu.*Register);
+    EXPECT_EQ(mem[0x4000], cpu.*Register);
     VerifyUnmodifiedFlags(cpu, CPUCopy);
 }
 
@@ -101,9 +112,13 @@ void M6502STTest::STAAbsoluteXYStore(CPU::INSTRUCTIONS instruction, uint8_t CPU:
     //given:
     cpu.*Register = 0x2F;
     cpu.*RegisterXY = 0x92;
-    mem[0xFFFC] = instruction;
-    mem[0xFFFD] = 0x00;
-    mem[0xFFFE] = 0x20;
+    mem[0xFFFC] = 0x00;
+    mem[0xFFFD] = 0x80;
+
+    mem[0x8000] = instruction;
+    mem[0x8001] = 0x00;
+    mem[0x8002] = 0x20;
+
     mem[0x2092] = 0x31;
 
     constexpr int32_t NUM_OF_CYCLES = 5;
@@ -141,11 +156,17 @@ TEST_F(M6502STTest, STAAbsoluteYCanStoreARegister) {
 TEST_F(M6502STTest, STAIndirectXCanStoreARegister){
     cpu.A = 0x2F;
     cpu.X = 0x92;
-    mem[0xFFFC] = CPU::INSTRUCTIONS::INS_STA_IND_X;
-    mem[0xFFFD] = 0x20;
+
+    mem[0xFFFC] = 0x00;
+    mem[0xFFFD] = 0x80;
+
+    mem[0x8000] = CPU::INSTRUCTIONS::INS_STA_IND_X;
+    mem[0x8001] = 0x20;
+
     mem[0x00B2] = 0x00;//0x92 + 0x20
-    mem[0x00B3] = 0x80;//0x8000
-    mem[0x8000] = 0x31;
+    mem[0x00B3] = 0x40;//0x4000
+
+    mem[0x4000] = 0x31;
 
     constexpr int32_t NUM_OF_CYCLES = 6;
     CPU CPUCopy = cpu;
@@ -155,18 +176,24 @@ TEST_F(M6502STTest, STAIndirectXCanStoreARegister){
 
     //then:
     EXPECT_EQ(totalCycles, NUM_OF_CYCLES);
-    EXPECT_EQ(mem[0x8000], cpu.A);
+    EXPECT_EQ(mem[0x4000], cpu.A);
     VerifyUnmodifiedFlags(cpu, CPUCopy);
 }
 
 TEST_F(M6502STTest, STAIndirectYCanStoreARegister){
     cpu.A = 0x2F;
     cpu.Y = 0x92;
-    mem[0xFFFC] = CPU::INSTRUCTIONS::INS_STA_IND_Y;
-    mem[0xFFFD] = 0x20;
+
+    mem[0xFFFC] = 0x00;
+    mem[0xFFFD] = 0x80;
+
+    mem[0x8000] = CPU::INSTRUCTIONS::INS_STA_IND_Y;
+    mem[0x8001] = 0x20;
+
     mem[0x0020] = 0x00;
-    mem[0x0021] = 0x80; //0x8000
-    mem[0x8000 + 0x92] = 0x31;
+    mem[0x0021] = 0x40; //0x4000
+
+    mem[0x4000 + 0x92] = 0x31;
 
     constexpr int32_t NUM_OF_CYCLES = 6;
     CPU CPUCopy = cpu;
@@ -176,7 +203,7 @@ TEST_F(M6502STTest, STAIndirectYCanStoreARegister){
 
     //then:
     EXPECT_EQ(totalCycles, NUM_OF_CYCLES);
-    EXPECT_EQ(mem[0x8092], cpu.A);
+    EXPECT_EQ(mem[0x4092], cpu.A);
     VerifyUnmodifiedFlags(cpu, CPUCopy);
 }
 /////////////////////////////////////////////////////////////////////////////////////
