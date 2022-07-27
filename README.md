@@ -14,32 +14,30 @@ In project 6502_emulator you can find ```main.cpp``` file. In this file you can 
 by setting fields of ```mem.Data[]``` array. Array is indexed frm ```0x000``` to ```0xFFFF```.
 
 ### Simple program:
+```asm
+; assembly 
+    global _start            ; set reset vector to location of _start
+            _start:            ; at 0x8000
+                   ;set value in memory which will be later loaded into A register
+                LDY 0x15       ; {instruction at 0x8000}   load value into Y register
+                STY #0x4312    ; {instruction at 0x8002}   store X register into 0x4312
+     
+                   ;set LSB for indirect address
+                LDX 0x12       ; {instruction at 0x8005}   load 0x12 into X register
+                STX 0x23       ; {instruction at 0x8007}   store X register into 0x23
+     
+                   ;set MSB for indirect address
+                LDX 0x43       ; {instruction at 0x8009}   load 0x43 into X register
+                STX 0x24       ; {instruction at 0x800B}   store X register int 0x24
+     
+                   ;indirect address is now stored at 2 cells: 0x23 (LSB) and 0x24 (MSB)
+                   ; load indirect address into A register
+                LDX 0x13       ; {instruction at 0x800D}   load 0x13 into X register - offset for zero-page address
+                LDA ($0x10, X) ; {instruction at 0x800F}   load Accumulator from indirect address X(0x13) + 0x10 -> 0x0023 and 0x0024
+```
+
 ```c++
-        /*
-     *
-     * global _start            ; set reset vector to location of _start
-     *       _start:            ; at 0x8000
-     *              ;set value in memory which will be later loaded into A register
-     *           LDY 0x15       ; {instruction at 0x8000}   load value into Y register
-     *           STY #0x4312    ; {instruction at 0x8002}   store X register into 0x4312
-     *
-     *              ;set LSB for indirect address
-     *           LDX 0x12       ; {instruction at 0x8005}   load 0x12 into X register
-     *           STX 0x23       ; {instruction at 0x8007}   store X register into 0x23
-     *
-     *              ;set MSB for indirect address
-     *           LDX 0x43       ; {instruction at 0x8009}   load 0x43 into X register
-     *           STX 0x24       ; {instruction at 0x800B}   store X register int 0x24
-     *
-     *              ;indirect address is now stored at 2 cells: 0x23 (LSB) and 0x24 (MSB)
-     *              ; load indirect address into A register
-     *           LDX 0x13       ; {instruction at 0x800D}   load 0x13 into X register - offset for zero-page address
-     *           LDA ($0x10, X) ; {instruction at 0x800F}   load Accumulator from indirect address X(0x13) + 0x10 -> 0x0023 and 0x0024
-     *
-     * Assuming that cell 0x0022 = 0x12 and 0x0023 = 0x83 with little endian conception we will get 16-bit absolute address 0x8312
-     * Now assuming that cell 0x8312 = 0x15 we will load 0x15 into accumulator
-     *
-    * */
+//bytecode programmed in c++
 
 //reset vector
 mem[0xFFFC] = 0x00;
