@@ -72,6 +72,36 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         {INSTRUCTIONS::INS_PLP,      [this](int32_t& cycles, Memory& memory) { P.PS = StackPop8Bits(cycles, memory); cycles -= 2;}},
         /////////////////////////////////// STACK OPERATIONS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
 
+        /////////////////////////////////// LOGICAL OPERATIONS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
+        //AND
+        {INSTRUCTIONS::INS_AND_IM,      [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(IMMEDIATE, LOGICAL_OPERATION::AND, cycles, memory);}},
+        {INSTRUCTIONS::INS_AND_ZP,      [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ZERO_PAGE, LOGICAL_OPERATION::AND, cycles, memory);}},
+        {INSTRUCTIONS::INS_AND_ZP_X,    [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ZERO_PAGE_X, LOGICAL_OPERATION::AND, cycles, memory);}},
+        {INSTRUCTIONS::INS_AND_ABS,     [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ABSOLUTE, LOGICAL_OPERATION::AND, cycles, memory);}},
+        {INSTRUCTIONS::INS_AND_ABS_X,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ABSOLUTE_X, LOGICAL_OPERATION::AND, cycles, memory);}},
+        {INSTRUCTIONS::INS_AND_ABS_Y,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ABSOLUTE_Y, LOGICAL_OPERATION::AND, cycles, memory);}},
+        {INSTRUCTIONS::INS_AND_IND_X,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(INDIRECT_X, LOGICAL_OPERATION::AND, cycles, memory);}},
+        {INSTRUCTIONS::INS_AND_IND_Y,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(INDIRECT_Y, LOGICAL_OPERATION::AND, cycles, memory);}},
+        //EOR
+        {INSTRUCTIONS::INS_ORA_IM,      [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(IMMEDIATE, LOGICAL_OPERATION::OR, cycles, memory);}},
+        {INSTRUCTIONS::INS_ORA_ZP,      [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ZERO_PAGE, LOGICAL_OPERATION::OR, cycles, memory);}},
+        {INSTRUCTIONS::INS_ORA_ZP_X,    [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ZERO_PAGE_X, LOGICAL_OPERATION::OR, cycles, memory);}},
+        {INSTRUCTIONS::INS_ORA_ABS,     [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ABSOLUTE, LOGICAL_OPERATION::OR, cycles, memory);}},
+        {INSTRUCTIONS::INS_ORA_ABS_X,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ABSOLUTE_X, LOGICAL_OPERATION::OR, cycles, memory);}},
+        {INSTRUCTIONS::INS_ORA_ABS_Y,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ABSOLUTE_Y, LOGICAL_OPERATION::OR, cycles, memory);}},
+        {INSTRUCTIONS::INS_ORA_IND_X,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(INDIRECT_X, LOGICAL_OPERATION::OR, cycles, memory);}},
+        {INSTRUCTIONS::INS_ORA_IND_Y,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(INDIRECT_Y, LOGICAL_OPERATION::OR, cycles, memory);}},
+        //ORA
+        {INSTRUCTIONS::INS_EOR_IM,      [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(IMMEDIATE, LOGICAL_OPERATION::XOR, cycles, memory);}},
+        {INSTRUCTIONS::INS_EOR_ZP,      [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ZERO_PAGE, LOGICAL_OPERATION::XOR, cycles, memory);}},
+        {INSTRUCTIONS::INS_EOR_ZP_X,    [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ZERO_PAGE_X, LOGICAL_OPERATION::XOR, cycles, memory);}},
+        {INSTRUCTIONS::INS_EOR_ABS,     [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ABSOLUTE, LOGICAL_OPERATION::XOR, cycles, memory);}},
+        {INSTRUCTIONS::INS_EOR_ABS_X,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ABSOLUTE_X, LOGICAL_OPERATION::XOR, cycles, memory);}},
+        {INSTRUCTIONS::INS_EOR_ABS_Y,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ABSOLUTE_Y, LOGICAL_OPERATION::XOR, cycles, memory);}},
+        {INSTRUCTIONS::INS_EOR_IND_X,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(INDIRECT_X, LOGICAL_OPERATION::XOR, cycles, memory);}},
+        {INSTRUCTIONS::INS_EOR_IND_Y,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(INDIRECT_Y, LOGICAL_OPERATION::XOR, cycles, memory);}},
+        /////////////////////////////////// LOGICAL OPERATIONS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
+
         ////////////////////////////////// JUMP INSTRUCTION IMPLEMENTATION //////////////////////////////////
         {INSTRUCTIONS::INS_JSR,         [this](int32_t& cycles, Memory& memory) {
             uint16_t absoluteAddress = Fetch16Bits(cycles, memory);

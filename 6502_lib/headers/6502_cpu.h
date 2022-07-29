@@ -27,6 +27,12 @@ namespace MOS6502 {
             INDIRECT_Y
         };
 
+        enum class LOGICAL_OPERATION {
+            AND,
+            XOR,
+            OR
+        };
+
         /*return 8-bit zero-page address*/
         uint8_t getZeroPageAddress(int32_t& cycles, const Memory &memory);
         /*return 8-bit zero-page address with an X offset*/
@@ -72,6 +78,11 @@ namespace MOS6502 {
         /*Sets N and Z flags of processor status after loading a register*/
         void LDSetStatus(uint8_t& reg);
 
+        /*returns address basing on addressing mode*/
+        uint16_t GetAddress(ADDRESSING_MODES mode, int32_t& cycles, const Memory& memory, bool checkPageCrossing);
+
+        /*Performs logical operation on accumulator*/
+        void PerformLogicalOnAccumulator(ADDRESSING_MODES mode, LOGICAL_OPERATION operation, int32_t& cycles, Memory& memory);
         /*Loads register with specified addressing mode*/
         void LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, const Memory& memory, uint8_t& reg);
         /*Stores register in specified address in memory*/
@@ -175,6 +186,58 @@ namespace MOS6502 {
             INS_PLA = 0x68,
             //cycles: 4  |    args: none (Implied)
             INS_PLP = 0x28,
+
+            //cycles: 2  |    args: 8-bit value
+            INS_AND_IM = 0x29,
+            //cycles: 3  |    args: 8-bit zero-page address
+            INS_AND_ZP = 0x25,
+            //cycles: 4  |    args: 8-bit zero-page address, X register offset
+            INS_AND_ZP_X = 0x35,
+            //cycles: 4  |    args: 16-bit absolute address (little endian)
+            INS_AND_ABS = 0x2D,
+            //cycles: 4-5|    args: 16-bit absolute address (little endian), X register offset
+            INS_AND_ABS_X = 0x3D,
+            //cycles: 4-5|    args: 16-bit absolute address (little endian), Y register offset
+            INS_AND_ABS_Y = 0x39,
+            //cycles: 6  |    args: (8-bit zero-page address, X register offset)
+            INS_AND_IND_X = 0x21,
+            //cycles: 5-6|    args: (8-bit zero-page address), Y register offset
+            INS_AND_IND_Y = 0x31,
+
+            //cycles: 2  |    args: 8-bit value
+            INS_ORA_IM = 0x09,
+            //cycles: 3  |    args: 8-bit zero-page address
+            INS_ORA_ZP = 0x05,
+            //cycles: 4  |    args: 8-bit zero-page address, X register offset
+            INS_ORA_ZP_X = 0x15,
+            //cycles: 4  |    args: 16-bit absolute address (little endian)
+            INS_ORA_ABS = 0x0D,
+            //cycles: 4-5|    args: 16-bit absolute address (little endian), X register offset
+            INS_ORA_ABS_X = 0x1D,
+            //cycles: 4-5|    args: 16-bit absolute address (little endian), Y register offset
+            INS_ORA_ABS_Y = 0x19,
+            //cycles: 6  |    args: (8-bit zero-page address, X register offset)
+            INS_ORA_IND_X = 0x01,
+            //cycles: 5-6|    args: (8-bit zero-page address), Y register offset
+            INS_ORA_IND_Y = 0x11,
+
+
+            //cycles: 2  |    args: 8-bit value
+            INS_EOR_IM = 0x49,
+            //cycles: 3  |    args: 8-bit zero-page address
+            INS_EOR_ZP = 0x45,
+            //cycles: 4  |    args: 8-bit zero-page address, X register offset
+            INS_EOR_ZP_X = 0x55,
+            //cycles: 4  |    args: 16-bit absolute address (little endian)
+            INS_EOR_ABS = 0x4D,
+            //cycles: 4-5|    args: 16-bit absolute address (little endian), X register offset
+            INS_EOR_ABS_X = 0x5D,
+            //cycles: 4-5|    args: 16-bit absolute address (little endian), Y register offset
+            INS_EOR_ABS_Y = 0x59,
+            //cycles: 6  |    args: (8-bit zero-page address, X register offset)
+            INS_EOR_IND_X = 0x41,
+            //cycles: 5-6|    args: (8-bit zero-page address), Y register offset
+            INS_EOR_IND_Y = 0x51,
 
             //cycles: 6  |    args: 16-bit absolute address (little endian)
             INS_JSR = 0x20,

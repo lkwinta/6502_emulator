@@ -19,7 +19,17 @@ if(NOT googletest_POPULATED)
 endif()
 enable_testing()
 
-add_executable(6502_tests tests/cpu_tests.cpp tests/load_registers/lda_tests.cpp tests/load_registers/ldx_tests.cpp tests/load_registers/ldy_tests.cpp tests/store_registers/st_tests.cpp tests/subroutine/jsr_rts_tests.cpp tests/stack_operations/stack_operations.cpp)
+add_executable(6502_tests
+        tests/cpu_tests.cpp
+        tests/load_registers/lda_tests.cpp
+        tests/load_registers/ldx_tests.cpp
+        tests/load_registers/ldy_tests.cpp
+        tests/store_registers/st_tests.cpp
+        tests/subroutine/jsr_rts_tests.cpp
+        tests/stack_operations/stack_operations.cpp/
+        tests/logical_operations/and_tests.cpp
+        tests/logical_operations/eor_tests.cpp
+        tests/logical_operations/ora_tests.cpp)
 
 target_link_libraries(6502_tests 6502_lib gtest_main gmock_main)
 include_directories(${CMAKE_SOURCE_DIR}/6502_lib/headers)
