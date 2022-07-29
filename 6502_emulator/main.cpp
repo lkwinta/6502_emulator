@@ -8,7 +8,11 @@ int main(){
 
     Memory mem{};
     CPU cpu{};
-    cpu.Reset(mem);
+    //sets value of the reset vector ( location of the _start function)
+    CPU::Setup(mem, 0x8000);
+    int32_t NUM_OF_CYCLES = 31;
+
+    cpu.Reset(NUM_OF_CYCLES, mem); //7 cycles
 
     /*
      *
@@ -35,10 +39,6 @@ int main(){
      * Now assuming that cell 0x8312 = 0x15 we will load 0x15 into accumulator
      *
     * */
-
-    //reset vector
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80; //location of the first instruction (little endian)
 
     //set value in memory which will be later loaded into A register
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_IM; // 2 cycles
@@ -69,7 +69,7 @@ int main(){
                         // - address for A register will be read from 0x10+0x13
 
     //We specify number of CPU cycles we want to execute
-    cpu.Execute(24, mem);
+    cpu.Execute(NUM_OF_CYCLES, mem);
 
     printf("X: 0x%X\n", cpu.X); //0x12
     printf("A: 0x%X\n", cpu.A); //0x15

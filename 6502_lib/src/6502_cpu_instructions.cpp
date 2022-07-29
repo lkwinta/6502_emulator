@@ -55,6 +55,22 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         {INSTRUCTIONS::INS_STY_ABS,     [this](int32_t& cycles, Memory& memory) { StoreRegister(ABSOLUTE, cycles, memory, Y);}},
         /////////////////////////////////// STORE Y REGISTER INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
 
+        /////////////////////////////////// TRANSFER REGISTERS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
+        {INSTRUCTIONS::INS_TAX,      [this](int32_t& cycles, Memory& memory) { X = A; LDSetStatus(X); cycles--; }},
+        {INSTRUCTIONS::INS_TXA,      [this](int32_t& cycles, Memory& memory) { A = X; LDSetStatus(A); cycles--; }},
+        {INSTRUCTIONS::INS_TAY,      [this](int32_t& cycles, Memory& memory) { Y = A; LDSetStatus(Y); cycles--; }},
+        {INSTRUCTIONS::INS_TYA,      [this](int32_t& cycles, Memory& memory) { A = Y; LDSetStatus(A); cycles--; }},
+        {INSTRUCTIONS::INS_TSX,      [this](int32_t& cycles, Memory& memory) { X = S; LDSetStatus(X); cycles--; }},
+        {INSTRUCTIONS::INS_TXS,      [this](int32_t& cycles, Memory& memory) { S = X; cycles--; }},
+        /////////////////////////////////// TRANSFER REGISTERS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
+
+        /////////////////////////////////// STACK OPERATIONS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
+        {INSTRUCTIONS::INS_PHA,      [this](int32_t& cycles, Memory& memory) { StackPush8Bits(cycles, memory, A); cycles--;}},
+        {INSTRUCTIONS::INS_PHP,      [this](int32_t& cycles, Memory& memory) { StackPush8Bits(cycles, memory, P.PS); cycles--;}},
+        {INSTRUCTIONS::INS_PLA,      [this](int32_t& cycles, Memory& memory) { A = StackPop8Bits(cycles, memory); cycles -= 2;}},
+        {INSTRUCTIONS::INS_PLP,      [this](int32_t& cycles, Memory& memory) { P.PS = StackPop8Bits(cycles, memory); cycles -= 2;}},
+        /////////////////////////////////// STACK OPERATIONS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
+
         ////////////////////////////////// JUMP INSTRUCTION IMPLEMENTATION //////////////////////////////////
         {INSTRUCTIONS::INS_JSR,         [this](int32_t& cycles, Memory& memory) {
             uint16_t absoluteAddress = Fetch16Bits(cycles, memory);

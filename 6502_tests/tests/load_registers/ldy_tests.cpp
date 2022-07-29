@@ -13,7 +13,9 @@ public:
     CPU cpu{};
 
     virtual void SetUp(){
-        cpu.Reset(mem);
+        CPU::Setup(mem, 0x8000);
+        int c = 7;
+        cpu.Reset( c , mem);
     }
 
     virtual void TearDown(){
@@ -31,8 +33,6 @@ static void VerifyUnmodifiedFlagsLDA(CPU& cpu, CPU& CPUCopy){
 
 TEST_F(M6502LDYTest, LDYImmediateCanLoadAValueIntoARegister){
     //given:
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_IM;
     mem[0x8001] = 0x84;
@@ -53,8 +53,6 @@ TEST_F(M6502LDYTest, LDYImmediateCanLoadAValueIntoARegister){
 }
 TEST_F(M6502LDYTest, LDYZeroPageCanLoadAValueIntoARegister){
     //given:
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_ZP;
     mem[0x8001] = 0x42;
@@ -81,8 +79,6 @@ TEST_F(M6502LDYTest, LDYZeroPageXCanLoadAValueIntoARegister){
     cpu.P.N = 1;
     cpu.P.Z = 1;
 
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_ZP_X;
     mem[0x8001] = 0x42;
@@ -108,9 +104,6 @@ TEST_F(M6502LDYTest, LDYZeroPageXCanLoadAValueIntoARegisterWhenItWraps){
     cpu.P.N = 1;
     cpu.P.Z = 1;
 
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
-
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_ZP_X;
     mem[0x8001] = 0x80;
 
@@ -135,9 +128,6 @@ TEST_F(M6502LDYTest, LDYAbsolutCanLoadAValueIntoARegister){
     constexpr int32_t NUM_CYCLES = 4;
     cpu.P.N = 1;
     cpu.P.Z = 1;
-
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_ABS;
     mem[0x8001] = 0x80;
@@ -167,9 +157,6 @@ TEST_F(M6502LDYTest, LDYAbsolutXCanLoadAValueIntoARegister){
 
     cpu.X = 0x40;
 
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
-
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_ABS_X;
     mem[0x8001] = 0x80;
     mem[0x8002] = 0x44; //0x4480
@@ -197,9 +184,6 @@ TEST_F(M6502LDYTest, LDYAbsolutXCanLoadAValueIntoARegisterWhenItCrossesPageBound
     cpu.P.Z = 1;
 
     cpu.X = 0xFF;
-
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_ABS_X;
     mem[0x8001] = 0x02;

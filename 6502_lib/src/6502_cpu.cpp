@@ -3,18 +3,26 @@
 //
 #include "6502_cpu.h"
 
-void MOS6502::CPU::Reset(Memory& memory) {
+void MOS6502::CPU::Reset(int32_t& cycles, Memory& memory) {
     PC = 0xFFFC;
 
     S = 0xFF;
     P.C = P.Z = P.I = P.D = P.B = P.V = P.N = 0;
     A = X = Y = 0;
 
-    memory.Initialise();
+    uint16_t firstInstructionAddress = Fetch16Bits(cycles, memory);
+    PC = firstInstructionAddress;
+    cycles -= 5;
 }
 
 MOS6502::CPU::CPU() {
     fillInstructionsLookupTable();
+}
+
+void MOS6502::CPU::Setup(MOS6502::Memory &memory, uint16_t resetVectorValue) {
+    memory.Initialise();
+    memory[0xFFFC] = (resetVectorValue & 0xFF);
+    memory[0xFFFD] = (resetVectorValue >> 8);
 }
 
 uint16_t MOS6502::CPU::Fetch8Bits(int32_t& cycles, const Memory& memory){
@@ -78,14 +86,14 @@ void MOS6502::CPU::StackPush16Bits(int32_t &cycles, MOS6502::Memory &memory, uin
 }
 
 uint8_t MOS6502::CPU::StackPop8Bits(int32_t &cycles, Memory& memory) {
-    uint8_t value = Read8Bits(cycles, memory, stackLocation + S);
     S += 1;
+    uint8_t value = Read8Bits(cycles, memory, stackLocation + S);
     return value;
 }
 
 uint16_t MOS6502::CPU::StackPop16Bits(int32_t &cycles, Memory& memory) {
-    uint16_t value = Read16Bits(cycles, memory, stackLocation + S + 1);
     S += 2;
+    uint16_t value = Read16Bits(cycles, memory, stackLocation + S - 1);
     return value;
 }
 
@@ -231,10 +239,6 @@ void MOS6502::CPU::StoreRegister(ADDRESSING_MODES mode, int32_t &cycles, Memory 
 
 int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){
     int32_t totalCycles = cycles;
-
-    int32_t c = 2;
-    uint16_t firstInstructionAddress = Fetch16Bits(c, memory);
-    PC = firstInstructionAddress;
 
     while(cycles > 0){
         uint8_t instruction = Fetch8Bits(cycles, memory);

@@ -13,7 +13,9 @@ public:
     CPU cpu{};
 
     virtual void SetUp(){
-        cpu.Reset(mem);
+        CPU::Setup(mem, 0x8000);
+        int c = 7;
+        cpu.Reset( c , mem);
     }
 
     virtual void TearDown(){
@@ -31,8 +33,6 @@ static void VerifyUnmodifiedFlagsLDA(CPU& cpu, CPU& CPUCopy){
 
 TEST_F(M6502LDATest, LDAImmediateCanLoadAValueIntoARegister){
     //given:
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_IM;
     mem[0x8001] = 0x84;
@@ -53,8 +53,6 @@ TEST_F(M6502LDATest, LDAImmediateCanLoadAValueIntoARegister){
 TEST_F(M6502LDATest, LDASetZAndNFlags){
     //given:
     constexpr int32_t NUM_OF_CYCLES = 2;
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_IM;
     mem[0x8001] = 0x22;
@@ -75,8 +73,6 @@ TEST_F(M6502LDATest, LDASetZAndNFlags){
 
 TEST_F(M6502LDATest, LDAZeroPageCanLoadAValueIntoARegister){
     //given:
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_ZP;
     mem[0x8001] = 0x42;
@@ -100,9 +96,6 @@ TEST_F(M6502LDATest, LDAZeroPageCanLoadAValueIntoARegister){
 TEST_F(M6502LDATest, LDAZeroPageXCanLoadAValueIntoARegister){
     //given:
     cpu.X = 0x05;
-
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_ZP_X;
     mem[0x8001] = 0x42;
@@ -129,8 +122,6 @@ TEST_F(M6502LDATest, LDAZeroPageXCanLoadAValueIntoARegister){
 TEST_F(M6502LDATest, LDAZeroPageXCanLoadAValueIntoARegisterWhenItWraps){
     //given:
     cpu.X = 0xFF;
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_ZP_X;
     mem[0x8001] = 0x80;
@@ -155,8 +146,6 @@ TEST_F(M6502LDATest, LDAZeroPageXCanLoadAValueIntoARegisterWhenItWraps){
 TEST_F(M6502LDATest, LDAAbsolutCanLoadAValueIntoARegister){
     //given:
     constexpr int32_t NUM_CYCLES = 4;
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_ABS;
     mem[0x8001] = 0x80;
@@ -185,8 +174,6 @@ TEST_F(M6502LDATest, LDAAbsolutXCanLoadAValueIntoARegister){
     constexpr int32_t NUM_CYCLES = 4;
     cpu.X = 0x40;
 
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_ABS_X;
     mem[0x8001] = 0x80;
@@ -215,9 +202,6 @@ TEST_F(M6502LDATest, LDAAbsolutXCanLoadAValueIntoARegisterWhenItCrossesPageBound
 
     cpu.X = 0xFF;
 
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
-
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_ABS_X;
     mem[0x8001] = 0x02;
     mem[0x8002] = 0x44; //0x4402
@@ -244,9 +228,6 @@ TEST_F(M6502LDATest, LDAAbsolutYCanLoadAValueIntoARegister){
     constexpr int32_t NUM_CYCLES = 4;
 
     cpu.Y = 0x40;
-
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_ABS_Y;
     mem[0x8001] = 0x80;
@@ -275,9 +256,6 @@ TEST_F(M6502LDATest, LDAAbsolutYCanLoadAValueIntoARegisterWhenItCrossesPageBound
 
     cpu.Y = 0xFF;
 
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
-
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_ABS_Y;
     mem[0x8001] = 0x02;
     mem[0x8002] = 0x44; //0x4402
@@ -304,9 +282,6 @@ TEST_F(M6502LDATest, LDAIndirectXCanLoadAValueIntoARegister){
     constexpr int32_t NUM_CYCLES = 6;
 
     cpu.X = 0x04;
-
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_IND_X;
     mem[0x8001] = 0x02;
@@ -336,8 +311,6 @@ TEST_F(M6502LDATest, LDAIndirectYCanLoadAValueIntoARegister){
     constexpr int32_t NUM_CYCLES = 5;
 
     cpu.Y = 0x04;
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_IND_Y;
     mem[0x8001] = 0x02;
@@ -367,8 +340,6 @@ TEST_F(M6502LDATest, LDAIndirectYCanLoadAValueIntoARegisterWhenItCrossesPageBoun
     constexpr int32_t NUM_CYCLES = 6;
 
     cpu.Y = 0xFF;
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_IND_Y;
     mem[0x8001] = 0x02;

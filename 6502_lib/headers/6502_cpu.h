@@ -77,18 +77,6 @@ namespace MOS6502 {
         /*Stores register in specified address in memory*/
         void StoreRegister(ADDRESSING_MODES mode, int32_t& cycles, Memory& memory, uint8_t& reg);
 
-        //8-bit bit field
-        struct PS {
-            uint8_t C : 1; //1-bit carry flag
-            uint8_t Z : 1; //1-bit zero flag
-            uint8_t I : 1; //1-bit interrupt disable
-            uint8_t D : 1; //1-bit decimal mode
-            uint8_t B : 1; //1-bit break command FLAG
-            uint8_t UNUSED : 1; //1-bit unused flag
-            uint8_t V : 1; //1-bit overflow flag
-            uint8_t N : 1; //1-bit negative flag
-        };
-
         /*Fills lookup table array with instructions*/
         void fillInstructionsLookupTable();
 
@@ -166,6 +154,28 @@ namespace MOS6502 {
             //cycles: 4  |    args: 16-bit absolute address (little endian)
             INS_STY_ABS = 0x8C,
 
+            //cycles: 2  |    args: none (Implied)
+            INS_TAX = 0xAA,
+            //cycles: 2  |    args: none (Implied)
+            INS_TAY = 0xA8,
+            //cycles: 2  |    args: none (Implied)
+            INS_TXA = 0x8A,
+            //cycles: 2  |    args: none (Implied)
+            INS_TYA = 0x98,
+            //cycles: 2  |    args: none (Implied)
+            INS_TXS = 0x9A,
+            //cycles: 2  |    args: none (Implied)
+            INS_TSX = 0xBA,
+
+            //cycles: 3  |    args: none (Implied)
+            INS_PHA = 0x48,
+            //cycles: 3  |    args: none (Implied)
+            INS_PHP  = 0x08,
+            //cycles: 4  |    args: none (Implied)
+            INS_PLA = 0x68,
+            //cycles: 4  |    args: none (Implied)
+            INS_PLP = 0x28,
+
             //cycles: 6  |    args: 16-bit absolute address (little endian)
             INS_JSR = 0x20,
             //cycles: 6  |    args: none (Implied)
@@ -178,11 +188,14 @@ namespace MOS6502 {
 
         CPU();
 
+        //sets the location of the first instruction at reset vector
+        static void Setup(Memory& memory, uint16_t resetVectorValue);
+
         //lookup table for instructions and their functions
         std::map<INSTRUCTIONS, std::function<void(int32_t&, Memory&)>> instructionsLookupTable;
 
-        //reset function
-        void Reset(Memory& memory);
+        //cycles: 7      |      reset function
+        void Reset(int32_t& cycles, Memory& memory);
 
         /* return number of cycles used */
         int32_t Execute(int32_t cycles, Memory& memory);
@@ -196,7 +209,22 @@ namespace MOS6502 {
         uint8_t X{}; //8-bit X register
         uint8_t Y{}; //8-bit Y register
 
-        PS P{}; //8-bit field Processor status register
+
+        union {
+            struct {
+                uint8_t C : 1; //1-bit carry flag
+                uint8_t Z : 1; //1-bit zero flag
+                uint8_t I : 1; //1-bit interrupt disable
+                uint8_t D : 1; //1-bit decimal mode
+                uint8_t B : 1; //1-bit break command FLAG
+                uint8_t UNUSED : 1; //1-bit unused flag
+                uint8_t V : 1; //1-bit overflow flag
+                uint8_t N : 1; //1-bit negative flag
+            };
+            //8-bit bit field
+            //8-bit field Processor status register
+            uint8_t PS;
+        } P;
         /////////// REGISTERS ///////////
     };
 }

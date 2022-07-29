@@ -9,7 +9,9 @@ public:
     CPU cpu{};
 
     virtual void SetUp(){
-        cpu.Reset(mem);
+        CPU::Setup(mem, 0x8000);
+        int c = 7;
+        cpu.Reset( c , mem);
     }
 
     virtual void TearDown(){
@@ -31,8 +33,6 @@ TEST_F(M6502CPUTest, CPUDoesNothingWhenExecutedWithZeroCycles){
 
 TEST_F(M6502CPUTest, CPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstruction){
     //given:
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_IM;
     mem[0x8001] = 0x84;

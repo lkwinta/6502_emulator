@@ -23,7 +23,9 @@ public:
     CPU cpu;
 
     virtual void SetUp(){
-        cpu.Reset(mem);
+        CPU::Setup(mem, 0x8000);
+        int c = 7;
+        cpu.Reset( c , mem);
     }
 
     virtual void TearDown(){
@@ -32,11 +34,6 @@ public:
 };
 
 TEST_F(M6502JSRRTSTest, CanJumpToSubroutineAndJumpBack){
-
-    cpu.Reset( mem);
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
-
     mem[0x8000] = CPU::INSTRUCTIONS::INS_JSR; //6 cycles
     mem[0x8001] = 0x00;
     mem[0x8002] = 0x40; //0x4000
@@ -60,10 +57,6 @@ TEST_F(M6502JSRRTSTest, CanJumpToSubroutineAndJumpBack){
 
 TEST_F(M6502JSRRTSTest, JSRAndRTSDoesNotAffectStatusFlags){
 
-    cpu.Reset( mem);
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
-
     mem[0x8000] = CPU::INSTRUCTIONS::INS_JSR; //6 cycles
     mem[0x8001] = 0x00;
     mem[0x8002] = 0x40; //0x4000
@@ -83,10 +76,6 @@ TEST_F(M6502JSRRTSTest, JSRAndRTSDoesNotAffectStatusFlags){
 }
 
 TEST_F(M6502JSRRTSTest, CanJumpAbsolute){
-
-    cpu.Reset( mem);
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_JMP_ABS; //3 cycles
     mem[0x8001] = 0x00;
@@ -109,10 +98,6 @@ TEST_F(M6502JSRRTSTest, CanJumpAbsolute){
 }
 
 TEST_F(M6502JSRRTSTest, CanJumpIndirect){
-
-    cpu.Reset( mem);
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_JMP_IND; //5 cycles
     mem[0x8001] = 0x00;
@@ -137,10 +122,6 @@ TEST_F(M6502JSRRTSTest, CanJumpIndirect){
 
 TEST_F(M6502JSRRTSTest, JumpAbsoluteDoesNotAffectProccesorStatus){
 
-    cpu.Reset( mem);
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
-
     mem[0x8000] = CPU::INSTRUCTIONS::INS_JMP_ABS; //3 cycles
     mem[0x8001] = 0x00;
     mem[0x8002] = 0x40; //0x4000
@@ -158,11 +139,6 @@ TEST_F(M6502JSRRTSTest, JumpAbsoluteDoesNotAffectProccesorStatus){
 }
 
 TEST_F(M6502JSRRTSTest, JumpIndirectDoesNotAffectProccesorStatus){
-
-    cpu.Reset( mem);
-
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_JMP_IND; //5 cycles
     mem[0x8001] = 0x00;

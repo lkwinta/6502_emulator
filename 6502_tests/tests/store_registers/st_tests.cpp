@@ -23,7 +23,9 @@ public:
     CPU cpu{};
 
     virtual void SetUp(){
-        cpu.Reset(mem);
+        CPU::Setup(mem, 0x8000);
+        int c = 7;
+        cpu.Reset( c , mem);
     }
 
     virtual void TearDown(){
@@ -40,8 +42,6 @@ public:
 void M6502STTest::STAZeroPageStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::* Register) {
     //given:
     cpu.*Register = 0x2F;
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = instruction;
     mem[0x8001] = 0x80;
@@ -65,9 +65,6 @@ void M6502STTest::STAZeroPageXYStore(CPU::INSTRUCTIONS instruction, uint8_t CPU:
     cpu.*Register = 0x42;
     cpu.*RegisterXY = 0x0F;
 
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
-
     mem[0x8000] = instruction;
     mem[0x8001] = 0x80;
 
@@ -88,8 +85,6 @@ void M6502STTest::STAZeroPageXYStore(CPU::INSTRUCTIONS instruction, uint8_t CPU:
 void M6502STTest::STAAbsoluteStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::*Register) {
     //given:
     cpu.*Register = 0x2F;
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = instruction;
     mem[0x8001] = 0x00;
@@ -112,8 +107,6 @@ void M6502STTest::STAAbsoluteXYStore(CPU::INSTRUCTIONS instruction, uint8_t CPU:
     //given:
     cpu.*Register = 0x2F;
     cpu.*RegisterXY = 0x92;
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = instruction;
     mem[0x8001] = 0x00;
@@ -157,8 +150,6 @@ TEST_F(M6502STTest, STAIndirectXCanStoreARegister){
     cpu.A = 0x2F;
     cpu.X = 0x92;
 
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_STA_IND_X;
     mem[0x8001] = 0x20;
@@ -183,9 +174,6 @@ TEST_F(M6502STTest, STAIndirectXCanStoreARegister){
 TEST_F(M6502STTest, STAIndirectYCanStoreARegister){
     cpu.A = 0x2F;
     cpu.Y = 0x92;
-
-    mem[0xFFFC] = 0x00;
-    mem[0xFFFD] = 0x80;
 
     mem[0x8000] = CPU::INSTRUCTIONS::INS_STA_IND_Y;
     mem[0x8001] = 0x20;
