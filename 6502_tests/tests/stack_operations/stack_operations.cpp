@@ -104,6 +104,7 @@ TEST_F(M6502StackOperationTest, CanPushAToStack){
     EXPECT_EQ(cpu.P.Z, CPUCopy.P.Z);
     EXPECT_EQ(cpu.P.N, CPUCopy.P.N);
     VerifyUnmodifiedFlags(cpu, CPUCopy);
+    EXPECT_EQ(cpu.S, 0xFE);
 }
 
 TEST_F(M6502StackOperationTest, CanPushProcessorStatusToStack){
@@ -122,6 +123,7 @@ TEST_F(M6502StackOperationTest, CanPushProcessorStatusToStack){
     EXPECT_EQ(totalCycles, NUM_OF_CYCLES);
     EXPECT_EQ(cpu.P.PS, mem[0x0100 + cpu.S + 1]);
     EXPECT_EQ(cpu.P.PS, CPUCopy.P.PS);
+    EXPECT_EQ(cpu.S, 0xFE);
 }
 
 TEST_F(M6502StackOperationTest, CanPopAFromStack){
@@ -140,6 +142,54 @@ TEST_F(M6502StackOperationTest, CanPopAFromStack){
     EXPECT_EQ(totalCycles, NUM_OF_CYCLES);
     EXPECT_EQ(cpu.A,0x42);
     EXPECT_EQ(cpu.P.PS, CPUCopy.P.PS);
+    EXPECT_EQ(cpu.S, 0xFF);
+}
+
+TEST_F(M6502StackOperationTest, CanPopZeroToAFromStack){
+    //given:
+    cpu.A = 0x00;
+    cpu.S = 0xFE;
+    cpu.P.Z = 0;
+    cpu.P.N = 1;
+
+    mem[0x8000] = CPU::INSTRUCTIONS::INS_PLA; //4 cycles
+    mem[0x01FF] = 0x00;
+    constexpr int32_t NUM_OF_CYCLES = 4;
+    CPU CPUCopy = cpu;
+
+    //when:
+    int32_t totalCycles = cpu.Execute(NUM_OF_CYCLES, mem);
+
+    //then:
+    EXPECT_EQ(totalCycles, NUM_OF_CYCLES);
+    EXPECT_EQ(cpu.A,0x00);
+    EXPECT_FALSE(cpu.P.N);
+    EXPECT_TRUE(cpu.P.Z);
+    VerifyUnmodifiedFlags(cpu, CPUCopy);
+    EXPECT_EQ(cpu.S, 0xFF);
+}
+
+TEST_F(M6502StackOperationTest, CanPopNegativeToAFromStack){
+    //given:
+    cpu.A = 0x00;
+    cpu.S = 0xFE;
+    cpu.P.N = 0;
+    cpu.P.Z = 1;
+    mem[0x8000] = CPU::INSTRUCTIONS::INS_PLA; //4 cycles
+    mem[0x01FF] = 0xFF;
+    constexpr int32_t NUM_OF_CYCLES = 4;
+    CPU CPUCopy = cpu;
+
+    //when:
+    int32_t totalCycles = cpu.Execute(NUM_OF_CYCLES, mem);
+
+    //then:
+    EXPECT_EQ(totalCycles, NUM_OF_CYCLES);
+    EXPECT_EQ(cpu.A,0xFF);
+    EXPECT_FALSE(cpu.P.Z);
+    EXPECT_TRUE(cpu.P.N);
+    VerifyUnmodifiedFlags(cpu, CPUCopy);
+    EXPECT_EQ(cpu.S, 0xFF);
 }
 
 TEST_F(M6502StackOperationTest, CanPopProcessorStatusFromStack){
@@ -157,4 +207,5 @@ TEST_F(M6502StackOperationTest, CanPopProcessorStatusFromStack){
     //then:
     EXPECT_EQ(totalCycles, NUM_OF_CYCLES);
     EXPECT_EQ(cpu.P.PS, 0x42);
+    EXPECT_EQ(cpu.S, 0xFF);
 }
