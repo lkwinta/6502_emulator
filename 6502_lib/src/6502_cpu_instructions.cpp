@@ -100,6 +100,9 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         {INSTRUCTIONS::INS_EOR_ABS_Y,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ABSOLUTE_Y, LOGICAL_OPERATION::XOR, cycles, memory);}},
         {INSTRUCTIONS::INS_EOR_IND_X,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(INDIRECT_X, LOGICAL_OPERATION::XOR, cycles, memory);}},
         {INSTRUCTIONS::INS_EOR_IND_Y,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(INDIRECT_Y, LOGICAL_OPERATION::XOR, cycles, memory);}},
+        //BIT
+        {INSTRUCTIONS::INS_BIT_ZP,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ZERO_PAGE, LOGICAL_OPERATION::BIT, cycles, memory);}},
+        {INSTRUCTIONS::INS_BIT_ABS,   [this](int32_t& cycles, Memory& memory) { PerformLogicalOnAccumulator(ABSOLUTE, LOGICAL_OPERATION::BIT, cycles, memory);}},
         /////////////////////////////////// LOGICAL OPERATIONS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
 
         ////////////////////////////////// JUMP INSTRUCTION IMPLEMENTATION //////////////////////////////////

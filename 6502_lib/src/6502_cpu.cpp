@@ -20,10 +20,22 @@ MOS6502::CPU::CPU() {
     fillInstructionsLookupTable();
 }
 
-void MOS6502::CPU::Setup(MOS6502::Memory &memory, uint16_t resetVectorValue) {
+void MOS6502::CPU::LoadProgram(Memory &memory, const uint8_t *program, uint8_t programSize) {
     memory.Initialise();
-    memory[0xFFFC] = (resetVectorValue & 0xFF);
-    memory[0xFFFD] = (resetVectorValue >> 8);
+    memory[0xFFFC] = program[0];
+    memory[0xFFFD] = program[1];
+
+    uint16_t programAddress = (program[1] << 8) + program[0];
+
+    for(uint16_t i = 2; i < programSize; i++){
+        memory[programAddress + i - 2] = program[i];
+    }
+}
+
+void MOS6502::CPU::Setup(Memory &memory, uint16_t resetVectorValue) {
+    memory.Initialise();
+    memory[0xFFFC] = resetVectorValue & 0xFF;
+    memory[0xFFFD] = resetVectorValue >> 8;
 }
 
 uint16_t MOS6502::CPU::Fetch8Bits(int32_t& cycles, const Memory& memory){
@@ -145,7 +157,7 @@ uint16_t MOS6502::CPU::getIndexedIndirectAddressY(int32_t &cycles, const MOS6502
 
 void MOS6502::CPU::LDSetStatus(uint8_t& reg){
     P.Z = (reg == 0);
-    P.N = (reg & 0b10000000) > 0;
+    P.N = (reg & 0b10000000) != 0;
 }
 
 uint16_t MOS6502::CPU::GetAddress(ADDRESSING_MODES mode, int32_t& cycles, const Memory& memory, bool checkPageCrossing){
@@ -220,14 +232,23 @@ void MOS6502::CPU::PerformLogicalOnAccumulator(ADDRESSING_MODES mode, MOS6502::C
     switch (operation) {
         case LOGICAL_OPERATION::AND: {
             A = (A & value);
+            LDSetStatus(A);
             break;
         }
         case LOGICAL_OPERATION::XOR: {
             A = (A ^ value);
+            LDSetStatus(A);
             break;
         }
         case LOGICAL_OPERATION::OR: {
             A = (A | value);
+            LDSetStatus(A);
+            break;
+        }
+        case LOGICAL_OPERATION::BIT: {
+            P.Z = ((A & value) == 0);
+            P.V = (value & 0b01000000) != 0;
+            P.N = (value & 0b10000000) != 0;
             break;
         }
         default: {
@@ -235,7 +256,6 @@ void MOS6502::CPU::PerformLogicalOnAccumulator(ADDRESSING_MODES mode, MOS6502::C
             throw std::runtime_error("Unhandled load addressing mode");
         }
     }
-    LDSetStatus(A);
 }
 
 int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){

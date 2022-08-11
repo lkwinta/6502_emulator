@@ -9,9 +9,6 @@ public:
     CPU cpu{};
 
     virtual void SetUp(){
-        CPU::Setup(mem, 0x8000);
-        int c = 7;
-        cpu.Reset( c , mem);
     }
 
     virtual void TearDown(){
@@ -33,9 +30,11 @@ TEST_F(M6502CPUTest, CPUDoesNothingWhenExecutedWithZeroCycles){
 
 TEST_F(M6502CPUTest, CPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstruction){
     //given:
+    int32_t c = 7;
+    uint8_t program[] = {0x00, 0x80, CPU::INSTRUCTIONS::INS_LDA_IM, 0x84};
+    CPU::LoadProgram(mem, program, 4);
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDA_IM;
-    mem[0x8001] = 0x84;
+    cpu.Reset(c, mem);
 
     //when:
     CPU CPUCopy = cpu;
@@ -43,4 +42,35 @@ TEST_F(M6502CPUTest, CPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstruct
 
     //then:
     EXPECT_EQ(cyclesUsed, 2);
+    EXPECT_EQ(cpu.A, 0x84);
+}
+
+TEST_F(M6502CPUTest, CPUCanRunSimpleProgram){
+    //given:
+    int32_t c = 7;
+    uint8_t program[] = {0x00, 0x10, 0xA9, 0xFF, 0x85, 0x90,
+                         0x8D, 0x00, 0x80, 0x49, 0xCC, 0x4C,
+                         0x02, 0x10};
+
+    CPU::LoadProgram(mem, program, 14);
+    cpu.Reset(c, mem);
+
+    //when:
+    for(int32_t clock = 10001; clock > 0; ){
+        clock -= cpu.Execute(21, mem);
+    }
+
+    //then:
+    EXPECT_EQ(mem[0x0FFF], 0x00);
+    EXPECT_EQ(mem[0x1000], 0xA9);
+    EXPECT_EQ(mem[0x1001], 0xFF);
+    EXPECT_EQ(mem[0x1002], 0x85);
+    EXPECT_EQ(mem[0x1003], 0x90);
+    //...
+    EXPECT_EQ(mem[0x1009], 0x4C);
+    EXPECT_EQ(mem[0x100A], 0x02);
+    EXPECT_EQ(mem[0x100B], 0x10);
+    EXPECT_EQ(mem[0x100C], 0x00);
+
+    EXPECT_EQ(cpu.A, 0x33);
 }

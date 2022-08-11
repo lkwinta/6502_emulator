@@ -8,16 +8,12 @@ int main(){
 
     Memory mem{};
     CPU cpu{};
-    //sets value of the reset vector ( location of the _start function)
-    CPU::Setup(mem, 0x8000);
-    int32_t NUM_OF_CYCLES = 31;
-
-    cpu.Reset(NUM_OF_CYCLES, mem); //7 cycles
 
     /*
+     *      * = 0x8000          ; tells cpu where the program is located at the memory
      *
-     * global _start            ; set reset vector to location of _start
-     *       _start:            ; at 0x8000
+     *      _start:             ; simple label
+     *
      *              ;set value in memory which will be later loaded into A register
      *           LDY 0x15       ; {instruction at 0x8000}   load value into Y register
      *           STY #0x4312    ; {instruction at 0x8002}   store X register into 0x4312
@@ -40,33 +36,47 @@ int main(){
      *
     * */
 
+    const uint16_t PROGRAM_SIZE = 19;
+    uint8_t program[PROGRAM_SIZE];
+
+    //first two bytes tells where the program will be placed
+    program[0] = 0x00;
+    program[1] = 0x80;
+
     //set value in memory which will be later loaded into A register
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_IM; // 2 cycles
-    mem[0x8001] = 0x15; //this value will be stored in ACC register by indirect address
-    mem[0x8002] = CPU::INSTRUCTIONS::INS_STY_ABS; //4 cycles
-    mem[0x8003] = 0x12;
-    mem[0x8004] = 0x43; //Y register will be stored at 0x4312
+    program[2] = CPU::INSTRUCTIONS::INS_LDY_IM; // 2 cycles
+    program[3] = 0x15; //this value will be stored in ACC register by indirect address
+    program[4] = CPU::INSTRUCTIONS::INS_STY_ABS; //4 cycles
+    program[5] = 0x12;
+    program[6] = 0x43; //Y register will be stored at 0x4312
 
     //set LSB for indirect address
-    mem[0x8005] = CPU::INS_LDX_IM; // 2 cycles
-    mem[0x8006] = 0x12;     //set  LSB
-    mem[0x8007] = CPU::INS_STX_ZP;  //3 cycles
-    mem[0x8008] = 0x23;    //store LSB in 0x22
+    program[7] = CPU::INS_LDX_IM; // 2 cycles
+    program[8] = 0x12;     //set  LSB
+    program[9] = CPU::INS_STX_ZP;  //3 cycles
+    program[10] = 0x23;    //store LSB in 0x22
 
     //set MSB for indirect address
-    mem[0x8009] = CPU::INS_LDX_IM; // 2 cycles
-    mem[0x800A] = 0x43;     //set  MSB
-    mem[0x800B] = CPU::INS_STX_ZP; //3 cycles
-    mem[0x800C] = 0x24;    //store MSB in 0x23
+    program[11] = CPU::INS_LDX_IM; // 2 cycles
+    program[12] = 0x43;     //set  MSB
+    program[13] = CPU::INS_STX_ZP; //3 cycles
+    program[14] = 0x24;    //store MSB in 0x23
 
     //now mem[0x0023] = 0x12 (LSB) and mem[0x0024] = 0x43 (MSB)
 
     //load indirect address into A register
-    mem[0x800D] = CPU::INS_LDX_IM; // 2 cycles
-    mem[0x800E] = 0x13; //zero-page offset
-    mem[0x800F] = CPU::INS_LDA_IND_X; // 6 cycles
-    mem[0x8010] = 0x10; // zero-page address for indirect address
+    program[15] = CPU::INS_LDX_IM; // 2 cycles
+    program[16] = 0x13; //zero-page offset
+    program[17] = CPU::INS_LDA_IND_X; // 6 cycles
+    program[18] = 0x10; // zero-page address for indirect address
                         // - address for A register will be read from 0x10+0x13
+
+
+    //sets value of the reset vector ( location of the _start function)
+    CPU::LoadProgram(mem, program, PROGRAM_SIZE);
+    int32_t NUM_OF_CYCLES = 31;
+
+    cpu.Reset(NUM_OF_CYCLES, mem); //7 cycles
 
     //We specify number of CPU cycles we want to execute
     cpu.Execute(NUM_OF_CYCLES, mem);

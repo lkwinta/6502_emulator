@@ -30,7 +30,8 @@ namespace MOS6502 {
         enum class LOGICAL_OPERATION {
             AND,
             XOR,
-            OR
+            OR,
+            BIT
         };
 
         /*return 8-bit zero-page address*/
@@ -173,11 +174,11 @@ namespace MOS6502 {
             INS_TXA = 0x8A,
             //cycles: 2  |    args: none (Implied)
             INS_TYA = 0x98,
+
             //cycles: 2  |    args: none (Implied)
             INS_TXS = 0x9A,
             //cycles: 2  |    args: none (Implied)
             INS_TSX = 0xBA,
-
             //cycles: 3  |    args: none (Implied)
             INS_PHA = 0x48,
             //cycles: 3  |    args: none (Implied)
@@ -221,7 +222,6 @@ namespace MOS6502 {
             //cycles: 5-6|    args: (8-bit zero-page address), Y register offset
             INS_ORA_IND_Y = 0x11,
 
-
             //cycles: 2  |    args: 8-bit value
             INS_EOR_IM = 0x49,
             //cycles: 3  |    args: 8-bit zero-page address
@@ -239,6 +239,11 @@ namespace MOS6502 {
             //cycles: 5-6|    args: (8-bit zero-page address), Y register offset
             INS_EOR_IND_Y = 0x51,
 
+            //cycles: 3  |    args: 8-bit zero-page address
+            INS_BIT_ZP = 0x24,
+            //cycles: 4  |    args: 16-bit absolute address (little endian)
+            INS_BIT_ABS = 0x2C,
+
             //cycles: 6  |    args: 16-bit absolute address (little endian)
             INS_JSR = 0x20,
             //cycles: 6  |    args: none (Implied)
@@ -251,11 +256,17 @@ namespace MOS6502 {
 
         CPU();
 
-        //sets the location of the first instruction at reset vector
-        static void Setup(Memory& memory, uint16_t resetVectorValue);
-
         //lookup table for instructions and their functions
         std::map<INSTRUCTIONS, std::function<void(int32_t&, Memory&)>> instructionsLookupTable;
+
+        //loads program to the memory
+        static void LoadProgram(Memory& memory, const uint8_t* program, uint8_t programSize);
+
+        /*
+         * sets value of the reset vector
+         * deprecated (use load program instead)
+         */
+        static void Setup(Memory& memory, uint16_t resetVectorValue);
 
         //cycles: 7      |      reset function
         void Reset(int32_t& cycles, Memory& memory);
