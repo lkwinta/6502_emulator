@@ -44,30 +44,30 @@ int main(){
     program[1] = 0x80;
 
     //set value in memory which will be later loaded into A register
-    program[2] = CPU::INSTRUCTIONS::INS_LDY_IM; // 2 cycles
+    program[2] = INSTRUCTIONS::INS_LDY_IM; // 2 cycles
     program[3] = 0x15; //this value will be stored in ACC register by indirect address
-    program[4] = CPU::INSTRUCTIONS::INS_STY_ABS; //4 cycles
+    program[4] = INSTRUCTIONS::INS_STY_ABS; //4 cycles
     program[5] = 0x12;
     program[6] = 0x43; //Y register will be stored at 0x4312
 
     //set LSB for indirect address
-    program[7] = CPU::INS_LDX_IM; // 2 cycles
+    program[7] = INSTRUCTIONS::INS_LDX_IM; // 2 cycles
     program[8] = 0x12;     //set  LSB
-    program[9] = CPU::INS_STX_ZP;  //3 cycles
+    program[9] = INSTRUCTIONS::INS_STX_ZP;  //3 cycles
     program[10] = 0x23;    //store LSB in 0x22
 
     //set MSB for indirect address
-    program[11] = CPU::INS_LDX_IM; // 2 cycles
+    program[11] = INSTRUCTIONS::INS_LDX_IM; // 2 cycles
     program[12] = 0x43;     //set  MSB
-    program[13] = CPU::INS_STX_ZP; //3 cycles
+    program[13] = INSTRUCTIONS::INS_STX_ZP; //3 cycles
     program[14] = 0x24;    //store MSB in 0x23
 
     //now mem[0x0023] = 0x12 (LSB) and mem[0x0024] = 0x43 (MSB)
 
     //load indirect address into A register
-    program[15] = CPU::INS_LDX_IM; // 2 cycles
+    program[15] = INSTRUCTIONS::INS_LDX_IM; // 2 cycles
     program[16] = 0x13; //zero-page offset
-    program[17] = CPU::INS_LDA_IND_X; // 6 cycles
+    program[17] = INSTRUCTIONS::INS_LDA_IND_X; // 6 cycles
     program[18] = 0x10; // zero-page address for indirect address
                         // - address for A register will be read from 0x10+0x13
 

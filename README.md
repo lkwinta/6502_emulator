@@ -10,14 +10,16 @@
 To compile this project you need to have CMake and MinGw installed.
   
 ### Usage:
-In project 6502_emulator you can find ```main.cpp``` file. In this file you can program your memory
-by setting fields of ```mem.Data[]``` array. Array is indexed frm ```0x000``` to ```0xFFFF```.
+In project 6502_emulator you can find ```main.cpp``` file. In this file you can write program by filing byte array called ```program```.
+
+First two bytes of the program contains memory location where program will be placed. 
+Program is loaded by static method ```CPU::LoadProgram(Memory &memory, const uint8_t *program, uint8_t programSize)```
 
 ### Simple program:
 ```asm
 ; assembly 
-    global _start            ; set reset vector to location of _start
-            _start:            ; at 0x8000
+            * = #0x8000         ; tells cpu where the program is located at the memory
+            
                    ;set value in memory which will be later loaded into A register
                 LDY 0x15       ; {instruction at 0x8000}   load value into Y register
                 STY #0x4312    ; {instruction at 0x8002}   store X register into 0x4312
@@ -37,37 +39,35 @@ by setting fields of ```mem.Data[]``` array. Array is indexed frm ```0x000``` to
 ```
 
 ```c++
-//bytecode programmed in c++
-
-//reset vector
-mem[0xFFFC] = 0x00;
-mem[0xFFFD] = 0x80; //location of the first instruction (little endian)
+//first two bytes tells where the program will be placed
+program[0] = 0x00;
+program[1] = 0x80;
 
 //set value in memory which will be later loaded into A register
-mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_IM; // 2 cycles
-mem[0x8001] = 0x15; //this value will be stored in ACC register by indirect address
-mem[0x8002] = CPU::INSTRUCTIONS::INS_STY_ABS; //4 cycles
-mem[0x8003] = 0x12;
-mem[0x8004] = 0x43; //Y register will be stored at 0x4312
+program[2] = INSTRUCTIONS::INS_LDY_IM; // 2 cycles
+program[3] = 0x15; //this value will be stored in ACC register by indirect address
+program[4] = INSTRUCTIONS::INS_STY_ABS; //4 cycles
+program[5] = 0x12;
+program[6] = 0x43; //Y register will be stored at 0x4312
 
 //set LSB for indirect address
-mem[0x8005] = CPU::INS_LDX_IM; // 2 cycles
-mem[0x8006] = 0x12;     //set  LSB
-mem[0x8007] = CPU::INS_STX_ZP;  //3 cycles
-mem[0x8008] = 0x23;    //store LSB in 0x22
+program[7] = INSTRUCTIONS::INS_LDX_IM; // 2 cycles
+program[8] = 0x12;     //set  LSB
+program[9] = INSTRUCTIONS::INS_STX_ZP;  //3 cycles
+program[10] = 0x23;    //store LSB in 0x22
 
 //set MSB for indirect address
-mem[0x8009] = CPU::INS_LDX_IM; // 2 cycles
-mem[0x800A] = 0x43;     //set  MSB
-mem[0x800B] = CPU::INS_STX_ZP; //3 cycles
-mem[0x800C] = 0x24;    //store MSB in 0x23
+program[11] = INSTRUCTIONS::INS_LDX_IM; // 2 cycles
+program[12] = 0x43;     //set  MSB
+program[13] = INSTRUCTIONS::INS_STX_ZP; //3 cycles
+program[14] = 0x24;    //store MSB in 0x23
 
 //now mem[0x0023] = 0x12 (LSB) and mem[0x0024] = 0x43 (MSB)
 
 //load indirect address into A register
-mem[0x800D] = CPU::INS_LDX_IM; // 2 cycles
-mem[0x800E] = 0x13; //zero-page offset
-mem[0x800F] = CPU::INS_LDA_IND_X; // 6 cycles
-mem[0x8010] = 0x10; // zero-page address for indirect address
-// - address for A register will be read from 0x10+0x13
+program[15] = INSTRUCTIONS::INS_LDX_IM; // 2 cycles
+program[16] = 0x13; //zero-page offset
+program[17] = INSTRUCTIONS::INS_LDA_IND_X; // 6 cycles
+program[18] = 0x10; // zero-page address for indirect address
+                    // - address for A register will be read from 0x10+0x13
 ```

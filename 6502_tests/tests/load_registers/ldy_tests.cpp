@@ -34,7 +34,7 @@ static void VerifyUnmodifiedFlagsLDA(CPU& cpu, CPU& CPUCopy){
 TEST_F(M6502LDYTest, LDYImmediateCanLoadAValueIntoARegister){
     //given:
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_IM;
+    mem[0x8000] = INSTRUCTIONS::INS_LDY_IM;
     mem[0x8001] = 0x84;
     CPU CPUCopy = cpu;
     cpu.P.N = 1;
@@ -54,7 +54,7 @@ TEST_F(M6502LDYTest, LDYImmediateCanLoadAValueIntoARegister){
 TEST_F(M6502LDYTest, LDYZeroPageCanLoadAValueIntoARegister){
     //given:
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_ZP;
+    mem[0x8000] = INSTRUCTIONS::INS_LDY_ZP;
     mem[0x8001] = 0x42;
 
     mem[0x0042] = 0x37;
@@ -80,7 +80,7 @@ TEST_F(M6502LDYTest, LDYZeroPageXCanLoadAValueIntoARegister){
     cpu.P.Z = 1;
 
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_ZP_X;
+    mem[0x8000] = INSTRUCTIONS::INS_LDY_ZP_X;
     mem[0x8001] = 0x42;
 
     mem[0x0047] = 0x37;
@@ -104,7 +104,7 @@ TEST_F(M6502LDYTest, LDYZeroPageXCanLoadAValueIntoARegisterWhenItWraps){
     cpu.P.N = 1;
     cpu.P.Z = 1;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_ZP_X;
+    mem[0x8000] = INSTRUCTIONS::INS_LDY_ZP_X;
     mem[0x8001] = 0x80;
 
     mem[0x007F] = 0x37;
@@ -129,7 +129,7 @@ TEST_F(M6502LDYTest, LDYAbsolutCanLoadAValueIntoARegister){
     cpu.P.N = 1;
     cpu.P.Z = 1;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_ABS;
+    mem[0x8000] = INSTRUCTIONS::INS_LDY_ABS;
     mem[0x8001] = 0x80;
     mem[0x8002] = 0x44; //0x4480
 
@@ -157,7 +157,7 @@ TEST_F(M6502LDYTest, LDYAbsolutXCanLoadAValueIntoARegister){
 
     cpu.X = 0x40;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_ABS_X;
+    mem[0x8000] = INSTRUCTIONS::INS_LDY_ABS_X;
     mem[0x8001] = 0x80;
     mem[0x8002] = 0x44; //0x4480
 
@@ -185,7 +185,7 @@ TEST_F(M6502LDYTest, LDYAbsolutXCanLoadAValueIntoARegisterWhenItCrossesPageBound
 
     cpu.X = 0xFF;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_LDY_ABS_X;
+    mem[0x8000] = INSTRUCTIONS::INS_LDY_ABS_X;
     mem[0x8001] = 0x02;
     mem[0x8002] = 0x44; //0x4402
 

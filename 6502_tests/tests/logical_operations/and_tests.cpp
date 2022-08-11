@@ -34,7 +34,7 @@ static void VerifyUnmodifiedFlagsLDA(CPU& cpu, CPU& CPUCopy){
 TEST_F(ANDTest, ANDImmediate){
     //given:
     cpu.A = 0b01001010;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_IM;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_IM;
     mem[0x8001] = 0b10111010;
     CPU CPUCopy = cpu;
     constexpr int32_t NUM_OF_CYCLES = 2;
@@ -54,7 +54,7 @@ TEST_F(ANDTest, ANDImmediate){
 TEST_F(ANDTest, ANDImmediateSetNFlag){
     //given:
     cpu.A = 0b11111111;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_IM;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_IM;
     mem[0x8001] = 0b11111111;
     CPU CPUCopy = cpu;
     constexpr int32_t NUM_OF_CYCLES = 2;
@@ -74,7 +74,7 @@ TEST_F(ANDTest, ANDImmediateSetNFlag){
 TEST_F(ANDTest, ANDImmediateSetZFlag){
     //given:
     cpu.A = 0b11111111;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_IM;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_IM;
     mem[0x8001] = 0b00000000;
     CPU CPUCopy = cpu;
     constexpr int32_t NUM_OF_CYCLES = 2;
@@ -94,7 +94,7 @@ TEST_F(ANDTest, ANDImmediateSetZFlag){
 TEST_F(ANDTest, ANDZeroPage){
     //given:
     cpu.A = 0b01001010;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_ZP;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_ZP;
     mem[0x8001] = 0x23;
     mem[0x0023] = 0b10111010;
     CPU CPUCopy = cpu;
@@ -116,7 +116,7 @@ TEST_F(ANDTest, ANDZeroPageX){
     //given:
     cpu.A = 0b01001010;
     cpu.X = 0x21;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_ZP_X;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_ZP_X;
     mem[0x8001] = 0x23;
     mem[0x0044] = 0b10111010;
     CPU CPUCopy = cpu;
@@ -138,7 +138,7 @@ TEST_F(ANDTest, ANDZeroPageXWhenItWraps){
     //given:
     cpu.A = 0b01001010;
     cpu.X = 0xFF;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_ZP_X;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_ZP_X;
     mem[0x8001] = 0x23;
     mem[0x0022] = 0b10111010;
     CPU CPUCopy = cpu;
@@ -159,7 +159,7 @@ TEST_F(ANDTest, ANDZeroPageXWhenItWraps){
 TEST_F(ANDTest, ANDAbsolute){
     //given:
     cpu.A = 0b01001010;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_ABS;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_ABS;
     mem[0x8001] = 0x23;
     mem[0x8002] = 0x24;// 0x2423
     mem[0x2423] = 0b10111010;
@@ -182,7 +182,7 @@ TEST_F(ANDTest, ANDAbsoluteX){
     //given:
     cpu.A = 0b01001010;
     cpu.X = 0x24;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_ABS_X;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_ABS_X;
     mem[0x8001] = 0x23;
     mem[0x8002] = 0x24;// 0x2423 + 0x24
     mem[0x2447] = 0b10111010;
@@ -205,7 +205,7 @@ TEST_F(ANDTest, ANDAbsoluteXWhenPageCrossing){
     //given:
     cpu.A = 0b01001010;
     cpu.X = 0xFA;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_ABS_X;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_ABS_X;
     mem[0x8001] = 0x23;
     mem[0x8002] = 0x20;// 0x2023
     mem[0x211D] = 0b10111010;
@@ -228,7 +228,7 @@ TEST_F(ANDTest, ANDAbsoluteY){
     //given:
     cpu.A = 0b01001010;
     cpu.Y = 0x24;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_ABS_Y;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_ABS_Y;
     mem[0x8001] = 0x23;
     mem[0x8002] = 0x24;// 0x2423 + 0x24
     mem[0x2447] = 0b10111010;
@@ -251,7 +251,7 @@ TEST_F(ANDTest, ANDAbsoluteYWhenPageCrossing){
     //given:
     cpu.A = 0b01001010;
     cpu.Y = 0xFA;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_ABS_Y;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_ABS_Y;
     mem[0x8001] = 0x23;
     mem[0x8002] = 0x20;// 0x2023
     mem[0x211D] = 0b10111010;
@@ -274,7 +274,7 @@ TEST_F(ANDTest, ANDAIndirectX){
     //given:
     cpu.A = 0b01001010;
     cpu.X = 0x24;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_IND_X;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_IND_X;
     mem[0x8001] = 0x23;
     mem[0x0047] = 0x47; //0x23 + 0x24 = 0x47
     mem[0x0048] = 0x24; //0x2447
@@ -299,7 +299,7 @@ TEST_F(ANDTest, ANDIndirectY){
     cpu.A = 0b01001010;
     cpu.Y = 0x21;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_IND_Y;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_IND_Y;
     mem[0x8001] = 0x23;
     mem[0x0023] = 0x23;
     mem[0x0024] = 0x20;// 0x2023 + 0x21 = 0x2044
@@ -325,7 +325,7 @@ TEST_F(ANDTest, ANDIndirectYWhenPageCrossing){
     cpu.A = 0b01001010;
     cpu.Y = 0xFA;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_AND_IND_Y;
+    mem[0x8000] = INSTRUCTIONS::INS_AND_IND_Y;
     mem[0x8001] = 0x23;
     mem[0x0023] = 0x23;
     mem[0x0024] = 0x20;// 0x2023 + 0xFA = 0x2044

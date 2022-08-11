@@ -34,13 +34,13 @@ public:
 };
 
 TEST_F(M6502JSRRTSTest, CanJumpToSubroutineAndJumpBack){
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_JSR; //6 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_JSR; //6 cycles
     mem[0x8001] = 0x00;
     mem[0x8002] = 0x40; //0x4000
 
-    mem[0x4000] = CPU::INSTRUCTIONS::INS_RTS; //6 cycles
+    mem[0x4000] = INSTRUCTIONS::INS_RTS; //6 cycles
 
-    mem[0x8003] = CPU::INSTRUCTIONS::INS_LDA_IM; //2 cycles
+    mem[0x8003] = INSTRUCTIONS::INS_LDA_IM; //2 cycles
     mem[0x8004] = 0x42;
 
     constexpr int32_t NUM_OF_CYCLES = 14;
@@ -57,11 +57,11 @@ TEST_F(M6502JSRRTSTest, CanJumpToSubroutineAndJumpBack){
 
 TEST_F(M6502JSRRTSTest, JSRAndRTSDoesNotAffectStatusFlags){
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_JSR; //6 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_JSR; //6 cycles
     mem[0x8001] = 0x00;
     mem[0x8002] = 0x40; //0x4000
 
-    mem[0x4000] = CPU::INSTRUCTIONS::INS_RTS; //6 cycles
+    mem[0x4000] = INSTRUCTIONS::INS_RTS; //6 cycles
 
     constexpr int32_t NUM_OF_CYCLES = 12;
     CPU CPUCopy = cpu;
@@ -77,12 +77,12 @@ TEST_F(M6502JSRRTSTest, JSRAndRTSDoesNotAffectStatusFlags){
 
 TEST_F(M6502JSRRTSTest, CanJumpAbsolute){
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_JMP_ABS; //3 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_JMP_ABS; //3 cycles
     mem[0x8001] = 0x00;
     mem[0x8002] = 0x40; //0x4000
 
 
-    mem[0x4000] = CPU::INSTRUCTIONS::INS_LDA_IM; //2 cycles
+    mem[0x4000] = INSTRUCTIONS::INS_LDA_IM; //2 cycles
     mem[0x4001] = 0x42;
 
     constexpr int32_t NUM_OF_CYCLES = 5;
@@ -99,14 +99,14 @@ TEST_F(M6502JSRRTSTest, CanJumpAbsolute){
 
 TEST_F(M6502JSRRTSTest, CanJumpIndirect){
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_JMP_IND; //5 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_JMP_IND; //5 cycles
     mem[0x8001] = 0x00;
     mem[0x8002] = 0x40; //0x4000
 
     mem[0x4000] = 0x00;
     mem[0x4001] = 0x20; //0x2000
 
-    mem[0x2000] = CPU::INSTRUCTIONS::INS_LDA_IM; //2 cycles
+    mem[0x2000] = INSTRUCTIONS::INS_LDA_IM; //2 cycles
     mem[0x2001] = 0x42;
 
     constexpr int32_t NUM_OF_CYCLES = 7;
@@ -122,7 +122,7 @@ TEST_F(M6502JSRRTSTest, CanJumpIndirect){
 
 TEST_F(M6502JSRRTSTest, JumpAbsoluteDoesNotAffectProccesorStatus){
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_JMP_ABS; //3 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_JMP_ABS; //3 cycles
     mem[0x8001] = 0x00;
     mem[0x8002] = 0x40; //0x4000
 
@@ -140,7 +140,7 @@ TEST_F(M6502JSRRTSTest, JumpAbsoluteDoesNotAffectProccesorStatus){
 
 TEST_F(M6502JSRRTSTest, JumpIndirectDoesNotAffectProccesorStatus){
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_JMP_IND; //5 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_JMP_IND; //5 cycles
     mem[0x8001] = 0x00;
     mem[0x8002] = 0x40; //0x4000
 

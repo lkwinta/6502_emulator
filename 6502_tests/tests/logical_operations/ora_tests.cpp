@@ -37,7 +37,7 @@ static constexpr uint8_t bin2 = 0b00011111;
 TEST_F(ORATest, ANDImmediate){
     //given:
     cpu.A = bin1;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_IM;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_IM;
     mem[0x8001] = bin2;
     CPU CPUCopy = cpu;
     constexpr int32_t NUM_OF_CYCLES = 2;
@@ -57,7 +57,7 @@ TEST_F(ORATest, ANDImmediate){
 TEST_F(ORATest, ANDImmediateSetNFlag){
     //given:
     cpu.A = 0b11111111;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_IM;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_IM;
     mem[0x8001] = 0b11111111;
     CPU CPUCopy = cpu;
     constexpr int32_t NUM_OF_CYCLES = 2;
@@ -77,7 +77,7 @@ TEST_F(ORATest, ANDImmediateSetNFlag){
 TEST_F(ORATest, ANDImmediateSetZFlag){
     //given:
     cpu.A = 0b00000000;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_IM;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_IM;
     mem[0x8001] = 0b00000000;
     CPU CPUCopy = cpu;
     constexpr int32_t NUM_OF_CYCLES = 2;
@@ -97,7 +97,7 @@ TEST_F(ORATest, ANDImmediateSetZFlag){
 TEST_F(ORATest, ANDZeroPage){
     //given:
     cpu.A = bin1;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_ZP;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_ZP;
     mem[0x8001] = 0x23;
     mem[0x0023] = bin2;
     CPU CPUCopy = cpu;
@@ -119,7 +119,7 @@ TEST_F(ORATest, ANDZeroPageX){
     //given:
     cpu.A = bin1;
     cpu.X = 0x21;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_ZP_X;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_ZP_X;
     mem[0x8001] = 0x23;
     mem[0x0044] = bin2;
     CPU CPUCopy = cpu;
@@ -141,7 +141,7 @@ TEST_F(ORATest, ANDZeroPageXWhenItWraps){
     //given:
     cpu.A = bin1;
     cpu.X = 0xFF;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_ZP_X;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_ZP_X;
     mem[0x8001] = 0x23;
     mem[0x0022] = bin2;
     CPU CPUCopy = cpu;
@@ -162,7 +162,7 @@ TEST_F(ORATest, ANDZeroPageXWhenItWraps){
 TEST_F(ORATest, ANDAbsolute){
     //given:
     cpu.A = bin1;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_ABS;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_ABS;
     mem[0x8001] = 0x23;
     mem[0x8002] = 0x24;// 0x2423
     mem[0x2423] = bin2;
@@ -185,7 +185,7 @@ TEST_F(ORATest, ANDAbsoluteX){
     //given:
     cpu.A = bin1;
     cpu.X = 0x24;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_ABS_X;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_ABS_X;
     mem[0x8001] = 0x23;
     mem[0x8002] = 0x24;// 0x2423 + 0x24
     mem[0x2447] = bin2;
@@ -208,7 +208,7 @@ TEST_F(ORATest, ANDAbsoluteXWhenPageCrossing){
     //given:
     cpu.A = bin1;
     cpu.X = 0xFA;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_ABS_X;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_ABS_X;
     mem[0x8001] = 0x23;
     mem[0x8002] = 0x20;// 0x2023
     mem[0x211D] = bin2;
@@ -231,7 +231,7 @@ TEST_F(ORATest, ANDAbsoluteY){
     //given:
     cpu.A = bin1;
     cpu.Y = 0x24;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_ABS_Y;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_ABS_Y;
     mem[0x8001] = 0x23;
     mem[0x8002] = 0x24;// 0x2423 + 0x24
     mem[0x2447] = bin2;
@@ -254,7 +254,7 @@ TEST_F(ORATest, ANDAbsoluteYWhenPageCrossing){
     //given:
     cpu.A = bin1;
     cpu.Y = 0xFA;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_ABS_Y;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_ABS_Y;
     mem[0x8001] = 0x23;
     mem[0x8002] = 0x20;// 0x2023
     mem[0x211D] = bin2;
@@ -277,7 +277,7 @@ TEST_F(ORATest, ANDAIndirectX){
     //given:
     cpu.A = bin1;
     cpu.X = 0x24;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_IND_X;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_IND_X;
     mem[0x8001] = 0x23;
     mem[0x0047] = 0x47; //0x23 + 0x24 = 0x47
     mem[0x0048] = 0x24; //0x2447
@@ -302,7 +302,7 @@ TEST_F(ORATest, ANDIndirectY){
     cpu.A = bin1;
     cpu.Y = 0x21;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_IND_Y;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_IND_Y;
     mem[0x8001] = 0x23;
     mem[0x0023] = 0x23;
     mem[0x0024] = 0x20;// 0x2023 + 0x21 = 0x2044
@@ -328,7 +328,7 @@ TEST_F(ORATest, ANDIndirectYWhenPageCrossing){
     cpu.A = bin1;
     cpu.Y = 0xFA;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_ORA_IND_Y;
+    mem[0x8000] = INSTRUCTIONS::INS_ORA_IND_Y;
     mem[0x8001] = 0x23;
     mem[0x0023] = 0x23;
     mem[0x0024] = 0x20;// 0x2023 + 0xFA = 0x2044

@@ -34,7 +34,7 @@ TEST_F(M6502StackOperationTest, CanTransferNegativeStackPointerToX){
     //given:
     cpu.X = 0;
     cpu.S = 0xFF;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_TSX; //2 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_TSX; //2 cycles
     constexpr int32_t NUM_OF_CYCLES = 2;
     CPU CPUCopy = cpu;
 
@@ -55,7 +55,7 @@ TEST_F(M6502StackOperationTest, CanTransferZeroStackPointerToX){
     cpu.S = 0;
     cpu.P.Z = 0;
     cpu.P.N = 1;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_TSX; //2 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_TSX; //2 cycles
     constexpr int32_t NUM_OF_CYCLES = 2;
     CPU CPUCopy = cpu;
 
@@ -73,7 +73,7 @@ TEST_F(M6502StackOperationTest, CanTransferZeroStackPointerToX){
 TEST_F(M6502StackOperationTest, CanTransferXToStackPointer){
     //given:
     cpu.X = 0x0;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_TXS; //2 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_TXS; //2 cycles
     constexpr int32_t NUM_OF_CYCLES = 2;
     CPU CPUCopy = cpu;
 
@@ -91,7 +91,7 @@ TEST_F(M6502StackOperationTest, CanTransferXToStackPointer){
 TEST_F(M6502StackOperationTest, CanPushAToStack){
     //given:
     cpu.A = 0x42;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_PHA; //3 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_PHA; //3 cycles
     constexpr int32_t NUM_OF_CYCLES = 3;
     CPU CPUCopy = cpu;
 
@@ -112,7 +112,7 @@ TEST_F(M6502StackOperationTest, CanPushProcessorStatusToStack){
     cpu.A = 0x42;
     cpu.P.PS = 0x25;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_PHP; //3 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_PHP; //3 cycles
     constexpr int32_t NUM_OF_CYCLES = 3;
     CPU CPUCopy = cpu;
 
@@ -130,7 +130,7 @@ TEST_F(M6502StackOperationTest, CanPopAFromStack){
     //given:
     cpu.A = 0x00;
     cpu.S = 0xFE;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_PLA; //4 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_PLA; //4 cycles
     mem[0x01FF] = 0x42;
     constexpr int32_t NUM_OF_CYCLES = 4;
     CPU CPUCopy = cpu;
@@ -152,7 +152,7 @@ TEST_F(M6502StackOperationTest, CanPopZeroToAFromStack){
     cpu.P.Z = 0;
     cpu.P.N = 1;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_PLA; //4 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_PLA; //4 cycles
     mem[0x01FF] = 0x00;
     constexpr int32_t NUM_OF_CYCLES = 4;
     CPU CPUCopy = cpu;
@@ -175,7 +175,7 @@ TEST_F(M6502StackOperationTest, CanPopNegativeToAFromStack){
     cpu.S = 0xFE;
     cpu.P.N = 0;
     cpu.P.Z = 1;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_PLA; //4 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_PLA; //4 cycles
     mem[0x01FF] = 0xFF;
     constexpr int32_t NUM_OF_CYCLES = 4;
     CPU CPUCopy = cpu;
@@ -196,7 +196,7 @@ TEST_F(M6502StackOperationTest, CanPopProcessorStatusFromStack){
     //given:
     cpu.P.PS = 0x00;
     cpu.S = 0xFE;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_PLP; //4 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_PLP; //4 cycles
     mem[0x01FF] = 0x42;
     constexpr int32_t NUM_OF_CYCLES = 4;
     CPU CPUCopy = cpu;

@@ -33,7 +33,7 @@ TEST_F(M6502TransferRegistersTest, CanTransferNegativeAccumaltorToX){
     cpu.A = 0xFF;
     cpu.P.Z = 1;
     cpu.P.N = 0;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_TAX; //2 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_TAX; //2 cycles
     constexpr int32_t NUM_OF_CYCLES = 2;
     CPU CPUCopy = cpu;
 
@@ -54,7 +54,7 @@ TEST_F(M6502TransferRegistersTest, CanTransferZeroAccumlatorToX){
     cpu.A = 0;
     cpu.P.Z = 0;
     cpu.P.N = 1;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_TAX; //2 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_TAX; //2 cycles
     constexpr int32_t NUM_OF_CYCLES = 2;
     CPU CPUCopy = cpu;
 
@@ -75,7 +75,7 @@ TEST_F(M6502TransferRegistersTest, CanTransferNegativeAccumaltorToY){
     cpu.A = 0xFF;
     cpu.P.Z = 1;
     cpu.P.N = 0;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_TAY; //2 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_TAY; //2 cycles
     constexpr int32_t NUM_OF_CYCLES = 2;
     CPU CPUCopy = cpu;
 
@@ -96,7 +96,7 @@ TEST_F(M6502TransferRegistersTest, CanTransferZeroAccumlatorToY){
     cpu.A = 0;
     cpu.P.Z = 0;
     cpu.P.N = 1;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_TAY; //2 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_TAY; //2 cycles
     constexpr int32_t NUM_OF_CYCLES = 2;
     CPU CPUCopy = cpu;
 
@@ -117,7 +117,7 @@ TEST_F(M6502TransferRegistersTest, CanTransferNegativeXToAccumulator){
     cpu.X = 0xFF;
     cpu.P.Z = 1;
     cpu.P.N = 0;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_TXA; //2 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_TXA; //2 cycles
     constexpr int32_t NUM_OF_CYCLES = 2;
     CPU CPUCopy = cpu;
 
@@ -138,7 +138,7 @@ TEST_F(M6502TransferRegistersTest, CanTransferZeroXToAccumulator){
     cpu.X = 0;
     cpu.P.Z = 0;
     cpu.P.N = 1;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_TXA; //2 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_TXA; //2 cycles
     constexpr int32_t NUM_OF_CYCLES = 2;
     CPU CPUCopy = cpu;
 
@@ -159,7 +159,7 @@ TEST_F(M6502TransferRegistersTest, CanTransferNegativeYToAccumulator){
     cpu.Y = 0xFF;
     cpu.P.Z = 1;
     cpu.P.N = 0;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_TYA; //2 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_TYA; //2 cycles
     constexpr int32_t NUM_OF_CYCLES = 2;
     CPU CPUCopy = cpu;
 
@@ -180,7 +180,7 @@ TEST_F(M6502TransferRegistersTest, CanTransferZeroYToAccumulator){
     cpu.Y = 0;
     cpu.P.Z = 0;
     cpu.P.N = 1;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_TYA; //2 cycles
+    mem[0x8000] = INSTRUCTIONS::INS_TYA; //2 cycles
     constexpr int32_t NUM_OF_CYCLES = 2;
     CPU CPUCopy = cpu;
 

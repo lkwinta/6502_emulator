@@ -31,7 +31,7 @@ TEST_F(M6502CPUTest, CPUDoesNothingWhenExecutedWithZeroCycles){
 TEST_F(M6502CPUTest, CPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstruction){
     //given:
     int32_t c = 7;
-    uint8_t program[] = {0x00, 0x80, CPU::INSTRUCTIONS::INS_LDA_IM, 0x84};
+    uint8_t program[] = {0x00, 0x80, INSTRUCTIONS::INS_LDA_IM, 0x84};
     CPU::LoadProgram(mem, program, 4);
 
     cpu.Reset(c, mem);

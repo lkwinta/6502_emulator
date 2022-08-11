@@ -34,7 +34,7 @@ static void VerifyUnmodifiedFlagsLDA(CPU& cpu, CPU& CPUCopy){
 TEST_F(BitTest, BitZeroPageZeroFlag){
     //given:
     cpu.A = 0b01010000;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_BIT_ZP;
+    mem[0x8000] = INSTRUCTIONS::INS_BIT_ZP;
     mem[0x8001] = 0x23;
     mem[0x0023] = 0b00001001;
 
@@ -56,7 +56,7 @@ TEST_F(BitTest, BitZeroPageZeroFlag){
 TEST_F(BitTest, BitZeroPageOverflowFlag){
     //given:
     cpu.A = 0b00010001;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_BIT_ZP;
+    mem[0x8000] = INSTRUCTIONS::INS_BIT_ZP;
     mem[0x8001] = 0x23;
     mem[0x0023] = 0b01001001;
 
@@ -78,7 +78,7 @@ TEST_F(BitTest, BitZeroPageOverflowFlag){
 TEST_F(BitTest, BitZeroPageNegativeFlag){
     //given:
     cpu.A = 0b01010001;
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_BIT_ZP;
+    mem[0x8000] = INSTRUCTIONS::INS_BIT_ZP;
     mem[0x8001] = 0x23;
     mem[0x0023] = 0b10001001;
 
@@ -101,7 +101,7 @@ TEST_F(BitTest, BitAbsoluteZeroFlag){
     //given:
     cpu.A = 0b01001010;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_BIT_ABS;
+    mem[0x8000] = INSTRUCTIONS::INS_BIT_ABS;
     mem[0x8001] = 0x23;
     mem[0x8002] = 0x24;// 0x2423
     mem[0x2423] = 0b00000101;
@@ -125,7 +125,7 @@ TEST_F(BitTest, BitAbsoluteOverflowFlag){
     //given:
     cpu.A = 0b00001011;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_BIT_ABS;
+    mem[0x8000] = INSTRUCTIONS::INS_BIT_ABS;
     mem[0x8001] = 0x23;
     mem[0x8002] = 0x24;// 0x2423
     mem[0x2423] = 0b01001101;
@@ -149,7 +149,7 @@ TEST_F(BitTest, BitAbsoluteNegativeFlag){
     //given:
     cpu.A = 0b01001011;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_BIT_ABS;
+    mem[0x8000] = INSTRUCTIONS::INS_BIT_ABS;
     mem[0x8001] = 0x23;
     mem[0x8002] = 0x24;// 0x2423
     mem[0x2423] = 0b10000001;

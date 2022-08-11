@@ -32,14 +32,14 @@ public:
 
     }
 
-    void STAZeroPageStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::* Register);
-    void STAZeroPageXYStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::* Register, uint8_t CPU::* RegisterXY);
-    void STAAbsoluteStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::* Register);
-    void STAAbsoluteXYStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::* Register, uint8_t CPU::* RegisterXY);
+    void STAZeroPageStore(INSTRUCTIONS instruction, uint8_t CPU::* Register);
+    void STAZeroPageXYStore(INSTRUCTIONS instruction, uint8_t CPU::* Register, uint8_t CPU::* RegisterXY);
+    void STAAbsoluteStore(INSTRUCTIONS instruction, uint8_t CPU::* Register);
+    void STAAbsoluteXYStore(INSTRUCTIONS instruction, uint8_t CPU::* Register, uint8_t CPU::* RegisterXY);
 
 };
 
-void M6502STTest::STAZeroPageStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::* Register) {
+void M6502STTest::STAZeroPageStore(INSTRUCTIONS instruction, uint8_t CPU::* Register) {
     //given:
     cpu.*Register = 0x2F;
 
@@ -60,7 +60,7 @@ void M6502STTest::STAZeroPageStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::*
     VerifyUnmodifiedFlags(cpu, CPUCopy);
 }
 
-void M6502STTest::STAZeroPageXYStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::* Register, uint8_t CPU::* RegisterXY) {
+void M6502STTest::STAZeroPageXYStore(INSTRUCTIONS instruction, uint8_t CPU::* Register, uint8_t CPU::* RegisterXY) {
     //given:
     cpu.*Register = 0x42;
     cpu.*RegisterXY = 0x0F;
@@ -82,7 +82,7 @@ void M6502STTest::STAZeroPageXYStore(CPU::INSTRUCTIONS instruction, uint8_t CPU:
     VerifyUnmodifiedFlags(cpu, CPUCopy);
 }
 
-void M6502STTest::STAAbsoluteStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::*Register) {
+void M6502STTest::STAAbsoluteStore(INSTRUCTIONS instruction, uint8_t CPU::*Register) {
     //given:
     cpu.*Register = 0x2F;
 
@@ -103,7 +103,7 @@ void M6502STTest::STAAbsoluteStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::*
     VerifyUnmodifiedFlags(cpu, CPUCopy);
 }
 
-void M6502STTest::STAAbsoluteXYStore(CPU::INSTRUCTIONS instruction, uint8_t CPU::*Register, uint8_t CPU::* RegisterXY) {
+void M6502STTest::STAAbsoluteXYStore(INSTRUCTIONS instruction, uint8_t CPU::*Register, uint8_t CPU::* RegisterXY) {
     //given:
     cpu.*Register = 0x2F;
     cpu.*RegisterXY = 0x92;
@@ -127,23 +127,23 @@ void M6502STTest::STAAbsoluteXYStore(CPU::INSTRUCTIONS instruction, uint8_t CPU:
 }
 
 TEST_F(M6502STTest, STAZeroPageCanStoreARegister) {
-    STAZeroPageStore(CPU::INSTRUCTIONS::INS_STA_ZP, &CPU::A);
+    STAZeroPageStore(INSTRUCTIONS::INS_STA_ZP, &CPU::A);
 }
 
 TEST_F(M6502STTest, STAZeroPageXCanStoreARegister) {
-    STAZeroPageXYStore(CPU::INSTRUCTIONS::INS_STA_ZP_X, &CPU::A, &CPU::X);
+    STAZeroPageXYStore(INSTRUCTIONS::INS_STA_ZP_X, &CPU::A, &CPU::X);
 }
 
 TEST_F(M6502STTest, STAAbsoluteCanStoreARegister) {
-    STAAbsoluteStore(CPU::INSTRUCTIONS::INS_STA_ABS, &CPU::A);
+    STAAbsoluteStore(INSTRUCTIONS::INS_STA_ABS, &CPU::A);
 }
 
 TEST_F(M6502STTest, STAAbsoluteXCanStoreARegister) {
-    STAAbsoluteXYStore(CPU::INSTRUCTIONS::INS_STA_ABS_X, &CPU::A, &CPU::X);
+    STAAbsoluteXYStore(INSTRUCTIONS::INS_STA_ABS_X, &CPU::A, &CPU::X);
 }
 
 TEST_F(M6502STTest, STAAbsoluteYCanStoreARegister) {
-    STAAbsoluteXYStore(CPU::INSTRUCTIONS::INS_STA_ABS_Y, &CPU::A, &CPU::Y);
+    STAAbsoluteXYStore(INSTRUCTIONS::INS_STA_ABS_Y, &CPU::A, &CPU::Y);
 }
 
 TEST_F(M6502STTest, STAIndirectXCanStoreARegister){
@@ -151,7 +151,7 @@ TEST_F(M6502STTest, STAIndirectXCanStoreARegister){
     cpu.X = 0x92;
 
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_STA_IND_X;
+    mem[0x8000] = INSTRUCTIONS::INS_STA_IND_X;
     mem[0x8001] = 0x20;
 
     mem[0x00B2] = 0x00;//0x92 + 0x20
@@ -175,7 +175,7 @@ TEST_F(M6502STTest, STAIndirectYCanStoreARegister){
     cpu.A = 0x2F;
     cpu.Y = 0x92;
 
-    mem[0x8000] = CPU::INSTRUCTIONS::INS_STA_IND_Y;
+    mem[0x8000] = INSTRUCTIONS::INS_STA_IND_Y;
     mem[0x8001] = 0x20;
 
     mem[0x0020] = 0x00;
@@ -197,29 +197,29 @@ TEST_F(M6502STTest, STAIndirectYCanStoreARegister){
 /////////////////////////////////////////////////////////////////////////////////////
 
 TEST_F(M6502STTest, STXZeroPageCanStoreXRegister) {
-    STAZeroPageStore(CPU::INSTRUCTIONS::INS_STX_ZP, &CPU::X);
+    STAZeroPageStore(INSTRUCTIONS::INS_STX_ZP, &CPU::X);
 }
 
 TEST_F(M6502STTest, STXZeroPageYCanStoreXRegister) {
-    STAZeroPageXYStore(CPU::INSTRUCTIONS::INS_STX_ZP_Y, &CPU::X, &CPU::Y);
+    STAZeroPageXYStore(INSTRUCTIONS::INS_STX_ZP_Y, &CPU::X, &CPU::Y);
 }
 
 TEST_F(M6502STTest, STXAbsoluteCanStoreXRegister) {
-    STAAbsoluteStore(CPU::INSTRUCTIONS::INS_STX_ABS, &CPU::X);
+    STAAbsoluteStore(INSTRUCTIONS::INS_STX_ABS, &CPU::X);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
 
 TEST_F(M6502STTest, STYZeroPageCanStoreYRegister) {
-    STAZeroPageStore(CPU::INSTRUCTIONS::INS_STY_ZP, &CPU::Y);
+    STAZeroPageStore(INSTRUCTIONS::INS_STY_ZP, &CPU::Y);
 }
 
 TEST_F(M6502STTest, STYZeroPageXCanStoreYRegister) {
-    STAZeroPageXYStore(CPU::INSTRUCTIONS::INS_STY_ZP_X, &CPU::Y, &CPU::X);
+    STAZeroPageXYStore(INSTRUCTIONS::INS_STY_ZP_X, &CPU::Y, &CPU::X);
 }
 
 TEST_F(M6502STTest, STYAbsoluteCanStoreYRegister) {
-    STAAbsoluteStore(CPU::INSTRUCTIONS::INS_STY_ABS, &CPU::Y);
+    STAAbsoluteStore(INSTRUCTIONS::INS_STY_ABS, &CPU::Y);
 }
 
 
