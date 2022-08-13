@@ -56,11 +56,11 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         /////////////////////////////////// STORE Y REGISTER INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
 
         /////////////////////////////////// TRANSFER REGISTERS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
-        {INSTRUCTIONS::INS_TAX,      [this](int32_t& cycles, Memory& memory) { X = A; LDSetStatus(X); cycles--; }},
-        {INSTRUCTIONS::INS_TXA,      [this](int32_t& cycles, Memory& memory) { A = X; LDSetStatus(A); cycles--; }},
-        {INSTRUCTIONS::INS_TAY,      [this](int32_t& cycles, Memory& memory) { Y = A; LDSetStatus(Y); cycles--; }},
-        {INSTRUCTIONS::INS_TYA,      [this](int32_t& cycles, Memory& memory) { A = Y; LDSetStatus(A); cycles--; }},
-        {INSTRUCTIONS::INS_TSX,      [this](int32_t& cycles, Memory& memory) { X = S; LDSetStatus(X); cycles--; }},
+        {INSTRUCTIONS::INS_TAX,      [this](int32_t& cycles, Memory& memory) { X = A; SetStatusNZ(X); cycles--; }},
+        {INSTRUCTIONS::INS_TXA,      [this](int32_t& cycles, Memory& memory) { A = X; SetStatusNZ(A); cycles--; }},
+        {INSTRUCTIONS::INS_TAY,      [this](int32_t& cycles, Memory& memory) { Y = A; SetStatusNZ(Y); cycles--; }},
+        {INSTRUCTIONS::INS_TYA,      [this](int32_t& cycles, Memory& memory) { A = Y; SetStatusNZ(A); cycles--; }},
+        {INSTRUCTIONS::INS_TSX,      [this](int32_t& cycles, Memory& memory) { X = S; SetStatusNZ(X); cycles--; }},
         {INSTRUCTIONS::INS_TXS,      [this](int32_t& cycles, Memory& memory) { S = X; cycles--; }},
         /////////////////////////////////// TRANSFER REGISTERS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
 
@@ -68,7 +68,7 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         {INSTRUCTIONS::INS_PHA,      [this](int32_t& cycles, Memory& memory) { StackPush8Bits(cycles, memory, A); cycles--;}},
         {INSTRUCTIONS::INS_PHP,      [this](int32_t& cycles, Memory& memory) { StackPush8Bits(cycles, memory, P.PS); cycles--;}},
         {INSTRUCTIONS::INS_PLA,      [this](int32_t& cycles, Memory& memory) { A = StackPop8Bits(cycles, memory); cycles -= 2;
-            LDSetStatus(A);}},
+            SetStatusNZ(A);}},
         {INSTRUCTIONS::INS_PLP,      [this](int32_t& cycles, Memory& memory) { P.PS = StackPop8Bits(cycles, memory); cycles -= 2;}},
         /////////////////////////////////// STACK OPERATIONS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
 
@@ -121,7 +121,22 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         }},
         {INSTRUCTIONS::INS_JMP_IND,         [this](int32_t& cycles, Memory& memory) {
             PC = Read16Bits(cycles, memory, getAbsoluteAddress(cycles, memory));
-        }}
+        }},
+        ////////////////////////////////// JUMP INSTRUCTION IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_INX,   [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(IMPLIED_X, MATH_OPERATION::INCREMENT, cycles, memory);}},
+        {INSTRUCTIONS::INS_INY,   [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(IMPLIED_Y, MATH_OPERATION::INCREMENT, cycles, memory);}},
+        {INSTRUCTIONS::INS_DEX,   [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(IMPLIED_X, MATH_OPERATION::DECREMENT, cycles, memory);}},
+        {INSTRUCTIONS::INS_DEY,   [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(IMPLIED_Y, MATH_OPERATION::DECREMENT, cycles, memory);}},
+
+        {INSTRUCTIONS::INS_INC_ZP,   [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(ZERO_PAGE, MATH_OPERATION::INCREMENT, cycles, memory);}},
+        {INSTRUCTIONS::INS_INC_ZP_X, [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(ZERO_PAGE_X, MATH_OPERATION::INCREMENT, cycles, memory);}},
+        {INSTRUCTIONS::INS_INC_ABS,  [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(ABSOLUTE, MATH_OPERATION::INCREMENT, cycles, memory);}},
+        {INSTRUCTIONS::INS_INC_ABS_X,[this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(ABSOLUTE_X, MATH_OPERATION::INCREMENT, cycles, memory);}},
+
+        {INSTRUCTIONS::INS_DEC_ZP,   [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(ZERO_PAGE, MATH_OPERATION::DECREMENT, cycles, memory);}},
+        {INSTRUCTIONS::INS_DEC_ZP_X, [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(ZERO_PAGE_X, MATH_OPERATION::DECREMENT, cycles, memory); }},
+        {INSTRUCTIONS::INS_DEC_ABS,  [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(ABSOLUTE, MATH_OPERATION::DECREMENT, cycles, memory);}},
+        {INSTRUCTIONS::INS_DEC_ABS_X,[this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(ABSOLUTE_X, MATH_OPERATION::DECREMENT, cycles, memory);}},
         ////////////////////////////////// JUMP INSTRUCTION IMPLEMENTATION //////////////////////////////////
     };
 }

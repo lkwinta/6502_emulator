@@ -155,7 +155,7 @@ uint16_t MOS6502::CPU::getIndexedIndirectAddressY(int32_t &cycles, const MOS6502
     return targetAddress + Y;
 }
 
-void MOS6502::CPU::LDSetStatus(uint8_t& reg){
+void MOS6502::CPU::SetStatusNZ(uint8_t& reg){
     P.Z = (reg == 0);
     P.N = (reg & 0b10000000) != 0;
 }
@@ -211,7 +211,7 @@ void MOS6502::CPU::LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, const Me
        reg = Fetch8Bits(cycles, memory);
    else
        reg = Read8Bits(cycles, memory, GetAddress(mode, cycles, memory, true));
-   LDSetStatus(reg);
+    SetStatusNZ(reg);
 }
 
 void MOS6502::CPU::StoreRegister(ADDRESSING_MODES mode, int32_t &cycles, Memory &memory, uint8_t &reg) {
@@ -232,17 +232,17 @@ void MOS6502::CPU::PerformLogicalOnAccumulator(ADDRESSING_MODES mode, MOS6502::C
     switch (operation) {
         case LOGICAL_OPERATION::AND: {
             A = (A & value);
-            LDSetStatus(A);
+            SetStatusNZ(A);
             break;
         }
         case LOGICAL_OPERATION::XOR: {
             A = (A ^ value);
-            LDSetStatus(A);
+            SetStatusNZ(A);
             break;
         }
         case LOGICAL_OPERATION::OR: {
             A = (A | value);
-            LDSetStatus(A);
+            SetStatusNZ(A);
             break;
         }
         case LOGICAL_OPERATION::BIT: {
@@ -255,6 +255,39 @@ void MOS6502::CPU::PerformLogicalOnAccumulator(ADDRESSING_MODES mode, MOS6502::C
             printf("Unhandled operation: %d", operation);
             throw std::runtime_error("Unhandled load addressing mode");
         }
+    }
+}
+
+void MOS6502::CPU::IncrementDecrementValue(MOS6502::CPU::ADDRESSING_MODES mode,
+                                                    MOS6502::CPU::MATH_OPERATION operation, int32_t &cycles,
+                                                    MOS6502::Memory &memory) {
+    if(mode == IMPLIED_X){
+        if(operation == MATH_OPERATION::INCREMENT)
+            X++;
+        else if(operation == MATH_OPERATION::DECREMENT)
+            X--;
+        cycles--;
+        SetStatusNZ(X);
+    } else if (mode == IMPLIED_Y) {
+        if(operation == MATH_OPERATION::INCREMENT)
+            Y++;
+        else if(operation == MATH_OPERATION::DECREMENT)
+            Y--;
+        cycles--;
+        SetStatusNZ(Y);
+    } else {
+        uint16_t address = GetAddress(mode, cycles, memory, false);
+        uint8_t value = Read8Bits(cycles, memory, address);
+        if(operation == MATH_OPERATION::INCREMENT)
+            value++;
+        else if(operation == MATH_OPERATION::DECREMENT)
+            value--;
+
+        cycles--;
+        if(mode == ABSOLUTE_X)
+            cycles--;
+        Write8Bits(cycles, memory, address, value);
+        SetStatusNZ(value);
     }
 }
 
@@ -273,3 +306,5 @@ int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){
 
     return totalCycles - cycles;
 }
+
+

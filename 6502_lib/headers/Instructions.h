@@ -163,6 +163,33 @@ namespace MOS6502 {
         INS_JMP_ABS = 0x4C,
         //cycles: 5  |    args: (16-bit indirect address (little endian))
         INS_JMP_IND = 0x6C,
+
+        //cycles: 2  |    args: none (Implied)
+        INS_INX = 0xE8,
+        //cycles: 2  |    args: none (Implied)
+        INS_INY = 0xC8,
+        //cycles: 2  |    args: none (Implied)
+        INS_DEX = 0xCA,
+        //cycles: 2  |    args: none (Implied)
+        INS_DEY = 0x88,
+
+        //cycles: 5  |    args: 8-bit zero-page address
+        INS_INC_ZP = 0xE6,
+        //cycles: 6  |    args: 8-bit zero-page address, X register offset
+        INS_INC_ZP_X = 0xF6,
+        //cycles: 6  |    args: 16-bit absolute address (little endian)
+        INS_INC_ABS = 0xEE,
+        //cycles: 7  |    args: 16-bit absolute address (little endian), X register offset
+        INS_INC_ABS_X = 0xFE,
+
+        //cycles: 5  |    args: 8-bit zero-page address
+        INS_DEC_ZP = 0xC6,
+        //cycles: 6  |    args: 8-bit zero-page address, X register offset
+        INS_DEC_ZP_X = 0xD6,
+        //cycles: 6  |    args: 16-bit absolute address (little endian)
+        INS_DEC_ABS = 0xCE,
+        //cycles: 7  |    args: 16-bit absolute address (little endian), X register offset
+        INS_DEC_ABS_X = 0xDE,
     };
 }
 

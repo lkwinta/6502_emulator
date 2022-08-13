@@ -31,7 +31,7 @@ add_executable(6502_tests
         tests/logical_operations/eor_tests.cpp
         tests/logical_operations/ora_tests.cpp
         tests/logical_operations/bit_tests.cpp
-        tests/transfer_registers/transfer_registers_tests.cpp)
+        tests/transfer_registers/transfer_registers_tests.cpp tests/increment_decrement/inc_dec_tests.cpp)
 
 target_link_libraries(6502_tests 6502_lib gtest_main gmock_main)
 include_directories(${CMAKE_SOURCE_DIR}/6502_lib/headers)

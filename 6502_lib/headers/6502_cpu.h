@@ -17,6 +17,9 @@ namespace MOS6502 {
     private:
         /* Stores possible addressing modes */
         enum ADDRESSING_MODES{
+            IMPLIED_X,
+            IMPLIED_Y,
+            IMPLIED_A,
             IMMEDIATE,
             ZERO_PAGE,
             ZERO_PAGE_X,
@@ -33,6 +36,11 @@ namespace MOS6502 {
             XOR,
             OR,
             BIT
+        };
+
+        enum class MATH_OPERATION {
+            INCREMENT,
+            DECREMENT
         };
 
         /*return 8-bit zero-page address*/
@@ -78,13 +86,15 @@ namespace MOS6502 {
         uint16_t StackPop16Bits(int32_t& cycles, Memory& memory);
 
         /*Sets N and Z flags of processor status after loading a register*/
-        void LDSetStatus(uint8_t& reg);
+        void SetStatusNZ(uint8_t& reg);
 
         /*returns address basing on addressing mode*/
         uint16_t GetAddress(ADDRESSING_MODES mode, int32_t& cycles, const Memory& memory, bool checkPageCrossing);
 
         /*Performs logical operation on accumulator*/
         void PerformLogicalOnAccumulator(ADDRESSING_MODES mode, LOGICAL_OPERATION operation, int32_t& cycles, Memory& memory);
+        /*Increments and Decrements memory location*/
+        void IncrementDecrementValue(ADDRESSING_MODES mode, MATH_OPERATION operation, int32_t& cycles, Memory& memory);
         /*Loads register with specified addressing mode*/
         void LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, const Memory& memory, uint8_t& reg);
         /*Stores register in specified address in memory*/
@@ -95,11 +105,11 @@ namespace MOS6502 {
 
         /*stack index 0, stack pointer is added to that index*/
         uint16_t stackLocation = 0x0100;
-    public:
-        CPU();
 
         //lookup table for instructions and their functions
         std::map<INSTRUCTIONS, std::function<void(int32_t&, Memory&)>> instructionsLookupTable;
+    public:
+        CPU();
 
         //loads program to the memory
         static void LoadProgram(Memory& memory, const uint8_t* program, uint8_t programSize);
