@@ -7,7 +7,7 @@
 
 using namespace MOS6502;
 
-class ORATest : public testing::Test {
+class M6502ORATest : public testing::Test {
 public:
     Memory mem{};
     CPU cpu{};
@@ -34,7 +34,7 @@ static void VerifyUnmodifiedFlagsLDA(CPU& cpu, CPU& CPUCopy){
 static constexpr uint8_t bin1 = 0b01010101;
 static constexpr uint8_t bin2 = 0b00011111;
 
-TEST_F(ORATest, ANDImmediate){
+TEST_F(M6502ORATest, ANDImmediate){
     //given:
     cpu.A = bin1;
     mem[0x8000] = INSTRUCTIONS::INS_ORA_IM;
@@ -54,7 +54,7 @@ TEST_F(ORATest, ANDImmediate){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ORATest, ANDImmediateSetNFlag){
+TEST_F(M6502ORATest, ANDImmediateSetNFlag){
     //given:
     cpu.A = 0b11111111;
     mem[0x8000] = INSTRUCTIONS::INS_ORA_IM;
@@ -74,7 +74,7 @@ TEST_F(ORATest, ANDImmediateSetNFlag){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ORATest, ANDImmediateSetZFlag){
+TEST_F(M6502ORATest, ANDImmediateSetZFlag){
     //given:
     cpu.A = 0b00000000;
     mem[0x8000] = INSTRUCTIONS::INS_ORA_IM;
@@ -94,7 +94,7 @@ TEST_F(ORATest, ANDImmediateSetZFlag){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ORATest, ANDZeroPage){
+TEST_F(M6502ORATest, ANDZeroPage){
     //given:
     cpu.A = bin1;
     mem[0x8000] = INSTRUCTIONS::INS_ORA_ZP;
@@ -115,7 +115,7 @@ TEST_F(ORATest, ANDZeroPage){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ORATest, ANDZeroPageX){
+TEST_F(M6502ORATest, ANDZeroPageX){
     //given:
     cpu.A = bin1;
     cpu.X = 0x21;
@@ -137,7 +137,7 @@ TEST_F(ORATest, ANDZeroPageX){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ORATest, ANDZeroPageXWhenItWraps){
+TEST_F(M6502ORATest, ANDZeroPageXWhenItWraps){
     //given:
     cpu.A = bin1;
     cpu.X = 0xFF;
@@ -159,7 +159,7 @@ TEST_F(ORATest, ANDZeroPageXWhenItWraps){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ORATest, ANDAbsolute){
+TEST_F(M6502ORATest, ANDAbsolute){
     //given:
     cpu.A = bin1;
     mem[0x8000] = INSTRUCTIONS::INS_ORA_ABS;
@@ -181,7 +181,7 @@ TEST_F(ORATest, ANDAbsolute){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ORATest, ANDAbsoluteX){
+TEST_F(M6502ORATest, ANDAbsoluteX){
     //given:
     cpu.A = bin1;
     cpu.X = 0x24;
@@ -204,7 +204,7 @@ TEST_F(ORATest, ANDAbsoluteX){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ORATest, ANDAbsoluteXWhenPageCrossing){
+TEST_F(M6502ORATest, ANDAbsoluteXWhenPageCrossing){
     //given:
     cpu.A = bin1;
     cpu.X = 0xFA;
@@ -227,7 +227,7 @@ TEST_F(ORATest, ANDAbsoluteXWhenPageCrossing){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ORATest, ANDAbsoluteY){
+TEST_F(M6502ORATest, ANDAbsoluteY){
     //given:
     cpu.A = bin1;
     cpu.Y = 0x24;
@@ -250,7 +250,7 @@ TEST_F(ORATest, ANDAbsoluteY){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ORATest, ANDAbsoluteYWhenPageCrossing){
+TEST_F(M6502ORATest, ANDAbsoluteYWhenPageCrossing){
     //given:
     cpu.A = bin1;
     cpu.Y = 0xFA;
@@ -273,7 +273,7 @@ TEST_F(ORATest, ANDAbsoluteYWhenPageCrossing){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ORATest, ANDAIndirectX){
+TEST_F(M6502ORATest, ANDAIndirectX){
     //given:
     cpu.A = bin1;
     cpu.X = 0x24;
@@ -297,7 +297,7 @@ TEST_F(ORATest, ANDAIndirectX){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ORATest, ANDIndirectY){
+TEST_F(M6502ORATest, ANDIndirectY){
     //given:
     cpu.A = bin1;
     cpu.Y = 0x21;
@@ -323,7 +323,7 @@ TEST_F(ORATest, ANDIndirectY){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ORATest, ANDIndirectYWhenPageCrossing){
+TEST_F(M6502ORATest, ANDIndirectYWhenPageCrossing){
     //given:
     cpu.A = bin1;
     cpu.Y = 0xFA;

@@ -7,7 +7,7 @@
 
 using namespace MOS6502;
 
-class ANDTest : public testing::Test {
+class M6502ANDTest : public testing::Test {
 public:
     Memory mem{};
     CPU cpu{};
@@ -31,7 +31,7 @@ static void VerifyUnmodifiedFlagsLDA(CPU& cpu, CPU& CPUCopy){
     EXPECT_EQ(cpu.P.V, CPUCopy.P.V);
 }
 
-TEST_F(ANDTest, ANDImmediate){
+TEST_F(M6502ANDTest, ANDImmediate){
     //given:
     cpu.A = 0b01001010;
     mem[0x8000] = INSTRUCTIONS::INS_AND_IM;
@@ -51,7 +51,7 @@ TEST_F(ANDTest, ANDImmediate){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ANDTest, ANDImmediateSetNFlag){
+TEST_F(M6502ANDTest, ANDImmediateSetNFlag){
     //given:
     cpu.A = 0b11111111;
     mem[0x8000] = INSTRUCTIONS::INS_AND_IM;
@@ -71,7 +71,7 @@ TEST_F(ANDTest, ANDImmediateSetNFlag){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ANDTest, ANDImmediateSetZFlag){
+TEST_F(M6502ANDTest, ANDImmediateSetZFlag){
     //given:
     cpu.A = 0b11111111;
     mem[0x8000] = INSTRUCTIONS::INS_AND_IM;
@@ -91,7 +91,7 @@ TEST_F(ANDTest, ANDImmediateSetZFlag){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ANDTest, ANDZeroPage){
+TEST_F(M6502ANDTest, ANDZeroPage){
     //given:
     cpu.A = 0b01001010;
     mem[0x8000] = INSTRUCTIONS::INS_AND_ZP;
@@ -112,7 +112,7 @@ TEST_F(ANDTest, ANDZeroPage){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ANDTest, ANDZeroPageX){
+TEST_F(M6502ANDTest, ANDZeroPageX){
     //given:
     cpu.A = 0b01001010;
     cpu.X = 0x21;
@@ -134,7 +134,7 @@ TEST_F(ANDTest, ANDZeroPageX){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ANDTest, ANDZeroPageXWhenItWraps){
+TEST_F(M6502ANDTest, ANDZeroPageXWhenItWraps){
     //given:
     cpu.A = 0b01001010;
     cpu.X = 0xFF;
@@ -156,7 +156,7 @@ TEST_F(ANDTest, ANDZeroPageXWhenItWraps){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ANDTest, ANDAbsolute){
+TEST_F(M6502ANDTest, ANDAbsolute){
     //given:
     cpu.A = 0b01001010;
     mem[0x8000] = INSTRUCTIONS::INS_AND_ABS;
@@ -178,7 +178,7 @@ TEST_F(ANDTest, ANDAbsolute){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ANDTest, ANDAbsoluteX){
+TEST_F(M6502ANDTest, ANDAbsoluteX){
     //given:
     cpu.A = 0b01001010;
     cpu.X = 0x24;
@@ -201,7 +201,7 @@ TEST_F(ANDTest, ANDAbsoluteX){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ANDTest, ANDAbsoluteXWhenPageCrossing){
+TEST_F(M6502ANDTest, ANDAbsoluteXWhenPageCrossing){
     //given:
     cpu.A = 0b01001010;
     cpu.X = 0xFA;
@@ -224,7 +224,7 @@ TEST_F(ANDTest, ANDAbsoluteXWhenPageCrossing){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ANDTest, ANDAbsoluteY){
+TEST_F(M6502ANDTest, ANDAbsoluteY){
     //given:
     cpu.A = 0b01001010;
     cpu.Y = 0x24;
@@ -247,7 +247,7 @@ TEST_F(ANDTest, ANDAbsoluteY){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ANDTest, ANDAbsoluteYWhenPageCrossing){
+TEST_F(M6502ANDTest, ANDAbsoluteYWhenPageCrossing){
     //given:
     cpu.A = 0b01001010;
     cpu.Y = 0xFA;
@@ -270,7 +270,7 @@ TEST_F(ANDTest, ANDAbsoluteYWhenPageCrossing){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ANDTest, ANDAIndirectX){
+TEST_F(M6502ANDTest, ANDAIndirectX){
     //given:
     cpu.A = 0b01001010;
     cpu.X = 0x24;
@@ -294,7 +294,7 @@ TEST_F(ANDTest, ANDAIndirectX){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ANDTest, ANDIndirectY){
+TEST_F(M6502ANDTest, ANDIndirectY){
     //given:
     cpu.A = 0b01001010;
     cpu.Y = 0x21;
@@ -320,7 +320,7 @@ TEST_F(ANDTest, ANDIndirectY){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(ANDTest, ANDIndirectYWhenPageCrossing){
+TEST_F(M6502ANDTest, ANDIndirectYWhenPageCrossing){
     //given:
     cpu.A = 0b01001010;
     cpu.Y = 0xFA;

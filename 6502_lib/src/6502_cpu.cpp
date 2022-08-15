@@ -291,6 +291,17 @@ void MOS6502::CPU::IncrementDecrementValue(MOS6502::CPU::ADDRESSING_MODES mode,
     }
 }
 
+void MOS6502::CPU::BranchIf(int32_t &cycles, MOS6502::Memory &memory, bool flag, bool expectedState) {
+    auto offset = static_cast<int8_t>(Fetch8Bits(cycles, memory));
+
+    if(flag == expectedState){
+        cycles--;
+        if((PC >> 8) != ((PC + offset) >> 8))
+            cycles -= 2; // page crossed
+        PC += offset;
+    }
+}
+
 int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){
     int32_t totalCycles = cycles;
 

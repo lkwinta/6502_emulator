@@ -112,17 +112,12 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
             PC = absoluteAddress;
             cycles--;
         }},
-        {INSTRUCTIONS::INS_RTS,         [this](int32_t& cycles, Memory& memory) {
-            PC = StackPop16Bits(cycles, memory) + 1;
-            cycles -= 3;
-        }},
-        {INSTRUCTIONS::INS_JMP_ABS,         [this](int32_t& cycles, Memory& memory) {
-            PC = getAbsoluteAddress(cycles, memory);
-        }},
-        {INSTRUCTIONS::INS_JMP_IND,         [this](int32_t& cycles, Memory& memory) {
-            PC = Read16Bits(cycles, memory, getAbsoluteAddress(cycles, memory));
-        }},
+        {INSTRUCTIONS::INS_RTS,         [this](int32_t& cycles, Memory& memory) { PC = StackPop16Bits(cycles, memory) + 1; cycles -= 3; }},
+        {INSTRUCTIONS::INS_JMP_ABS,         [this](int32_t& cycles, Memory& memory) { PC = getAbsoluteAddress(cycles, memory); }},
+        {INSTRUCTIONS::INS_JMP_IND,         [this](int32_t& cycles, Memory& memory) { PC = Read16Bits(cycles, memory, getAbsoluteAddress(cycles, memory)); }},
         ////////////////////////////////// JUMP INSTRUCTION IMPLEMENTATION //////////////////////////////////
+
+        ////////////////////////////////// INCREMENT INSTRUCTION IMPLEMENTATION //////////////////////////////////
         {INSTRUCTIONS::INS_INX,   [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(IMPLIED_X, MATH_OPERATION::INCREMENT, cycles, memory);}},
         {INSTRUCTIONS::INS_INY,   [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(IMPLIED_Y, MATH_OPERATION::INCREMENT, cycles, memory);}},
         {INSTRUCTIONS::INS_DEX,   [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(IMPLIED_X, MATH_OPERATION::DECREMENT, cycles, memory);}},
@@ -137,6 +132,31 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         {INSTRUCTIONS::INS_DEC_ZP_X, [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(ZERO_PAGE_X, MATH_OPERATION::DECREMENT, cycles, memory); }},
         {INSTRUCTIONS::INS_DEC_ABS,  [this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(ABSOLUTE, MATH_OPERATION::DECREMENT, cycles, memory);}},
         {INSTRUCTIONS::INS_DEC_ABS_X,[this](int32_t& cycles, Memory& memory) { IncrementDecrementValue(ABSOLUTE_X, MATH_OPERATION::DECREMENT, cycles, memory);}},
-        ////////////////////////////////// JUMP INSTRUCTION IMPLEMENTATION //////////////////////////////////
+        ////////////////////////////////// INCREMENT INSTRUCTION IMPLEMENTATION //////////////////////////////////
+
+        ////////////////////////////////// BRANCH INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_BEQ,[this](int32_t& cycles, Memory& memory) { BranchIf(cycles, memory, P.Z, true); }},
+        {INSTRUCTIONS::INS_BNE,[this](int32_t& cycles, Memory& memory) { BranchIf(cycles, memory, P.Z, false); }},
+        {INSTRUCTIONS::INS_BMI,[this](int32_t& cycles, Memory& memory) { BranchIf(cycles, memory, P.N, true); }},
+        {INSTRUCTIONS::INS_BPL,[this](int32_t& cycles, Memory& memory) { BranchIf(cycles, memory, P.N, false); }},
+        {INSTRUCTIONS::INS_BCS,[this](int32_t& cycles, Memory& memory) { BranchIf(cycles, memory, P.C, true); }},
+        {INSTRUCTIONS::INS_BCC,[this](int32_t& cycles, Memory& memory) { BranchIf(cycles, memory, P.C, false); }},
+        {INSTRUCTIONS::INS_BVS,[this](int32_t& cycles, Memory& memory) { BranchIf(cycles, memory, P.V, true); }},
+        {INSTRUCTIONS::INS_BVC,[this](int32_t& cycles, Memory& memory) { BranchIf(cycles, memory, P.V, false); }},
+        ////////////////////////////////// BRANCH INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+
+        ////////////////////////////////// SET/CLEAR FLAGS INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_CLC,[this](int32_t& cycles, Memory& memory) { P.C = 0; cycles--; }},
+        {INSTRUCTIONS::INS_SEC,[this](int32_t& cycles, Memory& memory) { P.C = 1; cycles--; }},
+        {INSTRUCTIONS::INS_CLD,[this](int32_t& cycles, Memory& memory) { P.D = 0; cycles--; }},
+        {INSTRUCTIONS::INS_SED,[this](int32_t& cycles, Memory& memory) { P.D = 1; cycles--; }},
+        {INSTRUCTIONS::INS_CLI,[this](int32_t& cycles, Memory& memory) { P.I = 0; cycles--; }},
+        {INSTRUCTIONS::INS_SEI,[this](int32_t& cycles, Memory& memory) { P.I = 1; cycles--; }},
+        {INSTRUCTIONS::INS_CLV,[this](int32_t& cycles, Memory& memory) { P.V = 0; cycles--; }},
+        ////////////////////////////////// SET/CLEAR FLAGS INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+
+        ////////////////////////////////// SYSTEM FUNCTIONS INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_NOP,[this](int32_t& cycles, Memory& memory) { cycles--; }},
+        ////////////////////////////////// SYSTEM FUNCTIONS INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
     };
 }

@@ -7,7 +7,7 @@
 
 using namespace MOS6502;
 
-class EORTest : public testing::Test {
+class M6502EORTest : public testing::Test {
 public:
     Memory mem{};
     CPU cpu{};
@@ -34,7 +34,7 @@ static void VerifyUnmodifiedFlagsLDA(CPU& cpu, CPU& CPUCopy){
 static constexpr uint8_t bin1 = 0b11010101;
 static constexpr uint8_t bin2 = 0b10011111;
 
-TEST_F(EORTest, EORImmediate){
+TEST_F(M6502EORTest, EORImmediate){
     //given:
     cpu.A = bin1;
     mem[0x8000] = INSTRUCTIONS::INS_EOR_IM;
@@ -54,7 +54,7 @@ TEST_F(EORTest, EORImmediate){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(EORTest, EORImmediateSetNFlag){
+TEST_F(M6502EORTest, EORImmediateSetNFlag){
     //given:
     cpu.A = 0b11111111;
     mem[0x8000] = INSTRUCTIONS::INS_EOR_IM;
@@ -74,7 +74,7 @@ TEST_F(EORTest, EORImmediateSetNFlag){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(EORTest, EORImmediateSetZFlag){
+TEST_F(M6502EORTest, EORImmediateSetZFlag){
     //given:
     cpu.A = 0b11111111;
     mem[0x8000] = INSTRUCTIONS::INS_EOR_IM;
@@ -94,7 +94,7 @@ TEST_F(EORTest, EORImmediateSetZFlag){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(EORTest, EORZeroPage){
+TEST_F(M6502EORTest, EORZeroPage){
     //given:
     cpu.A = bin1;
     mem[0x8000] = INSTRUCTIONS::INS_EOR_ZP;
@@ -115,7 +115,7 @@ TEST_F(EORTest, EORZeroPage){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(EORTest, EORZeroPageX){
+TEST_F(M6502EORTest, EORZeroPageX){
     //given:
     cpu.A = bin1;
     cpu.X = 0x21;
@@ -137,7 +137,7 @@ TEST_F(EORTest, EORZeroPageX){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(EORTest, EORZeroPageXWhenItWraps){
+TEST_F(M6502EORTest, EORZeroPageXWhenItWraps){
     //given:
     cpu.A = bin1;
     cpu.X = 0xFF;
@@ -159,7 +159,7 @@ TEST_F(EORTest, EORZeroPageXWhenItWraps){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(EORTest, EORAbsolute){
+TEST_F(M6502EORTest, EORAbsolute){
     //given:
     cpu.A = bin1;
     mem[0x8000] = INSTRUCTIONS::INS_EOR_ABS;
@@ -181,7 +181,7 @@ TEST_F(EORTest, EORAbsolute){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(EORTest, EORAbsoluteX){
+TEST_F(M6502EORTest, EORAbsoluteX){
     //given:
     cpu.A = bin1;
     cpu.X = 0x24;
@@ -204,7 +204,7 @@ TEST_F(EORTest, EORAbsoluteX){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(EORTest, EORAbsoluteXWhenPageCrossing){
+TEST_F(M6502EORTest, EORAbsoluteXWhenPageCrossing){
     //given:
     cpu.A = bin1;
     cpu.X = 0xFA;
@@ -227,7 +227,7 @@ TEST_F(EORTest, EORAbsoluteXWhenPageCrossing){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(EORTest, EORAbsoluteY){
+TEST_F(M6502EORTest, EORAbsoluteY){
     //given:
     cpu.A = bin1;
     cpu.Y = 0x24;
@@ -250,7 +250,7 @@ TEST_F(EORTest, EORAbsoluteY){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(EORTest, EORAbsoluteYWhenPageCrossing){
+TEST_F(M6502EORTest, EORAbsoluteYWhenPageCrossing){
     //given:
     cpu.A = bin1;
     cpu.Y = 0xFA;
@@ -273,7 +273,7 @@ TEST_F(EORTest, EORAbsoluteYWhenPageCrossing){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(EORTest, EORAIndirectX){
+TEST_F(M6502EORTest, EORAIndirectX){
     //given:
     cpu.A = bin1;
     cpu.X = 0x24;
@@ -297,7 +297,7 @@ TEST_F(EORTest, EORAIndirectX){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(EORTest, EORIndirectY){
+TEST_F(M6502EORTest, EORIndirectY){
     //given:
     cpu.A = bin1;
     cpu.Y = 0x21;
@@ -323,7 +323,7 @@ TEST_F(EORTest, EORIndirectY){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(EORTest, EORIndirectYWhenPageCrossing){
+TEST_F(M6502EORTest, EORIndirectYWhenPageCrossing){
     //given:
     cpu.A = bin1;
     cpu.Y = 0xFA;

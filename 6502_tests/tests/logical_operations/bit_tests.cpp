@@ -7,7 +7,7 @@
 
 using namespace MOS6502;
 
-class BitTest : public testing::Test {
+class M6502BitTest : public testing::Test {
 public:
     Memory mem{};
     CPU cpu{};
@@ -31,7 +31,7 @@ static void VerifyUnmodifiedFlagsLDA(CPU& cpu, CPU& CPUCopy){
 }
 
 
-TEST_F(BitTest, BitZeroPageZeroFlag){
+TEST_F(M6502BitTest, BitZeroPageZeroFlag){
     //given:
     cpu.A = 0b01010000;
     mem[0x8000] = INSTRUCTIONS::INS_BIT_ZP;
@@ -53,7 +53,7 @@ TEST_F(BitTest, BitZeroPageZeroFlag){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(BitTest, BitZeroPageOverflowFlag){
+TEST_F(M6502BitTest, BitZeroPageOverflowFlag){
     //given:
     cpu.A = 0b00010001;
     mem[0x8000] = INSTRUCTIONS::INS_BIT_ZP;
@@ -75,7 +75,7 @@ TEST_F(BitTest, BitZeroPageOverflowFlag){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(BitTest, BitZeroPageNegativeFlag){
+TEST_F(M6502BitTest, BitZeroPageNegativeFlag){
     //given:
     cpu.A = 0b01010001;
     mem[0x8000] = INSTRUCTIONS::INS_BIT_ZP;
@@ -97,7 +97,7 @@ TEST_F(BitTest, BitZeroPageNegativeFlag){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(BitTest, BitAbsoluteZeroFlag){
+TEST_F(M6502BitTest, BitAbsoluteZeroFlag){
     //given:
     cpu.A = 0b01001010;
 
@@ -121,7 +121,7 @@ TEST_F(BitTest, BitAbsoluteZeroFlag){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(BitTest, BitAbsoluteOverflowFlag){
+TEST_F(M6502BitTest, BitAbsoluteOverflowFlag){
     //given:
     cpu.A = 0b00001011;
 
@@ -145,7 +145,7 @@ TEST_F(BitTest, BitAbsoluteOverflowFlag){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
-TEST_F(BitTest, BitAbsoluteNegativeFlag){
+TEST_F(M6502BitTest, BitAbsoluteNegativeFlag){
     //given:
     cpu.A = 0b01001011;
 

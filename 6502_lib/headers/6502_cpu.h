@@ -99,7 +99,9 @@ namespace MOS6502 {
         void LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, const Memory& memory, uint8_t& reg);
         /*Stores register in specified address in memory*/
         void StoreRegister(ADDRESSING_MODES mode, int32_t& cycles, Memory& memory, uint8_t& reg);
-
+        /*Branches if flag is in expected state*/
+        void BranchIf(int32_t& cycles, Memory& memory, bool flag, bool expectedState);
+        
         /*Fills lookup table array with instructions*/
         void fillInstructionsLookupTable();
 
