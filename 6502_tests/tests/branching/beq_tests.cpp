@@ -113,7 +113,7 @@ TEST_F(M6502BEQTest, BEQCanBranchBackwardToNextPage){
 
     cpu.P.Z = 1;
     mem[0x8000] = INSTRUCTIONS::INS_BEQ; //5 cycles (branch successful, new page)
-    mem[0x8001] = static_cast<uint8_t>(-0x3);
+    mem[0x8001] = -0x3;
 
     constexpr int32_t NUM_OF_CYCLES = 5;
     CPU CPUCopy = cpu;

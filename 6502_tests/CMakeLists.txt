@@ -43,7 +43,7 @@ add_executable(6502_tests
         tests/branching/bvs_tests.cpp
         tests/status_flag_changes/set_status_flags.cpp
         tests/status_flag_changes/clear_status_flags.cpp
-        tests/system_functions/nop_tests.cpp)
+        tests/system_functions/nop_tests.cpp tests/add_substract_with_carry/adc_tests.cpp tests/add_substract_with_carry/cmp_tests.cpp tests/add_substract_with_carry/cpx_tests.cpp tests/add_substract_with_carry/cpy_tests.cpp)
 
 target_link_libraries(6502_tests 6502_lib gtest_main gmock_main)
 include_directories(${CMAKE_SOURCE_DIR}/6502_lib/headers)

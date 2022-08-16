@@ -12,6 +12,9 @@
 #include "Memory.h"
 #include "Instructions.h"
 
+//returns most significant bit of 8 bit value
+#define MSB(a) (a >> 7)
+
 namespace MOS6502 {
     class CPU {
     private:
@@ -40,7 +43,9 @@ namespace MOS6502 {
 
         enum class MATH_OPERATION {
             INCREMENT,
-            DECREMENT
+            DECREMENT,
+            ADD,
+            SUBTRACT,
         };
 
         /*return 8-bit zero-page address*/
@@ -95,12 +100,16 @@ namespace MOS6502 {
         void PerformLogicalOnAccumulator(ADDRESSING_MODES mode, LOGICAL_OPERATION operation, int32_t& cycles, Memory& memory);
         /*Increments and Decrements memory location*/
         void IncrementDecrementValue(ADDRESSING_MODES mode, MATH_OPERATION operation, int32_t& cycles, Memory& memory);
+        /*Performs Add and Subtract On Accumulator*/
+        void PerformAddSubtractOnAccumulator(ADDRESSING_MODES mode, MATH_OPERATION operation, int32_t& cycles, Memory& memory);
         /*Loads register with specified addressing mode*/
         void LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, const Memory& memory, uint8_t& reg);
         /*Stores register in specified address in memory*/
         void StoreRegister(ADDRESSING_MODES mode, int32_t& cycles, Memory& memory, uint8_t& reg);
-        /*Branches if flag is in expected state*/
-        void BranchIf(int32_t& cycles, Memory& memory, bool flag, bool expectedState);
+        /*Branches if given flag is in expected state*/
+        void BranchIf(int32_t &cycles, MOS6502::Memory &memory, bool flag, bool expectedState);
+        /*Compares memory value to register*/
+        void CompareWithRegister(ADDRESSING_MODES mode, int32_t& cycles, Memory& memory, uint8_t& reg);
         
         /*Fills lookup table array with instructions*/
         void fillInstructionsLookupTable();

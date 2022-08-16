@@ -155,6 +155,40 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         {INSTRUCTIONS::INS_CLV,[this](int32_t& cycles, Memory& memory) { P.V = 0; cycles--; }},
         ////////////////////////////////// SET/CLEAR FLAGS INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
 
+        ////////////////////////////////// ADD/SUBTRACT WITH CARRY INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_ADC_IM,   [this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(IMMEDIATE, MATH_OPERATION::ADD, cycles, memory); }},
+        {INSTRUCTIONS::INS_ADC_ZP,   [this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(ZERO_PAGE, MATH_OPERATION::ADD, cycles, memory); }},
+        {INSTRUCTIONS::INS_ADC_ZP_X, [this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(ZERO_PAGE_X, MATH_OPERATION::ADD, cycles, memory); }},
+        {INSTRUCTIONS::INS_ADC_ABS,  [this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(ABSOLUTE, MATH_OPERATION::ADD, cycles, memory); }},
+        {INSTRUCTIONS::INS_ADC_ABS_X,[this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(ABSOLUTE_X, MATH_OPERATION::ADD, cycles, memory); }},
+        {INSTRUCTIONS::INS_ADC_ABS_Y,[this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(ABSOLUTE_Y, MATH_OPERATION::ADD, cycles, memory); }},
+        {INSTRUCTIONS::INS_ADC_IND_X,[this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(INDIRECT_X, MATH_OPERATION::ADD, cycles, memory); }},
+        {INSTRUCTIONS::INS_ADC_IND_Y,[this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(INDIRECT_Y, MATH_OPERATION::ADD, cycles, memory); }},
+        ////////////////////////////////// ADD/SUBTRACT WITH CARRY INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+
+        ////////////////////////////////// COMPARE WITH ACCUMULATOR INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_CMP_IM,   [this](int32_t& cycles, Memory& memory) { CompareWithRegister(IMMEDIATE, cycles, memory, A); }},
+        {INSTRUCTIONS::INS_CMP_ZP,   [this](int32_t& cycles, Memory& memory) { CompareWithRegister(ZERO_PAGE, cycles, memory, A); }},
+        {INSTRUCTIONS::INS_CMP_ZP_X, [this](int32_t& cycles, Memory& memory) { CompareWithRegister(ZERO_PAGE_X, cycles, memory, A); }},
+        {INSTRUCTIONS::INS_CMP_ABS,  [this](int32_t& cycles, Memory& memory) { CompareWithRegister(ABSOLUTE, cycles, memory, A); }},
+        {INSTRUCTIONS::INS_CMP_ABS_X,[this](int32_t& cycles, Memory& memory) { CompareWithRegister(ABSOLUTE_X, cycles, memory, A); }},
+        {INSTRUCTIONS::INS_CMP_ABS_Y,[this](int32_t& cycles, Memory& memory) { CompareWithRegister(ABSOLUTE_Y, cycles, memory, A); }},
+        {INSTRUCTIONS::INS_CMP_IND_X,[this](int32_t& cycles, Memory& memory) { CompareWithRegister(INDIRECT_X, cycles, memory, A); }},
+        {INSTRUCTIONS::INS_CMP_IND_Y,[this](int32_t& cycles, Memory& memory) { CompareWithRegister(INDIRECT_Y, cycles, memory, A); }},
+        ////////////////////////////////// COMPARE WITH ACCUMULATOR INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+
+        ////////////////////////////////// COMPARE WITH X REGISTER INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_CPX_IM,   [this](int32_t& cycles, Memory& memory) { CompareWithRegister(IMMEDIATE, cycles, memory, X); }},
+        {INSTRUCTIONS::INS_CPX_ZP,   [this](int32_t& cycles, Memory& memory) { CompareWithRegister(ZERO_PAGE, cycles, memory, X); }},
+        {INSTRUCTIONS::INS_CPX_ABS,  [this](int32_t& cycles, Memory& memory) { CompareWithRegister(ABSOLUTE, cycles, memory, X); }},
+        ////////////////////////////////// COMPARE WITH X REGISTER INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+
+        ////////////////////////////////// COMPARE WITH Y REGISTER INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_CPY_IM,   [this](int32_t& cycles, Memory& memory) { CompareWithRegister(IMMEDIATE, cycles, memory, Y); }},
+        {INSTRUCTIONS::INS_CPY_ZP,   [this](int32_t& cycles, Memory& memory) { CompareWithRegister(ZERO_PAGE, cycles, memory, Y); }},
+        {INSTRUCTIONS::INS_CPY_ABS,  [this](int32_t& cycles, Memory& memory) { CompareWithRegister(ABSOLUTE, cycles, memory, Y); }},
+        ////////////////////////////////// COMPARE WITH Y REGISTER INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+
         ////////////////////////////////// SYSTEM FUNCTIONS INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
         {INSTRUCTIONS::INS_NOP,[this](int32_t& cycles, Memory& memory) { cycles--; }},
         ////////////////////////////////// SYSTEM FUNCTIONS INSTRUCTIONS IMPLEMENTATION //////////////////////////////////

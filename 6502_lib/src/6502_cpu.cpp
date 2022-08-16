@@ -291,6 +291,38 @@ void MOS6502::CPU::IncrementDecrementValue(MOS6502::CPU::ADDRESSING_MODES mode,
     }
 }
 
+//A - A register, M - operand, R - result, 0,1 - most significant bit of each component
+// A  M  R | V | A^R | A^M |~(A^M) |
+// 0  0  0 | 0 |  0  |  0  |   1   |
+// 0  0  1 | 1 |  1  |  0  |   1   |
+// 0  1  0 | 0 |  0  |  1  |   0   |
+// 0  1  1 | 0 |  1  |  1  |   0   |  so V = ~(A^M) & (A^R)
+// 1  0  0 | 0 |  1  |  1  |   0   |
+// 1  0  1 | 0 |  0  |  1  |   0   |
+// 1  1  0 | 1 |  1  |  0  |   1   |
+// 1  1  1 | 0 |  0  |  0  |   1   |
+
+void MOS6502::CPU::PerformAddSubtractOnAccumulator(MOS6502::CPU::ADDRESSING_MODES mode, MOS6502::CPU::MATH_OPERATION operation, int32_t &cycles, MOS6502::Memory &memory) {
+    uint16_t operand;
+    if (mode == IMMEDIATE)
+        operand = Fetch8Bits(cycles, memory);
+    else
+        operand = Read8Bits(cycles, memory, GetAddress(mode, cycles, memory, true));
+
+    if (P.D == 1) {
+        printf("UNSUPPORTED DECIMAL MODE");
+        throw -1;
+    }
+
+    if(operation == MATH_OPERATION::ADD){
+        uint16_t result = A + operand + P.C;
+        P.C = (result & 0xFF00) > 0;
+        P.V = ((!(MSB(A)^MSB(operand))) & (MSB(A)^MSB(uint8_t(result))));
+        A = (result & 0xFF);
+    }
+    SetStatusNZ(A);
+}
+
 void MOS6502::CPU::BranchIf(int32_t &cycles, MOS6502::Memory &memory, bool flag, bool expectedState) {
     auto offset = static_cast<int8_t>(Fetch8Bits(cycles, memory));
 
@@ -300,6 +332,19 @@ void MOS6502::CPU::BranchIf(int32_t &cycles, MOS6502::Memory &memory, bool flag,
             cycles -= 2; // page crossed
         PC += offset;
     }
+}
+
+void MOS6502::CPU::CompareWithRegister(MOS6502::CPU::ADDRESSING_MODES mode, int32_t &cycles, MOS6502::Memory &memory, uint8_t &reg) {
+    uint8_t operand;
+    if(mode == IMMEDIATE)
+        operand = Fetch8Bits(cycles, memory);
+    else
+        operand = Read8Bits(cycles, memory, GetAddress(mode, cycles, memory, true));
+
+    uint8_t result = reg - operand;
+    P.N = (result >> 7) > 0;
+    P.Z = (reg == operand);
+    P.C = (reg >= operand);
 }
 
 int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){

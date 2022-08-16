@@ -6,6 +6,7 @@
 #define INC_6502_PROJECT_INSTRUCTIONS_H
 
 #include <cstdint>
+
 namespace MOS6502 {
     //contains possible instructions
     enum INSTRUCTIONS : uint8_t {
@@ -222,6 +223,54 @@ namespace MOS6502 {
         INS_SEI = 0x78,
         //cycles: 2  |    args: none (Implied)
         INS_CLV = 0xB8,
+
+        //cycles: 2  |    args: 8-bit value
+        INS_ADC_IM = 0x69,
+        //cycles: 3  |    args: 8-bit zero-page address
+        INS_ADC_ZP = 0x65,
+        //cycles: 4  |    args: 8-bit zero-page address, X register offset
+        INS_ADC_ZP_X = 0x75,
+        //cycles: 4  |    args: 16-bit absolute address (little endian)
+        INS_ADC_ABS = 0x6D,
+        //cycles: 4, +1 if page crossed |    args: 16-bit absolute address (little endian), X register offset
+        INS_ADC_ABS_X = 0x7D,
+        //cycles: 4, +1 if page crossed |    args: 16-bit absolute address (little endian), Y register offset
+        INS_ADC_ABS_Y = 0x79,
+        //cycles: 6  |    args: (8-bit zero-page address, X register offset)
+        INS_ADC_IND_X = 0x61,
+        //cycles: 5, +1 if page crossed |    args: (8-bit zero-page address), Y register offset
+        INS_ADC_IND_Y = 0x71,
+
+        //cycles: 2  |    args: 8-bit value
+        INS_CMP_IM = 0xC9,
+        //cycles: 3  |    args: 8-bit zero-page address
+        INS_CMP_ZP = 0xC5,
+        //cycles: 4  |    args: 8-bit zero-page address, X register offset
+        INS_CMP_ZP_X = 0xD5,
+        //cycles: 4  |    args: 16-bit absolute address (little endian)
+        INS_CMP_ABS = 0xCD,
+        //cycles: 4, +1 if page crossed |    args: 16-bit absolute address (little endian), X register offset
+        INS_CMP_ABS_X = 0xDD,
+        //cycles: 4, +1 if page crossed |    args: 16-bit absolute address (little endian), Y register offset
+        INS_CMP_ABS_Y = 0xD9,
+        //cycles: 6  |    args: (8-bit zero-page address, X register offset)
+        INS_CMP_IND_X = 0xC1,
+        //cycles: 5, +1 if page crossed |    args: (8-bit zero-page address), Y register offset
+        INS_CMP_IND_Y = 0xD1,
+
+        //cycles: 2  |    args: 8-bit value
+        INS_CPX_IM = 0xE0,
+        //cycles: 3  |    args: 8-bit zero-page address
+        INS_CPX_ZP = 0xE4,
+        //cycles: 4  |    args: 16-bit absolute address (little endian)
+        INS_CPX_ABS = 0xEC,
+
+        //cycles: 2  |    args: 8-bit value
+        INS_CPY_IM = 0xC0,
+        //cycles: 3  |    args: 8-bit zero-page address
+        INS_CPY_ZP = 0xC4,
+        //cycles: 4  |    args: 16-bit absolute address (little endian)
+        INS_CPY_ABS = 0xCC,
 
         //cycles: 2  |    args: none (Implied)
         INS_NOP = 0xEA,
