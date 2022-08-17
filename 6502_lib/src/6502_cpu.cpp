@@ -314,12 +314,16 @@ void MOS6502::CPU::PerformAddSubtractOnAccumulator(MOS6502::CPU::ADDRESSING_MODE
         throw -1;
     }
 
-    if(operation == MATH_OPERATION::ADD){
-        uint16_t result = A + operand + P.C;
-        P.C = (result & 0xFF00) > 0;
-        P.V = ((!(MSB(A)^MSB(operand))) & (MSB(A)^MSB(uint8_t(result))));
-        A = (result & 0xFF);
-    }
+
+    if(operation == MATH_OPERATION::SUBTRACT)
+        operand = operand ^ 0x00FF;
+
+
+    uint16_t result = A + operand + P.C;
+    P.C = (result & 0xFF00) > 0;
+    P.V = ((!(MSB(A)^MSB(operand))) & (MSB(A)^MSB(uint8_t(result))));
+    A = (result & 0xFF);
+
     SetStatusNZ(A);
 }
 
@@ -361,6 +365,20 @@ int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){
     }
 
     return totalCycles - cycles;
+}
+
+int32_t MOS6502::CPU::ExecuteInfinite(MOS6502::Memory &memory) {
+    int32_t cycles = INT32_MAX;
+
+    uint8_t instruction = Fetch8Bits(cycles, memory);
+
+    while (instructionsLookupTable[(INSTRUCTIONS)instruction]) {
+        if(instructionsLookupTable.find((INSTRUCTIONS)instruction) != instructionsLookupTable.end())
+            instructionsLookupTable[(INSTRUCTIONS)instruction](cycles, memory);
+
+        instruction = Fetch8Bits(cycles, memory);
+    }
+    return INT32_MAX - cycles;
 }
 
 

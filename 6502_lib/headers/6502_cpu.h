@@ -136,6 +136,8 @@ namespace MOS6502 {
 
         /* return number of cycles used */
         int32_t Execute(int32_t cycles, Memory& memory);
+        /* return number of cycles used */
+        int32_t ExecuteInfinite(Memory& memory);
 
         /////////// REGISTERS ///////////
         uint16_t PC{}; //16-bit program counter

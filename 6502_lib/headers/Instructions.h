@@ -242,6 +242,23 @@ namespace MOS6502 {
         INS_ADC_IND_Y = 0x71,
 
         //cycles: 2  |    args: 8-bit value
+        INS_SBC_IM = 0xE9,
+        //cycles: 3  |    args: 8-bit zero-page address
+        INS_SBC_ZP = 0xE5,
+        //cycles: 4  |    args: 8-bit zero-page address, X register offset
+        INS_SBC_ZP_X = 0xF5,
+        //cycles: 4  |    args: 16-bit absolute address (little endian)
+        INS_SBC_ABS = 0xED,
+        //cycles: 4, +1 if page crossed |    args: 16-bit absolute address (little endian), X register offset
+        INS_SBC_ABS_X = 0xFD,
+        //cycles: 4, +1 if page crossed |    args: 16-bit absolute address (little endian), Y register offset
+        INS_SBC_ABS_Y = 0xF9,
+        //cycles: 6  |    args: (8-bit zero-page address, X register offset)
+        INS_SBC_IND_X = 0xE1,
+        //cycles: 5, +1 if page crossed |    args: (8-bit zero-page address), Y register offset
+        INS_SBC_IND_Y = 0xF1,
+
+        //cycles: 2  |    args: 8-bit value
         INS_CMP_IM = 0xC9,
         //cycles: 3  |    args: 8-bit zero-page address
         INS_CMP_ZP = 0xC5,

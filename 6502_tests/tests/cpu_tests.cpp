@@ -74,3 +74,38 @@ TEST_F(M6502CPUTest, CPUCanRunSimpleProgram){
 
     EXPECT_EQ(cpu.A, 0x33);
 }
+
+TEST_F(M6502CPUTest, CPUCanRunForLoopProgram){
+    //given:
+    int32_t c = 7;
+
+    /*
+     *
+     * * = $1000
+     *
+     * lda #0
+     * clc
+     *
+     * loop
+     *      adc #8
+     *      cmp #24
+     *      bne loop
+     *
+     * ldx #20
+     * */
+
+    uint8_t program[] = {0x00, 0x10, 0xA9, 0x00, 0x18, 0x69,
+                         0x08, 0xC9, 0x18, 0xD0, 0xFA, 0xA2,
+                         0x14};
+
+    CPU::LoadProgram(mem, program, 13);
+    cpu.Reset(c, mem);
+
+    //when:
+    cpu.ExecuteInfinite(mem);
+
+    //then:
+    EXPECT_EQ(cpu.A, 24);
+    EXPECT_EQ(cpu.X, 20);
+}
+
