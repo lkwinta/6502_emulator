@@ -331,6 +331,37 @@ TEST_F(M6502SBCTest, SBCAbsoluteCanSubstractZeroAndCarry){
     TestAbs(data);
 }
 
+TEST_F(M6502SBCTest, SBCAbsoluteCanSubstract1From0){
+    SBCTestData data{};
+    data.A = 0x0;
+    data.operand = 0x1;
+    data.Carry = true;
+
+    data.result = -0x1;
+    data.ExpectedC = false;
+    data.ExpectedN = true;
+    data.ExpectedV = false;
+    data.ExpectedZ = false;
+
+    TestAbs(data);
+}
+
+TEST_F(M6502SBCTest, SBCAbsoluteCanSubstract1AndCaryFrom0){
+    SBCTestData data{};
+    data.A = 0x0;
+    data.operand = 0x1;
+    data.Carry = false;
+
+    data.result = -0x2;
+    data.ExpectedC = false;
+    data.ExpectedN = true;
+    data.ExpectedV = false;
+    data.ExpectedZ = false;
+
+    TestAbs(data);
+}
+
+
 TEST_F(M6502SBCTest, SBCAbsoluteCanSubstract0ToFF){
     SBCTestData data{};
     data.A = 0x0;
@@ -346,32 +377,13 @@ TEST_F(M6502SBCTest, SBCAbsoluteCanSubstract0ToFF){
     TestAbs(data);
 }
 
-TEST_F(M6502SBCTest, SBCAbsoluteCanSubstractNegative){
-    SBCTestData data{};
-    data.A = 0x0;
-    data.operand = -0x1;
-    data.Carry = false;
-
-    data.result = -0x1;
-    data.ExpectedC = false;
-    data.ExpectedN = true;
-    data.ExpectedV = false;
-    data.ExpectedZ = false;
-
-    TestAbs(data);
-}
-
 TEST_F(M6502SBCTest, SBCAbsoluteCanSubstractToOverflow2Negative){
-    //A: 10000000
-    //O: 11111111
-    //R: 01111111 + C
-
     SBCTestData data{};
-    data.A = -0x80;
-    data.operand = -0x1;
-    data.Carry = false;
+    data.A = static_cast<uint8_t>(-128);
+    data.operand = 1;
+    data.Carry = true;
 
-    data.result = 0x7F;
+    data.result = 127;
     data.ExpectedC = true;
     data.ExpectedN = false;
     data.ExpectedV = true;
@@ -381,19 +393,32 @@ TEST_F(M6502SBCTest, SBCAbsoluteCanSubstractToOverflow2Negative){
 }
 
 TEST_F(M6502SBCTest, SBCAbsoluteCanSubstractToOverflow2Positive){
-    //A: 01111111
-    //O: 00000001
-    //R: 10000000
 
     SBCTestData data{};
-    data.A = 0x7F;
-    data.operand = 0x1;
-    data.Carry = false;
+    data.A = 127;
+    data.operand = -0x1;
+    data.Carry = true;
 
-    data.result = -0x80;
+    data.result = 128;
     data.ExpectedC = false;
     data.ExpectedN = true;
     data.ExpectedV = true;
+    data.ExpectedZ = false;
+
+    TestAbs(data);
+}
+
+TEST_F(M6502SBCTest, SBCAbsoluteCanSubstractNegative){
+
+    SBCTestData data{};
+    data.A = 0x3;
+    data.operand = -0x1;
+    data.Carry = true;
+
+    data.result = 0x4;
+    data.ExpectedC = false;
+    data.ExpectedN = false;
+    data.ExpectedV = false;
     data.ExpectedZ = false;
 
     TestAbs(data);
@@ -405,8 +430,8 @@ TEST_F(M6502SBCTest, SBCAbsoluteCanSubstract2PositiveNumbers){
     data.operand = 17;
     data.Carry = true;
 
-    data.result = 38;
-    data.ExpectedC = false;
+    data.result = 3;
+    data.ExpectedC = true;
     data.ExpectedN = false;
     data.ExpectedV = false;
     data.ExpectedZ = false;
@@ -424,8 +449,8 @@ TEST_F(M6502SBCTest, SBCAbsoluteCanSubstractPositiveAndNegativeNumbers){
     data.operand = -17;
     data.Carry = true;
 
-    data.result = 4;
-    data.ExpectedC = true;
+    data.result = 37;
+    data.ExpectedC = false;
     data.ExpectedN = false;
     data.ExpectedV = false;
     data.ExpectedZ = false;
@@ -440,14 +465,14 @@ TEST_F(M6502SBCTest, SBCAbsoluteCanSubstractToOverflow2NegativeAndCarry){
     //R: 10000000 + C -128
 
     SBCTestData data{};
-    data.A = -0x80;
-    data.operand = -0x1;
-    data.Carry = true;
+    data.A = -128;
+    data.operand = 0x1;
+    data.Carry = false;
 
-    data.result = -0x80;
+    data.result = 126;
     data.ExpectedC = true;
-    data.ExpectedN = true;
-    data.ExpectedV = false;
+    data.ExpectedN = false;
+    data.ExpectedV = true;
     data.ExpectedZ = false;
 
     TestAbs(data);
@@ -455,12 +480,12 @@ TEST_F(M6502SBCTest, SBCAbsoluteCanSubstractToOverflow2NegativeAndCarry){
 
 TEST_F(M6502SBCTest, SBCImmediateCanSubstractWithCarry){
     SBCTestData data{};
-    data.A = 0x20;
-    data.operand = 0x5;
-    data.Carry = true;
+    data.A = 20;
+    data.operand = 5;
+    data.Carry = false;
 
-    data.result = 0x26;
-    data.ExpectedC = false;
+    data.result = 14;
+    data.ExpectedC = true;
     data.ExpectedN = false;
     data.ExpectedV = false;
     data.ExpectedZ = false;
@@ -470,12 +495,12 @@ TEST_F(M6502SBCTest, SBCImmediateCanSubstractWithCarry){
 
 TEST_F(M6502SBCTest, SBCZeroPageCanSubstractWithCarry){
     SBCTestData data{};
-    data.A = 0x20;
-    data.operand = 0x5;
-    data.Carry = true;
+    data.A = 20;
+    data.operand = 5;
+    data.Carry = false;
 
-    data.result = 0x26;
-    data.ExpectedC = false;
+    data.result = 14;
+    data.ExpectedC = true;
     data.ExpectedN = false;
     data.ExpectedV = false;
     data.ExpectedZ = false;
@@ -485,12 +510,12 @@ TEST_F(M6502SBCTest, SBCZeroPageCanSubstractWithCarry){
 
 TEST_F(M6502SBCTest, SBCZeroPageXCanSubstractWithCarry){
     SBCTestData data{};
-    data.A = 0x20;
-    data.operand = 0x5;
-    data.Carry = true;
+    data.A = 20;
+    data.operand = 5;
+    data.Carry = false;
 
-    data.result = 0x26;
-    data.ExpectedC = false;
+    data.result = 14;
+    data.ExpectedC = true;
     data.ExpectedN = false;
     data.ExpectedV = false;
     data.ExpectedZ = false;
@@ -500,12 +525,12 @@ TEST_F(M6502SBCTest, SBCZeroPageXCanSubstractWithCarry){
 
 TEST_F(M6502SBCTest, SBCAbsoluteXCanSubstractWithCarry){
     SBCTestData data{};
-    data.A = 0x20;
-    data.operand = 0x5;
-    data.Carry = true;
+    data.A = 20;
+    data.operand = 5;
+    data.Carry = false;
 
-    data.result = 0x26;
-    data.ExpectedC = false;
+    data.result = 14;
+    data.ExpectedC = true;
     data.ExpectedN = false;
     data.ExpectedV = false;
     data.ExpectedZ = false;
@@ -516,12 +541,12 @@ TEST_F(M6502SBCTest, SBCAbsoluteXCanSubstractWithCarry){
 
 TEST_F(M6502SBCTest, SBCAbsoluteYCanSubstractWithCarry){
     SBCTestData data{};
-    data.A = 0x20;
-    data.operand = 0x5;
-    data.Carry = true;
+    data.A = 20;
+    data.operand = 5;
+    data.Carry = false;
 
-    data.result = 0x26;
-    data.ExpectedC = false;
+    data.result = 14;
+    data.ExpectedC = true;
     data.ExpectedN = false;
     data.ExpectedV = false;
     data.ExpectedZ = false;
@@ -531,12 +556,12 @@ TEST_F(M6502SBCTest, SBCAbsoluteYCanSubstractWithCarry){
 
 TEST_F(M6502SBCTest, SBCIndirectXCanSubstractWithCarry){
     SBCTestData data{};
-    data.A = 0x20;
-    data.operand = 0x5;
-    data.Carry = true;
+    data.A = 20;
+    data.operand = 5;
+    data.Carry = false;
 
-    data.result = 0x26;
-    data.ExpectedC = false;
+    data.result = 14;
+    data.ExpectedC = true;
     data.ExpectedN = false;
     data.ExpectedV = false;
     data.ExpectedZ = false;
@@ -546,12 +571,12 @@ TEST_F(M6502SBCTest, SBCIndirectXCanSubstractWithCarry){
 
 TEST_F(M6502SBCTest, SBCIndirectYCanSubstractWithCarry){
     SBCTestData data{};
-    data.A = 0x20;
-    data.operand = 0x5;
-    data.Carry = true;
+    data.A = 20;
+    data.operand = 5;
+    data.Carry = false;
 
-    data.result = 0x26;
-    data.ExpectedC = false;
+    data.result = 14;
+    data.ExpectedC = true;
     data.ExpectedN = false;
     data.ExpectedV = false;
     data.ExpectedZ = false;

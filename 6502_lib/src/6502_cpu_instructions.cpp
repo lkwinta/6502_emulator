@@ -167,7 +167,14 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         ////////////////////////////////// ADD WITH CARRY INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
 
         ////////////////////////////////// SUBTRACT WITH CARRY INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_SBC_IM,   [this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(IMMEDIATE, MATH_OPERATION::SUBTRACT, cycles, memory); }},
+        {INSTRUCTIONS::INS_SBC_ZP,   [this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(ZERO_PAGE, MATH_OPERATION::SUBTRACT, cycles, memory); }},
+        {INSTRUCTIONS::INS_SBC_ZP_X, [this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(ZERO_PAGE_X, MATH_OPERATION::SUBTRACT, cycles, memory); }},
         {INSTRUCTIONS::INS_SBC_ABS,  [this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(ABSOLUTE, MATH_OPERATION::SUBTRACT, cycles, memory); }},
+        {INSTRUCTIONS::INS_SBC_ABS_X,[this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(ABSOLUTE_X, MATH_OPERATION::SUBTRACT, cycles, memory); }},
+        {INSTRUCTIONS::INS_SBC_ABS_Y,[this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(ABSOLUTE_Y, MATH_OPERATION::SUBTRACT, cycles, memory); }},
+        {INSTRUCTIONS::INS_SBC_IND_X,[this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(INDIRECT_X, MATH_OPERATION::SUBTRACT, cycles, memory); }},
+        {INSTRUCTIONS::INS_SBC_IND_Y,[this](int32_t& cycles, Memory& memory) { PerformAddSubtractOnAccumulator(INDIRECT_Y, MATH_OPERATION::SUBTRACT, cycles, memory); }},
         ////////////////////////////////// SUBTRACT WITH CARRY INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
 
         ////////////////////////////////// COMPARE WITH ACCUMULATOR INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
