@@ -1,4 +1,4 @@
-# 6502_emulator [![CMake](https://github.com/lukasz12345678/6502_emulator/actions/workflows/cmake.yml/badge.svg)](https://github.com/lukasz12345678/6502_emulator/actions/workflows/cmake.yml)
+# 6502_emulator [![CMake Tests](https://github.com/lukasz12345678/6502_emulator/actions/workflows/cmake.yml/badge.svg?branch=master)](https://github.com/lukasz12345678/6502_emulator/actions/workflows/cmake.yml)
 
 ### Projects:
  You can find 3 projects. 
