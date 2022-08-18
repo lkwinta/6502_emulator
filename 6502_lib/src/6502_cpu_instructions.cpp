@@ -113,8 +113,8 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
             cycles--;
         }},
         {INSTRUCTIONS::INS_RTS,         [this](int32_t& cycles, Memory& memory) { PC = StackPop16Bits(cycles, memory) + 1; cycles -= 3; }},
-        {INSTRUCTIONS::INS_JMP_ABS,         [this](int32_t& cycles, Memory& memory) { PC = getAbsoluteAddress(cycles, memory); }},
-        {INSTRUCTIONS::INS_JMP_IND,         [this](int32_t& cycles, Memory& memory) { PC = Read16Bits(cycles, memory, getAbsoluteAddress(cycles, memory)); }},
+        {INSTRUCTIONS::INS_JMP_ABS,     [this](int32_t& cycles, Memory& memory) { PC = getAbsoluteAddress(cycles, memory); }},
+        {INSTRUCTIONS::INS_JMP_IND,     [this](int32_t& cycles, Memory& memory) { PC = Read16Bits(cycles, memory, getAbsoluteAddress(cycles, memory)); }},
         ////////////////////////////////// JUMP INSTRUCTION IMPLEMENTATION //////////////////////////////////
 
         ////////////////////////////////// INCREMENT INSTRUCTION IMPLEMENTATION //////////////////////////////////
@@ -208,13 +208,29 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         {INSTRUCTIONS::INS_ASL_ABS_X,[this](int32_t& cycles, Memory& memory) { ShiftValue(ABSOLUTE_X, MATH_OPERATION::SHIFT_LEFT, cycles, memory);}},
         ////////////////////////////////// SHIFT LEFT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
 
-        ////////////////////////////////// SHIFT LEFT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        ////////////////////////////////// SHIFT RIGHT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
         {INSTRUCTIONS::INS_LSR_A,    [this](int32_t& cycles, Memory& memory) { ShiftValue(ACCUMULATOR, MATH_OPERATION::SHIFT_RIGHT, cycles, memory);}},
         {INSTRUCTIONS::INS_LSR_ZP,   [this](int32_t& cycles, Memory& memory) { ShiftValue(ZERO_PAGE, MATH_OPERATION::SHIFT_RIGHT, cycles, memory);}},
         {INSTRUCTIONS::INS_LSR_ZP_X, [this](int32_t& cycles, Memory& memory) { ShiftValue(ZERO_PAGE_X, MATH_OPERATION::SHIFT_RIGHT, cycles, memory);}},
         {INSTRUCTIONS::INS_LSR_ABS,  [this](int32_t& cycles, Memory& memory) { ShiftValue(ABSOLUTE, MATH_OPERATION::SHIFT_RIGHT, cycles, memory);}},
         {INSTRUCTIONS::INS_LSR_ABS_X,[this](int32_t& cycles, Memory& memory) { ShiftValue(ABSOLUTE_X, MATH_OPERATION::SHIFT_RIGHT, cycles, memory);}},
-        ////////////////////////////////// SHIFT LEFT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        ////////////////////////////////// SHIFT RIGHT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+
+        ////////////////////////////////// ROTATE LEFT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_ROL_A,    [this](int32_t& cycles, Memory& memory) { ShiftValue(ACCUMULATOR, MATH_OPERATION::ROTATE_LEFT, cycles, memory);}},
+        {INSTRUCTIONS::INS_ROL_ZP,   [this](int32_t& cycles, Memory& memory) { ShiftValue(ZERO_PAGE, MATH_OPERATION::ROTATE_LEFT, cycles, memory);}},
+        {INSTRUCTIONS::INS_ROL_ZP_X, [this](int32_t& cycles, Memory& memory) { ShiftValue(ZERO_PAGE_X, MATH_OPERATION::ROTATE_LEFT, cycles, memory);}},
+        {INSTRUCTIONS::INS_ROL_ABS,  [this](int32_t& cycles, Memory& memory) { ShiftValue(ABSOLUTE, MATH_OPERATION::ROTATE_LEFT, cycles, memory);}},
+        {INSTRUCTIONS::INS_ROL_ABS_X,[this](int32_t& cycles, Memory& memory) { ShiftValue(ABSOLUTE_X, MATH_OPERATION::ROTATE_LEFT, cycles, memory);}},
+        ////////////////////////////////// ROTATE LEFT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+
+        ////////////////////////////////// ROTATE RIGHT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_ROR_A,    [this](int32_t& cycles, Memory& memory) { ShiftValue(ACCUMULATOR, MATH_OPERATION::ROTATE_RIGHT, cycles, memory);}},
+        {INSTRUCTIONS::INS_ROR_ZP,   [this](int32_t& cycles, Memory& memory) { ShiftValue(ZERO_PAGE, MATH_OPERATION::ROTATE_RIGHT, cycles, memory);}},
+        {INSTRUCTIONS::INS_ROR_ZP_X, [this](int32_t& cycles, Memory& memory) { ShiftValue(ZERO_PAGE_X, MATH_OPERATION::ROTATE_RIGHT, cycles, memory);}},
+        {INSTRUCTIONS::INS_ROR_ABS,  [this](int32_t& cycles, Memory& memory) { ShiftValue(ABSOLUTE, MATH_OPERATION::ROTATE_RIGHT, cycles, memory);}},
+        {INSTRUCTIONS::INS_ROR_ABS_X,[this](int32_t& cycles, Memory& memory) { ShiftValue(ABSOLUTE_X, MATH_OPERATION::ROTATE_RIGHT, cycles, memory);}},
+        ////////////////////////////////// ROTATE RIGHT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
 
         ////////////////////////////////// SYSTEM FUNCTIONS INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
         {INSTRUCTIONS::INS_NOP,[this](int32_t& cycles, Memory& memory) { cycles--; }},

@@ -282,6 +282,8 @@ void MOS6502::CPU::IncrementDecrementValue(MOS6502::CPU::ADDRESSING_MODES mode,
             value++;
         else if(operation == MATH_OPERATION::DECREMENT)
             value--;
+        else
+            throw std::runtime_error("INVALID MATH OPERATION FOR THIS METHOD");
 
         cycles--;
         if(mode == ABSOLUTE_X)
@@ -311,12 +313,14 @@ void MOS6502::CPU::PerformAddSubtractOnAccumulator(MOS6502::CPU::ADDRESSING_MODE
 
     if (P.D == 1) {
         printf("UNSUPPORTED DECIMAL MODE");
-        throw -1;
+        throw std::runtime_error("UNSUPPORTED DECIMAL MODE");
     }
 
 
     if(operation == MATH_OPERATION::SUBTRACT)
         operand = operand ^ 0x00FF;
+    else if(operation != MATH_OPERATION::ADD)
+        throw std::runtime_error("INVALID MATH OPERATION FOR THIS METHOD");
 
 
     uint16_t result = A + operand + P.C;
@@ -362,13 +366,24 @@ void MOS6502::CPU::ShiftValue(MOS6502::CPU::ADDRESSING_MODES mode, MOS6502::CPU:
         operand = Read8Bits(cycles, memory, address);
     }
 
-    if(operation == MATH_OPERATION::SHIFT_LEFT){
-        P.C = (operand & 0b10000000) > 0;
+    if(operation == MATH_OPERATION::SHIFT_LEFT || operation == MATH_OPERATION::ROTATE_LEFT){
+        bool temp = (operand & 0b10000000) > 0;
         operand = operand << 1;
-    } else {
-        P.C = (operand & 0b00000001) > 0;
+
+        if(operation == MATH_OPERATION::ROTATE_LEFT)
+            operand += P.C;
+
+        P.C = temp;
+    } else if (operation == MATH_OPERATION::SHIFT_RIGHT || operation == MATH_OPERATION::ROTATE_RIGHT){
+        bool temp = (operand & 0b00000001) > 0;
         operand = operand >> 1;
-    }
+
+        if(operation == MATH_OPERATION::ROTATE_RIGHT)
+            operand |= uint8_t(P.C) << 7;
+
+        P.C = temp;
+    } else
+        throw std::runtime_error("INVALID MATH OPERATION FOR THIS METHOD");
 
     cycles--;
     SetStatusNZ(operand);

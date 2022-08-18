@@ -297,6 +297,28 @@ namespace MOS6502 {
         //cycles: 7  |    args: 16-bit absolute address (little endian), X register offset
         INS_LSR_ABS_X = 0x5E,
 
+        //cycles: 2  |    args: none (accumulator)
+        INS_ROL_A = 0x2A,
+        //cycles: 5  |    args: 8-bit zero-page address
+        INS_ROL_ZP = 0x26,
+        //cycles: 6  |    args: 8-bit zero-page address, X register offset
+        INS_ROL_ZP_X = 0x36,
+        //cycles: 6  |    args: 16-bit absolute address (little endian)
+        INS_ROL_ABS = 0x2E,
+        //cycles: 7  |    args: 16-bit absolute address (little endian), X register offset
+        INS_ROL_ABS_X = 0x3E,
+
+        //cycles: 2  |    args: none (accumulator)
+        INS_ROR_A = 0x6A,
+        //cycles: 5  |    args: 8-bit zero-page address
+        INS_ROR_ZP = 0x66,
+        //cycles: 6  |    args: 8-bit zero-page address, X register offset
+        INS_ROR_ZP_X = 0x76,
+        //cycles: 6  |    args: 16-bit absolute address (little endian)
+        INS_ROR_ABS = 0x6E,
+        //cycles: 7  |    args: 16-bit absolute address (little endian), X register offset
+        INS_ROR_ABS_X = 0x7E,
+
         //cycles: 2  |    args: 8-bit value
         INS_CPX_IM = 0xE0,
         //cycles: 3  |    args: 8-bit zero-page address

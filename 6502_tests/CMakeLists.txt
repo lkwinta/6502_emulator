@@ -50,7 +50,7 @@ add_executable(6502_tests
         tests/add_subtract_with_carry/cpx_tests.cpp
         tests/add_subtract_with_carry/cpy_tests.cpp
         tests/shifts_and_rotates/asl_tests.cpp
-        tests/shifts_and_rotates/lsr_tests.cpp)
+        tests/shifts_and_rotates/lsr_tests.cpp tests/shifts_and_rotates/rol_tests.cpp tests/shifts_and_rotates/ror_tests.cpp)
 
 target_link_libraries(6502_tests 6502_lib gtest_main gmock_main)
 include_directories(${CMAKE_SOURCE_DIR}/6502_lib/headers)

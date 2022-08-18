@@ -48,7 +48,9 @@ namespace MOS6502 {
             ADD,
             SUBTRACT,
             SHIFT_LEFT,
-            SHIFT_RIGHT
+            SHIFT_RIGHT,
+            ROTATE_LEFT,
+            ROTATE_RIGHT,
         };
 
         /*return 8-bit zero-page address*/
