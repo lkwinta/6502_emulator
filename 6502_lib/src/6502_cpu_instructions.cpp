@@ -200,6 +200,22 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         {INSTRUCTIONS::INS_CPY_ABS,  [this](int32_t& cycles, Memory& memory) { CompareWithRegister(ABSOLUTE, cycles, memory, Y); }},
         ////////////////////////////////// COMPARE WITH Y REGISTER INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
 
+        ////////////////////////////////// SHIFT LEFT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_ASL_A,    [this](int32_t& cycles, Memory& memory) { ShiftValue(ACCUMULATOR, MATH_OPERATION::SHIFT_LEFT, cycles, memory);}},
+        {INSTRUCTIONS::INS_ASL_ZP,   [this](int32_t& cycles, Memory& memory) { ShiftValue(ZERO_PAGE, MATH_OPERATION::SHIFT_LEFT, cycles, memory);}},
+        {INSTRUCTIONS::INS_ASL_ZP_X, [this](int32_t& cycles, Memory& memory) { ShiftValue(ZERO_PAGE_X, MATH_OPERATION::SHIFT_LEFT, cycles, memory);}},
+        {INSTRUCTIONS::INS_ASL_ABS,  [this](int32_t& cycles, Memory& memory) { ShiftValue(ABSOLUTE, MATH_OPERATION::SHIFT_LEFT, cycles, memory);}},
+        {INSTRUCTIONS::INS_ASL_ABS_X,[this](int32_t& cycles, Memory& memory) { ShiftValue(ABSOLUTE_X, MATH_OPERATION::SHIFT_LEFT, cycles, memory);}},
+        ////////////////////////////////// SHIFT LEFT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+
+        ////////////////////////////////// SHIFT LEFT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_LSR_A,    [this](int32_t& cycles, Memory& memory) { ShiftValue(ACCUMULATOR, MATH_OPERATION::SHIFT_RIGHT, cycles, memory);}},
+        {INSTRUCTIONS::INS_LSR_ZP,   [this](int32_t& cycles, Memory& memory) { ShiftValue(ZERO_PAGE, MATH_OPERATION::SHIFT_RIGHT, cycles, memory);}},
+        {INSTRUCTIONS::INS_LSR_ZP_X, [this](int32_t& cycles, Memory& memory) { ShiftValue(ZERO_PAGE_X, MATH_OPERATION::SHIFT_RIGHT, cycles, memory);}},
+        {INSTRUCTIONS::INS_LSR_ABS,  [this](int32_t& cycles, Memory& memory) { ShiftValue(ABSOLUTE, MATH_OPERATION::SHIFT_RIGHT, cycles, memory);}},
+        {INSTRUCTIONS::INS_LSR_ABS_X,[this](int32_t& cycles, Memory& memory) { ShiftValue(ABSOLUTE_X, MATH_OPERATION::SHIFT_RIGHT, cycles, memory);}},
+        ////////////////////////////////// SHIFT LEFT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+
         ////////////////////////////////// SYSTEM FUNCTIONS INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
         {INSTRUCTIONS::INS_NOP,[this](int32_t& cycles, Memory& memory) { cycles--; }},
         ////////////////////////////////// SYSTEM FUNCTIONS INSTRUCTIONS IMPLEMENTATION //////////////////////////////////

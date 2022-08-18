@@ -351,6 +351,37 @@ void MOS6502::CPU::CompareWithRegister(MOS6502::CPU::ADDRESSING_MODES mode, int3
     P.C = (reg >= operand);
 }
 
+void MOS6502::CPU::ShiftValue(MOS6502::CPU::ADDRESSING_MODES mode, MOS6502::CPU::MATH_OPERATION operation, int32_t &cycles, MOS6502::Memory &memory) {
+    uint8_t operand;
+    uint16_t address = 0;
+
+    if(mode == ACCUMULATOR)
+        operand = A;
+    else {
+        address = GetAddress(mode, cycles, memory, false);
+        operand = Read8Bits(cycles, memory, address);
+    }
+
+    if(operation == MATH_OPERATION::SHIFT_LEFT){
+        P.C = (operand & 0b10000000) > 0;
+        operand = operand << 1;
+    } else {
+        P.C = (operand & 0b00000001) > 0;
+        operand = operand >> 1;
+    }
+
+    cycles--;
+    SetStatusNZ(operand);
+
+    if(mode == ABSOLUTE_X)
+        cycles--;
+
+    if(mode == ACCUMULATOR)
+        A = operand;
+    else
+        Write8Bits(cycles, memory, address, operand);
+}
+
 int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){
     int32_t totalCycles = cycles;
 
@@ -380,5 +411,6 @@ int32_t MOS6502::CPU::ExecuteInfinite(MOS6502::Memory &memory) {
     }
     return INT32_MAX - cycles;
 }
+
 
 

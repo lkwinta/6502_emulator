@@ -20,6 +20,7 @@ namespace MOS6502 {
     private:
         /* Stores possible addressing modes */
         enum ADDRESSING_MODES{
+            ACCUMULATOR,
             IMPLIED_X,
             IMPLIED_Y,
             IMPLIED_A,
@@ -46,6 +47,8 @@ namespace MOS6502 {
             DECREMENT,
             ADD,
             SUBTRACT,
+            SHIFT_LEFT,
+            SHIFT_RIGHT
         };
 
         /*return 8-bit zero-page address*/
@@ -110,7 +113,9 @@ namespace MOS6502 {
         void BranchIf(int32_t &cycles, MOS6502::Memory &memory, bool flag, bool expectedState);
         /*Compares memory value to register*/
         void CompareWithRegister(ADDRESSING_MODES mode, int32_t& cycles, Memory& memory, uint8_t& reg);
-        
+        /*Compares memory value to register*/
+        void ShiftValue(ADDRESSING_MODES mode, MATH_OPERATION operation, int32_t& cycles, Memory& memory);
+
         /*Fills lookup table array with instructions*/
         void fillInstructionsLookupTable();
 
