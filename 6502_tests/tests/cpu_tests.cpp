@@ -1,6 +1,6 @@
 #include "6502_cpu.h"
 #include <gtest/gtest.h>
-#include <filesystem>
+#include <fstream>
 #include <iostream>
 
 using namespace MOS6502;
@@ -116,31 +116,24 @@ TEST_F(M6502CPUTest, TestEveryInstructionProgramWithoutDecimalMode){
 
     using std::cout; using std::cin;
     using std::endl; using std::string;
-    using std::filesystem::current_path;
 
-    string path = current_path().string();
-    cout << "Current working directory: " << path << endl;
-
-    FILE* fp = fopen( "bin_programs\\6502_functional_test.bin", "rb");
+    std::ifstream file("bin_programs\\6502_functional_test.bin", std::ios::in | std::ios::binary);
     cout << "File open ok " << endl;
     const size_t TOTAL_BYTES = 65526;
 
-    auto buffer = new uint8_t[TOTAL_BYTES];
+    auto buffer = new char[TOTAL_BYTES];
+
     cout << "buffer ok " << endl;
 
-    size_t read_bytes = fread(buffer, 1, TOTAL_BYTES, fp);
-    cout << "Read ok " << read_bytes << endl;
+    file.read(buffer, TOTAL_BYTES);
 
-    fclose(fp);
-    cout << "Close ok " << read_bytes << endl;
+    file.close();
 
-    for(uint16_t i = 0x000A; i <= 0xFFFF; i++){
+    for(uint32_t i = 0x000A; i <= 0xFFFF; i++){
         mem[i] = buffer[i - 0x000A];
     }
-    cout << "Copy ok " << read_bytes << endl;
+    cout << "Copy ok " << endl;
     delete[] buffer;
-
-    EXPECT_EQ(read_bytes, TOTAL_BYTES);
 
     cpu.PC = 0x0400;
 
