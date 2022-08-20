@@ -124,11 +124,14 @@ TEST_F(M6502CPUTest, TestEveryInstructionProgramWithoutDecimalMode){
     cout << "Current working directory: " << path << endl;
 
     FILE* fp = fopen( "bin_programs\\6502_functional_test.bin", "rb");
-
+    cout << "File open ok " << endl;
     const size_t TOTAL_BYTES = 65526;
 
     size_t read_bytes = fread(&Mem[0x000A], 1, TOTAL_BYTES, fp);
+    cout << "Read ok " << read_bytes << endl;
+
     fclose(fp);
+    cout << "Close ok " << read_bytes << endl;
 
     EXPECT_EQ(read_bytes, TOTAL_BYTES);
 
