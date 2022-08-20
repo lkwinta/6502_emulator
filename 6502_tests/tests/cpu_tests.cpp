@@ -103,7 +103,7 @@ TEST_F(M6502CPUTest, CPUCanRunForLoopProgram){
 
     //when:
     cpu.Execute( 40,mem);
-dfgdgdfgd
+
     //then:
     EXPECT_EQ(cpu.A, 24);
     EXPECT_EQ(cpu.X, 20);
