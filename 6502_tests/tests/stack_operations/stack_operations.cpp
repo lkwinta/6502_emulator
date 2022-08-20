@@ -107,7 +107,7 @@ TEST_F(M6502StackOperationTest, CanPushAToStack){
     EXPECT_EQ(cpu.S, 0xFE);
 }
 
-TEST_F(M6502StackOperationTest, CanPushProcessorStatusToStack){
+TEST_F(M6502StackOperationTest, CanPushProcessorStatusToStackAndSetBreakAndUnusedFlags) {
     //given:
     cpu.A = 0x42;
     cpu.P.PS = 0x25;
@@ -121,7 +121,7 @@ TEST_F(M6502StackOperationTest, CanPushProcessorStatusToStack){
 
     //then:
     EXPECT_EQ(totalCycles, NUM_OF_CYCLES);
-    EXPECT_EQ(cpu.P.PS, mem[0x0100 + cpu.S + 1]);
+    EXPECT_EQ(CPUCopy.P.PS | cpu.UnusedBitFlag | cpu.BreakBitFlag , mem[0x0100 + cpu.S + 1] );
     EXPECT_EQ(cpu.P.PS, CPUCopy.P.PS);
     EXPECT_EQ(cpu.S, 0xFE);
 }
@@ -197,7 +197,7 @@ TEST_F(M6502StackOperationTest, CanPopProcessorStatusFromStack){
     cpu.P.PS = 0x00;
     cpu.S = 0xFE;
     mem[0x8000] = INSTRUCTIONS::INS_PLP; //4 cycles
-    mem[0x01FF] = 0x42;
+    mem[0x01FF] = 0x42 | cpu.UnusedBitFlag | cpu.BreakBitFlag;
     constexpr int32_t NUM_OF_CYCLES = 4;
     CPU CPUCopy = cpu;
 
@@ -207,5 +207,26 @@ TEST_F(M6502StackOperationTest, CanPopProcessorStatusFromStack){
     //then:
     EXPECT_EQ(totalCycles, NUM_OF_CYCLES);
     EXPECT_EQ(cpu.P.PS, 0x42);
+    EXPECT_EQ(cpu.S, 0xFF);
+}
+
+TEST_F(M6502StackOperationTest, CanPopProcessorStatusFromStackWhioutLoosingDataAboutBFlag){
+    //given:
+    cpu.P.PS = cpu.UnusedBitFlag | cpu.BreakBitFlag;;
+    cpu.S = 0xFE;
+
+    mem[0x01FF] = cpu.UnusedBitFlag | cpu.BreakBitFlag;
+
+    mem[0x8000] = INSTRUCTIONS::INS_PLP; //4 cycles
+
+    constexpr int32_t NUM_OF_CYCLES = 4;
+    CPU CPUCopy = cpu;
+
+    //when:
+    int32_t totalCycles = cpu.Execute(NUM_OF_CYCLES, mem);
+
+    //then:
+    EXPECT_EQ(totalCycles, NUM_OF_CYCLES);
+    EXPECT_EQ(cpu.P.PS, cpu.UnusedBitFlag | cpu.BreakBitFlag);
     EXPECT_EQ(cpu.S, 0xFF);
 }

@@ -6,8 +6,27 @@
 #define INC_6502_PROJECT_INSTRUCTIONS_H
 
 #include <cstdint>
+#include <string>
 
 namespace MOS6502 {
+    /* Stores possible addressing modes */
+    enum ADDRESSING_MODE : uint8_t {
+        ACCUMULATOR,
+        IMPLIED_X,
+        IMPLIED_Y,
+        IMPLIED_A,
+        IMPLIED,
+        RELATIVE,
+        IMMEDIATE,
+        ZERO_PAGE,
+        ZERO_PAGE_X,
+        ZERO_PAGE_Y,
+        ABSOLUTE,
+        ABSOLUTE_X,
+        ABSOLUTE_Y,
+        INDIRECT_X,
+        INDIRECT_Y
+    };
     //contains possible instructions
     enum INSTRUCTIONS : uint8_t {
         //cycles: 2  |    args: 8-bit value
@@ -192,21 +211,21 @@ namespace MOS6502 {
         //cycles: 7  |    args: 16-bit absolute address (little endian), X register offset
         INS_DEC_ABS_X = 0xDE,
 
-        //cycles: 2, +1 if succeeds, +2 if new page  |    args: 8-bit branch offset
+        //cycles: 2, +1 if succeeds, +1 if new page  |    args: 8-bit branch offset
         INS_BEQ = 0xF0,
-        //cycles: 2, +1 if succeeds, +2 if new page  |    args: 8-bit branch offset
+        //cycles: 2, +1 if succeeds, +1 if new page  |    args: 8-bit branch offset
         INS_BNE = 0xD0,
-        //cycles: 2, +1 if succeeds, +2 if new page  |    args: 8-bit branch offset
+        //cycles: 2, +1 if succeeds, +1 if new page  |    args: 8-bit branch offset
         INS_BCC = 0x90,
-        //cycles: 2, +1 if succeeds, +2 if new page  |    args: 8-bit branch offset
+        //cycles: 2, +1 if succeeds, +1 if new page  |    args: 8-bit branch offset
         INS_BCS = 0xB0,
-        //cycles: 2, +1 if succeeds, +2 if new page  |    args: 8-bit branch offset
+        //cycles: 2, +1 if succeeds, +1 if new page  |    args: 8-bit branch offset
         INS_BMI = 0x30,
-        //cycles: 2, +1 if succeeds, +2 if new page  |    args: 8-bit branch offset
+        //cycles: 2, +1 if succeeds, +1 if new page  |    args: 8-bit branch offset
         INS_BPL = 0x10,
-        //cycles: 2, +1 if succeeds, +2 if new page  |    args: 8-bit branch offset
+        //cycles: 2, +1 if succeeds, +1 if new page  |    args: 8-bit branch offset
         INS_BVC = 0x50,
-        //cycles: 2, +1 if succeeds, +2 if new page  |    args: 8-bit branch offset
+        //cycles: 2, +1 if succeeds, +1 if new page  |    args: 8-bit branch offset
         INS_BVS = 0x70,
 
         //cycles: 2  |    args: none (Implied)
@@ -333,9 +352,103 @@ namespace MOS6502 {
         //cycles: 4  |    args: 16-bit absolute address (little endian)
         INS_CPY_ABS = 0xCC,
 
+        //cycles: 7  |    args: none (Implied)
+        INS_BRK = 0x00,
         //cycles: 2  |    args: none (Implied)
         INS_NOP = 0xEA,
+        //cycles: 6  |    args: none (Implied)
+        INS_RTI = 0x40,
+
     };
+
+
+    struct instruction {
+        std::string name;
+        MOS6502::INSTRUCTIONS opcode;
+        MOS6502::ADDRESSING_MODE addressingMode;
+        uint8_t cycles;
+        uint8_t bytes;
+    };
+
+    [[maybe_unused]] static const instruction InstructionsDataTable[] = {
+            {"LDA", INS_LDA_IM, IMMEDIATE, 2, 1},
+            {"LDA", INS_LDA_ZP, ZERO_PAGE, 3, 2},
+            {"LDA", INS_LDA_ZP_X, ZERO_PAGE_X, 4, 2},
+            {"LDA", INS_LDA_ABS, ABSOLUTE, 4, 2},
+            {"LDA", INS_LDA_ABS_X, ABSOLUTE_X, 4, 2},
+            {"LDA", INS_LDA_ABS_Y, ABSOLUTE_Y, 4, 2},
+            {"LDA", INS_LDA_IND_X, INDIRECT_X, 6, 2},
+            {"LDA", INS_LDA_IND_Y, INDIRECT_Y, 5, 2},
+
+            {"LDX", INS_LDX_IM, IMMEDIATE, 2, 1},
+            {"LDX", INS_LDX_ZP, ZERO_PAGE, 3, 2},
+            {"LDX", INS_LDX_ZP_Y, ZERO_PAGE_X, 4, 2},
+            {"LDX", INS_LDX_ABS, ABSOLUTE, 4, 2},
+            {"LDX", INS_LDX_ABS_Y, ABSOLUTE_Y, 4, 2},
+
+            {"LDY", INS_LDY_IM, IMMEDIATE, 2, 1},
+            {"LDY", INS_LDY_ZP, ZERO_PAGE, 3, 2},
+            {"LDY", INS_LDY_ZP_X, ZERO_PAGE_X, 4, 2},
+            {"LDY", INS_LDY_ABS, ABSOLUTE, 4, 2},
+            {"LDY", INS_LDY_ABS_X, ABSOLUTE_Y, 4, 2},
+
+            {"STA", INS_STA_ZP, ZERO_PAGE, 3, 2},
+            {"STA", INS_STA_ZP_X, ZERO_PAGE_X, 4, 2},
+            {"STA", INS_STA_ABS, ABSOLUTE, 4, 2},
+            {"STA", INS_STA_ABS_X, ABSOLUTE_X, 4, 2},
+            {"STA", INS_STA_ABS_Y, ABSOLUTE_Y, 4, 2},
+            {"STA", INS_STA_IND_X, INDIRECT_X, 6, 2},
+            {"STA", INS_STA_IND_Y, INDIRECT_Y, 6, 2},
+
+            {"STX", INS_STX_ZP, ZERO_PAGE, 3, 2},
+            {"STX", INS_STX_ZP_Y, ZERO_PAGE_X, 4, 2},
+            {"STX", INS_STX_ABS, ABSOLUTE, 4, 2},
+
+            {"STY", INS_STY_ZP, ZERO_PAGE, 3, 2},
+            {"STY", INS_STY_ZP_X, ZERO_PAGE_X, 4, 2},
+            {"STY", INS_STY_ABS, ABSOLUTE, 4, 2},
+
+            {"CLC", INS_CLC, IMPLIED, 2, 2},
+            {"SEC", INS_SEC, IMPLIED, 2, 2},
+            {"CLD", INS_CLD, IMPLIED, 2, 2},
+            {"SED", INS_SED, IMPLIED, 2, 2},
+            {"CLI", INS_CLI, IMPLIED, 2, 2},
+            {"SEI", INS_SEI, IMPLIED, 2, 2},
+            {"CLV", INS_CLV, IMPLIED, 2, 2},
+
+            {"BEQ", INS_BEQ, RELATIVE, 2, 2},
+            {"BNE", INS_BNE, RELATIVE, 2, 2},
+            {"BCS", INS_BCS, RELATIVE, 2, 2},
+            {"BCC", INS_BCC, RELATIVE, 2, 2},
+            {"BMI", INS_BMI, RELATIVE, 2, 2},
+            {"BPL", INS_BPL, RELATIVE, 2, 2},
+            {"BVS", INS_BVS, RELATIVE, 2, 2},
+            {"BCS", INS_BCS, RELATIVE, 2, 2},
+
+            {"ADC", INS_ADC_IM, IMMEDIATE, 2, 1},
+            {"ADC", INS_ADC_ZP, ZERO_PAGE, 3, 2},
+            {"ADC", INS_ADC_ZP_X, ZERO_PAGE_X, 4, 2},
+            {"ADC", INS_ADC_ABS, ABSOLUTE, 4, 2},
+            {"ADC", INS_ADC_ABS_X, ABSOLUTE_X, 4, 2},
+            {"ADC", INS_ADC_ABS_Y, ABSOLUTE_Y, 4, 2},
+            {"ADC", INS_ADC_IND_X, INDIRECT_X, 6, 2},
+            {"ADC", INS_ADC_IND_Y, INDIRECT_Y, 5, 2},
+
+            {"CMP", INS_CMP_IM, IMMEDIATE, 2, 1},
+            {"CMP", INS_CMP_ZP, ZERO_PAGE, 3, 2},
+            {"CMP", INS_CMP_ZP_X, ZERO_PAGE_X, 4, 2},
+            {"CMP", INS_CMP_ABS, ABSOLUTE, 4, 2},
+            {"CMP", INS_CMP_ABS_X, ABSOLUTE_X, 4, 2},
+            {"CMP", INS_CMP_ABS_Y, ABSOLUTE_Y, 4, 2},
+            {"CMP", INS_CMP_IND_X, INDIRECT_X, 6, 2},
+            {"CMP", INS_CMP_IND_Y, INDIRECT_Y, 5, 2},
+
+            {"BRK", INS_BRK, IMPLIED, 7, 2},
+            {"NOP", INS_NOP, ZERO_PAGE_X, 1, 2},
+            {"RTI", INS_RTI, ABSOLUTE, 6, 2},
+
+    };
+
 }
 
 #endif //INC_6502_PROJECT_INSTRUCTIONS_H

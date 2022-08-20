@@ -65,12 +65,17 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         /////////////////////////////////// TRANSFER REGISTERS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
 
         /////////////////////////////////// STACK OPERATIONS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
-        {INSTRUCTIONS::INS_PHA,      [this](int32_t& cycles, Memory& memory) { StackPush8Bits(cycles, memory, A); cycles--;}},
-        {INSTRUCTIONS::INS_PHP,      [this](int32_t& cycles, Memory& memory) { StackPush8Bits(cycles, memory, P.PS); cycles--;}},
-        {INSTRUCTIONS::INS_PLA,      [this](int32_t& cycles, Memory& memory) { A = StackPop8Bits(cycles, memory); cycles -= 2;
-            SetStatusNZ(A);}},
-        {INSTRUCTIONS::INS_PLP,      [this](int32_t& cycles, Memory& memory) { P.PS = StackPop8Bits(cycles, memory); cycles -= 2;}},
-        /////////////////////////////////// STACK OPERATIONS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
+        {INSTRUCTIONS::INS_PHA,      [this](int32_t& cycles, Memory& memory) { StackPush8Bits(cycles, memory, A); cycles--; }},
+        {INSTRUCTIONS::INS_PHP,      [this](int32_t& cycles, Memory& memory) { StackPush8Bits(cycles, memory, P.PS | UnusedBitFlag | BreakBitFlag); cycles--; }},
+        {INSTRUCTIONS::INS_PLA,      [this](int32_t& cycles, Memory& memory) { A = StackPop8Bits(cycles, memory); cycles -= 2; SetStatusNZ(A);}},
+        {INSTRUCTIONS::INS_PLP,      [this](int32_t& cycles, Memory& memory) {
+            uint8_t stackPS = StackPop8Bits(cycles, memory);
+            stackPS &= ~(UnusedBitFlag | BreakBitFlag);
+            P.PS &= (UnusedBitFlag | BreakBitFlag);
+            P.PS |= stackPS;
+            cycles -= 2;
+        }},
+        /////////////////////////////////// STACK OPERATIONS INSTRUCTIONS IMPLEMENTATION //////////////////// ///////////////////
 
         /////////////////////////////////// LOGICAL OPERATIONS INSTRUCTIONS IMPLEMENTATION ///////////////////////////////////////
         //AND
@@ -114,7 +119,17 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         }},
         {INSTRUCTIONS::INS_RTS,         [this](int32_t& cycles, Memory& memory) { PC = StackPop16Bits(cycles, memory) + 1; cycles -= 3; }},
         {INSTRUCTIONS::INS_JMP_ABS,     [this](int32_t& cycles, Memory& memory) { PC = getAbsoluteAddress(cycles, memory); }},
-        {INSTRUCTIONS::INS_JMP_IND,     [this](int32_t& cycles, Memory& memory) { PC = Read16Bits(cycles, memory, getAbsoluteAddress(cycles, memory)); }},
+        {INSTRUCTIONS::INS_JMP_IND,     [this](int32_t& cycles, Memory& memory) {
+            uint16_t lsb = Fetch8Bits(cycles, memory);
+            uint16_t msb = Fetch8Bits(cycles, memory);
+
+            uint16_t address = (msb << 8) | lsb;
+
+            if (lsb == 0x00FF)
+                PC = Read8Bits(cycles,memory, address & 0xFF00 << 8) | Read8Bits(cycles, memory, address);
+            else
+                PC = Read16Bits(cycles, memory, address);
+        }},
         ////////////////////////////////// JUMP INSTRUCTION IMPLEMENTATION //////////////////////////////////
 
         ////////////////////////////////// INCREMENT INSTRUCTION IMPLEMENTATION //////////////////////////////////
@@ -233,7 +248,23 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
         ////////////////////////////////// ROTATE RIGHT INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
 
         ////////////////////////////////// SYSTEM FUNCTIONS INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
+        {INSTRUCTIONS::INS_BRK,[this](int32_t& cycles, Memory& memory) {
+            StackPush16Bits(cycles, memory, PC + 1);
+            StackPush8Bits(cycles, memory, P.PS | UnusedBitFlag | BreakBitFlag);
+            PC = 0xFFFE;
+            PC = Fetch16Bits(cycles, memory);
+            P.I = true;
+            cycles--;
+        }},
         {INSTRUCTIONS::INS_NOP,[this](int32_t& cycles, Memory& memory) { cycles--; }},
+        {INSTRUCTIONS::INS_RTI,[this](int32_t& cycles, Memory& memory) {
+            uint8_t stackPS = StackPop8Bits(cycles, memory);
+            stackPS &= ~(UnusedBitFlag | BreakBitFlag);
+            P.PS &= (UnusedBitFlag | BreakBitFlag);
+            P.PS |= stackPS;
+            PC = StackPop16Bits(cycles, memory);
+            cycles -= 2;
+        }},
         ////////////////////////////////// SYSTEM FUNCTIONS INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
     };
 }

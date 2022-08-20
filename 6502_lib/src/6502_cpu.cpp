@@ -145,7 +145,7 @@ uint16_t MOS6502::CPU::getAbsoluteAddressY(int32_t& cycles, const Memory& memory
 
 uint16_t MOS6502::CPU::getIndirectIndexedAddressX(int32_t &cycles, const MOS6502::Memory &memory) {
     cycles--; // add X register to address
-    return Read16Bits(cycles, memory, getZeroPageAddress(cycles, memory) + X);
+    return Read16Bits(cycles, memory, uint8_t(getZeroPageAddress(cycles, memory) + X));
 }
 
 uint16_t MOS6502::CPU::getIndexedIndirectAddressY(int32_t &cycles, const MOS6502::Memory &memory, bool checkPageCrossing) {
@@ -157,10 +157,10 @@ uint16_t MOS6502::CPU::getIndexedIndirectAddressY(int32_t &cycles, const MOS6502
 
 void MOS6502::CPU::SetStatusNZ(uint8_t& reg){
     P.Z = (reg == 0);
-    P.N = (reg & 0b10000000) != 0;
+    P.N = (reg & NegativeBitFlag) != 0;
 }
 
-uint16_t MOS6502::CPU::GetAddress(ADDRESSING_MODES mode, int32_t& cycles, const Memory& memory, bool checkPageCrossing){
+uint16_t MOS6502::CPU::GetAddress(ADDRESSING_MODE mode, int32_t& cycles, const Memory& memory, bool checkPageCrossing){
     uint16_t address;
 
     switch(mode){
@@ -206,7 +206,7 @@ uint16_t MOS6502::CPU::GetAddress(ADDRESSING_MODES mode, int32_t& cycles, const 
     return address;
 }
 
-void MOS6502::CPU::LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, const Memory& memory, uint8_t& reg){
+void MOS6502::CPU::LoadRegister(ADDRESSING_MODE mode, int32_t& cycles, const Memory& memory, uint8_t& reg){
    if(mode == IMMEDIATE)
        reg = Fetch8Bits(cycles, memory);
    else
@@ -214,14 +214,14 @@ void MOS6502::CPU::LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, const Me
     SetStatusNZ(reg);
 }
 
-void MOS6502::CPU::StoreRegister(ADDRESSING_MODES mode, int32_t &cycles, Memory &memory, uint8_t &reg) {
+void MOS6502::CPU::StoreRegister(ADDRESSING_MODE mode, int32_t &cycles, Memory &memory, uint8_t &reg) {
     Write8Bits(cycles, memory, GetAddress(mode, cycles, memory, false), reg);
     if(mode == ABSOLUTE_X || mode == ABSOLUTE_Y || mode == INDIRECT_Y)
         cycles--;
 }
 
 
-void MOS6502::CPU::PerformLogicalOnAccumulator(ADDRESSING_MODES mode, MOS6502::CPU::LOGICAL_OPERATION operation, int32_t &cycles,
+void MOS6502::CPU::PerformLogicalOnAccumulator(ADDRESSING_MODE mode, MOS6502::CPU::LOGICAL_OPERATION operation, int32_t &cycles,
                                                MOS6502::Memory &memory) {
     uint8_t value;
     if(mode == IMMEDIATE)
@@ -247,8 +247,8 @@ void MOS6502::CPU::PerformLogicalOnAccumulator(ADDRESSING_MODES mode, MOS6502::C
         }
         case LOGICAL_OPERATION::BIT: {
             P.Z = ((A & value) == 0);
-            P.V = (value & 0b01000000) != 0;
-            P.N = (value & 0b10000000) != 0;
+            P.V = (value & OverflowBitFlag) != 0;
+            P.N = (value & NegativeBitFlag) != 0;
             break;
         }
         default: {
@@ -258,7 +258,7 @@ void MOS6502::CPU::PerformLogicalOnAccumulator(ADDRESSING_MODES mode, MOS6502::C
     }
 }
 
-void MOS6502::CPU::IncrementDecrementValue(MOS6502::CPU::ADDRESSING_MODES mode,
+void MOS6502::CPU::IncrementDecrementValue(MOS6502::ADDRESSING_MODE mode,
                                                     MOS6502::CPU::MATH_OPERATION operation, int32_t &cycles,
                                                     MOS6502::Memory &memory) {
     if(mode == IMPLIED_X){
@@ -266,6 +266,8 @@ void MOS6502::CPU::IncrementDecrementValue(MOS6502::CPU::ADDRESSING_MODES mode,
             X++;
         else if(operation == MATH_OPERATION::DECREMENT)
             X--;
+        else
+            throw std::runtime_error("INVALID MATH OPERATION FOR THIS METHOD");
         cycles--;
         SetStatusNZ(X);
     } else if (mode == IMPLIED_Y) {
@@ -273,6 +275,8 @@ void MOS6502::CPU::IncrementDecrementValue(MOS6502::CPU::ADDRESSING_MODES mode,
             Y++;
         else if(operation == MATH_OPERATION::DECREMENT)
             Y--;
+        else
+            throw std::runtime_error("INVALID MATH OPERATION FOR THIS METHOD");
         cycles--;
         SetStatusNZ(Y);
     } else {
@@ -304,7 +308,7 @@ void MOS6502::CPU::IncrementDecrementValue(MOS6502::CPU::ADDRESSING_MODES mode,
 // 1  1  0 | 1 |  1  |  0  |   1   |
 // 1  1  1 | 0 |  0  |  0  |   1   |
 
-void MOS6502::CPU::PerformAddSubtractOnAccumulator(MOS6502::CPU::ADDRESSING_MODES mode, MOS6502::CPU::MATH_OPERATION operation, int32_t &cycles, MOS6502::Memory &memory) {
+void MOS6502::CPU::PerformAddSubtractOnAccumulator(MOS6502::ADDRESSING_MODE mode, MOS6502::CPU::MATH_OPERATION operation, int32_t &cycles, MOS6502::Memory &memory) {
     uint16_t operand;
     if (mode == IMMEDIATE)
         operand = Fetch8Bits(cycles, memory);
@@ -337,12 +341,12 @@ void MOS6502::CPU::BranchIf(int32_t &cycles, MOS6502::Memory &memory, bool flag,
     if(flag == expectedState){
         cycles--;
         if((PC >> 8) != ((PC + offset) >> 8))
-            cycles -= 2; // page crossed
+            cycles--; // page crossed
         PC += offset;
     }
 }
 
-void MOS6502::CPU::CompareWithRegister(MOS6502::CPU::ADDRESSING_MODES mode, int32_t &cycles, MOS6502::Memory &memory, uint8_t &reg) {
+void MOS6502::CPU::CompareWithRegister(MOS6502::ADDRESSING_MODE mode, int32_t &cycles, MOS6502::Memory &memory, uint8_t &reg) {
     uint8_t operand;
     if(mode == IMMEDIATE)
         operand = Fetch8Bits(cycles, memory);
@@ -350,12 +354,12 @@ void MOS6502::CPU::CompareWithRegister(MOS6502::CPU::ADDRESSING_MODES mode, int3
         operand = Read8Bits(cycles, memory, GetAddress(mode, cycles, memory, true));
 
     uint8_t result = reg - operand;
-    P.N = (result >> 7) > 0;
+    P.N = (result & NegativeBitFlag) > 0;
     P.Z = (reg == operand);
     P.C = (reg >= operand);
 }
 
-void MOS6502::CPU::ShiftValue(MOS6502::CPU::ADDRESSING_MODES mode, MOS6502::CPU::MATH_OPERATION operation, int32_t &cycles, MOS6502::Memory &memory) {
+void MOS6502::CPU::ShiftValue(MOS6502::ADDRESSING_MODE mode, MOS6502::CPU::MATH_OPERATION operation, int32_t &cycles, MOS6502::Memory &memory) {
     uint8_t operand;
     uint16_t address = 0;
 
@@ -367,7 +371,7 @@ void MOS6502::CPU::ShiftValue(MOS6502::CPU::ADDRESSING_MODES mode, MOS6502::CPU:
     }
 
     if(operation == MATH_OPERATION::SHIFT_LEFT || operation == MATH_OPERATION::ROTATE_LEFT){
-        bool temp = (operand & 0b10000000) > 0;
+        bool temp = (operand & NegativeBitFlag) > 0;
         operand = operand << 1;
 
         if(operation == MATH_OPERATION::ROTATE_LEFT)
@@ -375,7 +379,7 @@ void MOS6502::CPU::ShiftValue(MOS6502::CPU::ADDRESSING_MODES mode, MOS6502::CPU:
 
         P.C = temp;
     } else if (operation == MATH_OPERATION::SHIFT_RIGHT || operation == MATH_OPERATION::ROTATE_RIGHT){
-        bool temp = (operand & 0b00000001) > 0;
+        bool temp = (operand & CarryBitFlag) > 0;
         operand = operand >> 1;
 
         if(operation == MATH_OPERATION::ROTATE_RIGHT)
@@ -397,6 +401,15 @@ void MOS6502::CPU::ShiftValue(MOS6502::CPU::ADDRESSING_MODES mode, MOS6502::CPU:
         Write8Bits(cycles, memory, address, operand);
 }
 
+MOS6502::instruction MOS6502::CPU::findInstructionInDataTable(MOS6502::INSTRUCTIONS opcode) {
+    int size = sizeof(MOS6502::InstructionsDataTable)/sizeof(MOS6502::instruction);
+    for(int i = 0; i < size; i++){
+        if(MOS6502::InstructionsDataTable[i].opcode == opcode)
+            return MOS6502::InstructionsDataTable[i];
+    }
+    throw std::runtime_error("INVALID INSTRUCTION");
+}
+
 int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){
     int32_t totalCycles = cycles;
 
@@ -413,18 +426,20 @@ int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){
     return totalCycles - cycles;
 }
 
-int32_t MOS6502::CPU::ExecuteInfinite(MOS6502::Memory &memory) {
-    int32_t cycles = INT32_MAX;
+void MOS6502::CPU::ExecuteInfinite(MOS6502::Memory &memory) {
 
-    uint8_t instruction = Fetch8Bits(cycles, memory);
+    int32_t cyclesLeft = 1;
+    uint8_t instruction = Fetch8Bits(cyclesLeft, memory);
 
-    while (instructionsLookupTable[(INSTRUCTIONS)instruction]) {
+    cyclesLeft = findInstructionInDataTable((MOS6502::INSTRUCTIONS)instruction).cycles;
+
+    while (cyclesLeft == 0) {
         if(instructionsLookupTable.find((INSTRUCTIONS)instruction) != instructionsLookupTable.end())
-            instructionsLookupTable[(INSTRUCTIONS)instruction](cycles, memory);
+            instructionsLookupTable[(INSTRUCTIONS)instruction](cyclesLeft, memory);
 
-        instruction = Fetch8Bits(cycles, memory);
+        instruction = Fetch8Bits(cyclesLeft, memory);
+        cyclesLeft = findInstructionInDataTable((MOS6502::INSTRUCTIONS)instruction).cycles;
     }
-    return INT32_MAX - cycles;
 }
 
 

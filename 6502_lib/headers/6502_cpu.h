@@ -18,23 +18,6 @@
 namespace MOS6502 {
     class CPU {
     private:
-        /* Stores possible addressing modes */
-        enum ADDRESSING_MODES{
-            ACCUMULATOR,
-            IMPLIED_X,
-            IMPLIED_Y,
-            IMPLIED_A,
-            IMMEDIATE,
-            ZERO_PAGE,
-            ZERO_PAGE_X,
-            ZERO_PAGE_Y,
-            ABSOLUTE,
-            ABSOLUTE_X,
-            ABSOLUTE_Y,
-            INDIRECT_X,
-            INDIRECT_Y
-        };
-
         enum class LOGICAL_OPERATION {
             AND,
             XOR,
@@ -99,27 +82,29 @@ namespace MOS6502 {
         void SetStatusNZ(uint8_t& reg);
 
         /*returns address basing on addressing mode*/
-        uint16_t GetAddress(ADDRESSING_MODES mode, int32_t& cycles, const Memory& memory, bool checkPageCrossing);
+        uint16_t GetAddress(ADDRESSING_MODE mode, int32_t& cycles, const Memory& memory, bool checkPageCrossing);
 
         /*Performs logical operation on accumulator*/
-        void PerformLogicalOnAccumulator(ADDRESSING_MODES mode, LOGICAL_OPERATION operation, int32_t& cycles, Memory& memory);
+        void PerformLogicalOnAccumulator(ADDRESSING_MODE mode, LOGICAL_OPERATION operation, int32_t& cycles, Memory& memory);
         /*Increments and Decrements memory location*/
-        void IncrementDecrementValue(ADDRESSING_MODES mode, MATH_OPERATION operation, int32_t& cycles, Memory& memory);
+        void IncrementDecrementValue(ADDRESSING_MODE mode, MATH_OPERATION operation, int32_t& cycles, Memory& memory);
         /*Performs Add and Subtract On Accumulator*/
-        void PerformAddSubtractOnAccumulator(ADDRESSING_MODES mode, MATH_OPERATION operation, int32_t& cycles, Memory& memory);
+        void PerformAddSubtractOnAccumulator(ADDRESSING_MODE mode, MATH_OPERATION operation, int32_t& cycles, Memory& memory);
         /*Loads register with specified addressing mode*/
-        void LoadRegister(ADDRESSING_MODES mode, int32_t& cycles, const Memory& memory, uint8_t& reg);
+        void LoadRegister(ADDRESSING_MODE mode, int32_t& cycles, const Memory& memory, uint8_t& reg);
         /*Stores register in specified address in memory*/
-        void StoreRegister(ADDRESSING_MODES mode, int32_t& cycles, Memory& memory, uint8_t& reg);
+        void StoreRegister(ADDRESSING_MODE mode, int32_t& cycles, Memory& memory, uint8_t& reg);
         /*Branches if given flag is in expected state*/
         void BranchIf(int32_t &cycles, MOS6502::Memory &memory, bool flag, bool expectedState);
         /*Compares memory value to register*/
-        void CompareWithRegister(ADDRESSING_MODES mode, int32_t& cycles, Memory& memory, uint8_t& reg);
-        /*Compares memory value to register*/
-        void ShiftValue(ADDRESSING_MODES mode, MATH_OPERATION operation, int32_t& cycles, Memory& memory);
+        void CompareWithRegister(ADDRESSING_MODE mode, int32_t& cycles, Memory& memory, uint8_t& reg);
+        /*Shifts value*/
+        void ShiftValue(ADDRESSING_MODE mode, MATH_OPERATION operation, int32_t& cycles, Memory& memory);
 
         /*Fills lookup table array with instructions*/
         void fillInstructionsLookupTable();
+        /*Finds instruction in instructionDataTable*/
+        static instruction findInstructionInDataTable(INSTRUCTIONS opcode);
 
         /*stack index 0, stack pointer is added to that index*/
         uint16_t stackLocation = 0x0100;
@@ -144,7 +129,7 @@ namespace MOS6502 {
         /* return number of cycles used */
         int32_t Execute(int32_t cycles, Memory& memory);
         /* return number of cycles used */
-        int32_t ExecuteInfinite(Memory& memory);
+        void ExecuteInfinite(Memory& memory);
 
         /////////// REGISTERS ///////////
         uint16_t PC{}; //16-bit program counter
@@ -155,6 +140,14 @@ namespace MOS6502 {
         uint8_t X{}; //8-bit X register
         uint8_t Y{}; //8-bit Y register
 
+        const uint8_t NegativeBitFlag   = 0b10000000;
+        const uint8_t OverflowBitFlag   = 0b01000000;
+        const uint8_t UnusedBitFlag     = 0b00100000;
+        const uint8_t BreakBitFlag      = 0b00010000;
+        const uint8_t DecimalBitFlag    = 0b00001000;
+        const uint8_t InterruptBitFlag  = 0b00000100;
+        const uint8_t ZeroBitFlag       = 0b00000010;
+        const uint8_t CarryBitFlag      = 0b00000001;
 
         union {
             struct {

@@ -83,4 +83,5 @@ int main(){
 
     printf("X: 0x%X\n", cpu.X); //0x12
     printf("A: 0x%X\n", cpu.A); //0x15
+
 }

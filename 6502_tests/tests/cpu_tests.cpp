@@ -102,10 +102,28 @@ TEST_F(M6502CPUTest, CPUCanRunForLoopProgram){
     cpu.Reset(c, mem);
 
     //when:
-    cpu.ExecuteInfinite(mem);
+    cpu.Execute( 40,mem);
 
     //then:
     EXPECT_EQ(cpu.A, 24);
     EXPECT_EQ(cpu.X, 20);
 }
 
+TEST_F(M6502CPUTest, TestEveryInstructionProgramWithoutDecimalMode){
+    Memory Mem{};
+    CPU Cpu{};
+
+    FILE* fp;
+    fopen_s(&fp, "bin_programs\\6502_functional_test.bin",  "rb");
+    fread(&Mem[0x000A], 1, 65526, fp);
+    fclose(fp);
+
+    Cpu.PC = 0x0400;
+
+    while ( true ){
+        Cpu.Execute(1, Mem);
+        if(Cpu.PC == 0x336d)
+            break;
+    }
+    EXPECT_EQ(Cpu.PC, 0x336d);
+}

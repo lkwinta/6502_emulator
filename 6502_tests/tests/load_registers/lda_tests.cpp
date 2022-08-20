@@ -306,6 +306,37 @@ TEST_F(M6502LDATest, LDAIndirectXCanLoadAValueIntoARegister){
     VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
 }
 
+TEST_F(M6502LDATest, LDAIndirectXCanLoadAValueIntoARegisterWithWrapAround){
+    //given:
+    constexpr int32_t NUM_CYCLES = 6;
+
+    cpu.X = 0x2E;
+
+    mem[0x8000] = INSTRUCTIONS::INS_LDA_IND_X;
+    mem[0x8001] = 0xEE;
+
+    mem[0x001C] = 0x00; //0x04 + 0x02 = 0x0006
+    mem[0x001D] = 0x40; //0x4000
+
+    mem[0x4000] = 0x37;
+
+    cpu.P.N = 1;
+    cpu.P.Z = 1;
+
+    CPU CPUCopy = cpu;
+
+    //when:
+    int32_t cyclesUsed = cpu.Execute(NUM_CYCLES, mem);
+
+    //then:
+    EXPECT_EQ(cyclesUsed, NUM_CYCLES);
+    EXPECT_EQ(cpu.A, 0x37);
+    EXPECT_FALSE(cpu.P.Z);
+    EXPECT_FALSE(cpu.P.N);
+
+    VerifyUnmodifiedFlagsLDA(cpu, CPUCopy);
+}
+
 TEST_F(M6502LDATest, LDAIndirectYCanLoadAValueIntoARegister){
     //given:
     constexpr int32_t NUM_CYCLES = 5;

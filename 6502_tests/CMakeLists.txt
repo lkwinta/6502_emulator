@@ -26,7 +26,7 @@ add_executable(6502_tests
         tests/load_registers/ldy_tests.cpp
         tests/store_registers/st_tests.cpp
         tests/subroutine/jsr_rts_tests.cpp
-        tests/stack_operations/stack_operations.cpp/
+        tests/stack_operations/stack_operations.cpp
         tests/logical_operations/and_tests.cpp
         tests/logical_operations/eor_tests.cpp
         tests/logical_operations/ora_tests.cpp
@@ -50,7 +50,13 @@ add_executable(6502_tests
         tests/add_subtract_with_carry/cpx_tests.cpp
         tests/add_subtract_with_carry/cpy_tests.cpp
         tests/shifts_and_rotates/asl_tests.cpp
-        tests/shifts_and_rotates/lsr_tests.cpp tests/shifts_and_rotates/rol_tests.cpp tests/shifts_and_rotates/ror_tests.cpp)
+        tests/shifts_and_rotates/lsr_tests.cpp
+        tests/shifts_and_rotates/rol_tests.cpp
+        tests/shifts_and_rotates/ror_tests.cpp
+        tests/system_functions/brk_tests.cpp
+        tests/system_functions/rti_tests.cpp)
 
 target_link_libraries(6502_tests 6502_lib gtest_main gmock_main)
 include_directories(${CMAKE_SOURCE_DIR}/6502_lib/headers)
+
+configure_file(6502_functional_test.bin ${CMAKE_BINARY_DIR}/6502_tests/bin_programs/6502_functional_test.bin COPYONLY)

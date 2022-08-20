@@ -69,10 +69,10 @@ TEST_F(M6502BVSTest, BVSCanBranchForwardToNextPage){
     mem[0x8000] = INSTRUCTIONS::INS_JMP_ABS; //3 cycles
     mem[0x8001] = 0xF0;
     mem[0x8002] = 0x80;
-    mem[0x80F0] = INSTRUCTIONS::INS_BVS; //5 cycles (branch successful, new page)
+    mem[0x80F0] = INSTRUCTIONS::INS_BVS; //4 cycles (branch successful, new page)
     mem[0x80F1] = 0x55;
 
-    constexpr int32_t NUM_OF_CYCLES = 8;
+    constexpr int32_t NUM_OF_CYCLES = 7;
     CPU CPUCopy = cpu;
 
     //when:
@@ -112,10 +112,10 @@ TEST_F(M6502BVSTest, BVSCanBranchBackwardToNextPage){
     //given:
 
     cpu.P.V = 1;
-    mem[0x8000] = INSTRUCTIONS::INS_BVS; //5 cycles (branch successful, new page)
+    mem[0x8000] = INSTRUCTIONS::INS_BVS; //4 cycles (branch successful, new page)
     mem[0x8001] = static_cast<uint8_t>(-0x3);
 
-    constexpr int32_t NUM_OF_CYCLES = 5;
+    constexpr int32_t NUM_OF_CYCLES = 4;
     CPU CPUCopy = cpu;
 
     //when:
