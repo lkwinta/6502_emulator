@@ -126,6 +126,7 @@ TEST_F(M6502CPUTest, TestEveryInstructionProgramWithoutDecimalMode){
     const size_t TOTAL_BYTES = 65526;
 
     auto buffer = new uint8_t[TOTAL_BYTES];
+    cout << "buffer ok " << endl;
 
     size_t read_bytes = fread(buffer, 1, TOTAL_BYTES, fp);
     cout << "Read ok " << read_bytes << endl;
