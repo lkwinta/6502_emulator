@@ -127,7 +127,7 @@ TEST_F(M6502CPUTest, TestEveryInstructionProgramWithoutDecimalMode){
     cout << "File open ok " << endl;
     const size_t TOTAL_BYTES = 65526;
 
-    size_t read_bytes = fread(&Mem[0x000A], 1, TOTAL_BYTES, fp);
+    size_t read_bytes = fread(&Mem.Data[0x000A], 1, TOTAL_BYTES, fp);
     cout << "Read ok " << read_bytes << endl;
 
     fclose(fp);
