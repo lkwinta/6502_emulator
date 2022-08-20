@@ -112,9 +112,7 @@ TEST_F(M6502CPUTest, CPUCanRunForLoopProgram){
 }
 
 TEST_F(M6502CPUTest, TestEveryInstructionProgramWithoutDecimalMode){
-    Memory Mem{};
-    CPU Cpu{};
-    Mem.Initialise();
+    mem.Initialise();
 
     using std::cout; using std::cin;
     using std::endl; using std::string;
@@ -127,20 +125,28 @@ TEST_F(M6502CPUTest, TestEveryInstructionProgramWithoutDecimalMode){
     cout << "File open ok " << endl;
     const size_t TOTAL_BYTES = 65526;
 
-    size_t read_bytes = fread(&Mem.Data[0x000A], 1, TOTAL_BYTES, fp);
+    auto buffer = new uint8_t[TOTAL_BYTES];
+
+    size_t read_bytes = fread(buffer, 1, TOTAL_BYTES, fp);
     cout << "Read ok " << read_bytes << endl;
 
     fclose(fp);
     cout << "Close ok " << read_bytes << endl;
 
+    for(uint16_t i = 0x000A; i <= 0xFFFF; i++){
+        mem[i] = buffer[i - 0x000A];
+    }
+    cout << "Copy ok " << read_bytes << endl;
+    delete[] buffer;
+
     EXPECT_EQ(read_bytes, TOTAL_BYTES);
 
-    Cpu.PC = 0x0400;
+    cpu.PC = 0x0400;
 
     while ( true ){
-        Cpu.Execute(1, Mem);
-        if(Cpu.PC == 0x336d)
+        cpu.Execute(1, mem);
+        if(cpu.PC == 0x336d)
             break;
     }
-    EXPECT_EQ(Cpu.PC, 0x336d);
+    EXPECT_EQ(cpu.PC, 0x336d);
 }
