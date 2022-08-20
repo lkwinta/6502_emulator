@@ -114,26 +114,14 @@ TEST_F(M6502CPUTest, CPUCanRunForLoopProgram){
 TEST_F(M6502CPUTest, TestEveryInstructionProgramWithoutDecimalMode){
     mem.Initialise();
 
-    using std::cout; using std::cin;
-    using std::endl; using std::string;
-
     std::ifstream file("bin_programs\\6502_functional_test.bin", std::ios::in | std::ios::binary);
-    cout << "File open ok " << endl;
+
     const size_t TOTAL_BYTES = 65526;
 
-    auto buffer = new char[TOTAL_BYTES];
-
-    cout << "buffer ok " << endl;
-
-    file.read(buffer, TOTAL_BYTES);
+    file.read(reinterpret_cast<char *>(&mem[0x000A]), TOTAL_BYTES);
 
     file.close();
 
-    for(uint32_t i = 0x000A; i <= 0xFFFF; i++){
-        mem[i] = buffer[i - 0x000A];
-    }
-    cout << "Copy ok " << endl;
-    delete[] buffer;
 
     cpu.PC = 0x0400;
 
