@@ -114,7 +114,7 @@ TEST_F(M6502CPUTest, CPUCanRunForLoopProgram){
 TEST_F(M6502CPUTest, TestEveryInstructionProgramWithoutDecimalMode){
     Memory Mem{};
     CPU Cpu{};
-    mem.Initialise();
+    Mem.Initialise();
 
     using std::cout; using std::cin;
     using std::endl; using std::string;
