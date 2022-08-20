@@ -1,5 +1,7 @@
 #include "6502_cpu.h"
 #include <gtest/gtest.h>
+#include <filesystem>
+#include <iostream>
 
 using namespace MOS6502;
 
@@ -112,6 +114,13 @@ TEST_F(M6502CPUTest, CPUCanRunForLoopProgram){
 TEST_F(M6502CPUTest, TestEveryInstructionProgramWithoutDecimalMode){
     Memory Mem{};
     CPU Cpu{};
+
+    using std::cout; using std::cin;
+    using std::endl; using std::string;
+    using std::filesystem::current_path;
+
+    string path = current_path().string();
+    cout << "Current working directory: " << path << endl;
 
     FILE* fp = fopen( "bin_programs\\6502_functional_test.bin", "rb");
 
