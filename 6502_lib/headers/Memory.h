@@ -30,6 +30,18 @@ namespace MOS6502{
         uint8_t& operator[](uint32_t address) {
             return (this, Data[address]);
         }
+
+        void LoadProgram(const uint8_t *program, uint8_t programSize) {
+            Initialise();
+            Data[0xFFFC] = program[0];
+            Data[0xFFFD] = program[1];
+
+            uint16_t programAddress = (program[1] << 8) + program[0];
+
+            for(uint16_t i = 2; i < programSize; i++){
+                Data[programAddress + i - 2] = program[i];
+            }
+        }
     };
 }
 

@@ -114,9 +114,6 @@ namespace MOS6502 {
     public:
         CPU();
 
-        //loads program to the memory
-        static void LoadProgram(Memory& memory, const uint8_t* program, uint8_t programSize);
-
         /*
          * sets value of the reset vector
          * deprecated (use load program instead)

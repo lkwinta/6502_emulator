@@ -73,7 +73,7 @@ int main(){
 
 
     //sets value of the reset vector ( location of the _start function)
-    CPU::LoadProgram(mem, program, PROGRAM_SIZE);
+    mem.LoadProgram( program, PROGRAM_SIZE);
     int32_t NUM_OF_CYCLES = 31;
 
     cpu.Reset(NUM_OF_CYCLES, mem); //7 cycles

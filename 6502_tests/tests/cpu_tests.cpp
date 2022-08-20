@@ -32,7 +32,7 @@ TEST_F(M6502CPUTest, CPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstruct
     //given:
     int32_t c = 7;
     uint8_t program[] = {0x00, 0x80, INSTRUCTIONS::INS_LDA_IM, 0x84};
-    CPU::LoadProgram(mem, program, 4);
+    mem.LoadProgram( program, 4);
 
     cpu.Reset(c, mem);
 
@@ -52,7 +52,7 @@ TEST_F(M6502CPUTest, CPUCanRunSimpleProgram){
                          0x8D, 0x00, 0x80, 0x49, 0xCC, 0x4C,
                          0x02, 0x10};
 
-    CPU::LoadProgram(mem, program, 14);
+    mem.LoadProgram(program, 14);
     cpu.Reset(c, mem);
 
     //when:
@@ -98,7 +98,7 @@ TEST_F(M6502CPUTest, CPUCanRunForLoopProgram){
                          0x08, 0xC9, 0x18, 0xD0, 0xFA, 0xA2,
                          0x14};
 
-    CPU::LoadProgram(mem, program, 13);
+    mem.LoadProgram( program, 13);
     cpu.Reset(c, mem);
 
     //when:
@@ -113,10 +113,14 @@ TEST_F(M6502CPUTest, TestEveryInstructionProgramWithoutDecimalMode){
     Memory Mem{};
     CPU Cpu{};
 
-    FILE* fp;
-    fopen_s(&fp, "bin_programs\\6502_functional_test.bin",  "rb");
-    fread(&Mem[0x000A], 1, 65526, fp);
+    FILE* fp = fopen( "bin_programs\\6502_functional_test.bin", "rb");
+
+    const size_t TOTAL_BYTES = 65526;
+
+    size_t read_bytes = fread(&Mem[0x000A], 1, TOTAL_BYTES, fp);
     fclose(fp);
+
+    EXPECT_EQ(read_bytes, TOTAL_BYTES);
 
     Cpu.PC = 0x0400;
 

@@ -20,18 +20,6 @@ MOS6502::CPU::CPU() {
     fillInstructionsLookupTable();
 }
 
-void MOS6502::CPU::LoadProgram(Memory &memory, const uint8_t *program, uint8_t programSize) {
-    memory.Initialise();
-    memory[0xFFFC] = program[0];
-    memory[0xFFFD] = program[1];
-
-    uint16_t programAddress = (program[1] << 8) + program[0];
-
-    for(uint16_t i = 2; i < programSize; i++){
-        memory[programAddress + i - 2] = program[i];
-    }
-}
-
 void MOS6502::CPU::Setup(Memory &memory, uint16_t resetVectorValue) {
     memory.Initialise();
     memory[0xFFFC] = resetVectorValue & 0xFF;
@@ -252,7 +240,7 @@ void MOS6502::CPU::PerformLogicalOnAccumulator(ADDRESSING_MODE mode, MOS6502::CP
             break;
         }
         default: {
-            printf("Unhandled operation: %d", operation);
+            printf("Unhandled operation: %d", static_cast<int>(operation));
             throw std::runtime_error("Unhandled load addressing mode");
         }
     }
