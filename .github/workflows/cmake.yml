@@ -29,7 +29,7 @@ jobs:
     - name: Print Files 2
       run: ls 6502_tests
     - name: Print Files 3
-      run: ls build
+      run: ls build/6502_tests
       
     - name: Build
       # Build your program with the given configuration
@@ -38,9 +38,9 @@ jobs:
     - name: Print Files 1
       run: ls
     - name: Print Files 2
-      run: ls 6502_tests
-    - name: Print Files 3
       run: ls build
+    - name: Print Files 3
+      run: ls build/6502_tests
       
     - name: Tests
       working-directory: ${{github.workspace}}/build
