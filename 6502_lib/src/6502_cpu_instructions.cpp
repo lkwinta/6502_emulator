@@ -249,7 +249,8 @@ void MOS6502::CPU::fillInstructionsLookupTable(){
 
         ////////////////////////////////// SYSTEM FUNCTIONS INSTRUCTIONS IMPLEMENTATION //////////////////////////////////
         {INSTRUCTIONS::INS_BRK,[this](int32_t& cycles, Memory& memory) {
-            StackPush16Bits(cycles, memory, PC + 1);
+            PC++;
+            StackPush16Bits(cycles, memory, PC);
             StackPush8Bits(cycles, memory, P.PS | UnusedBitFlag | BreakBitFlag);
             PC = 0xFFFE;
             PC = Fetch16Bits(cycles, memory);

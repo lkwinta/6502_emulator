@@ -561,3 +561,54 @@ TEST_F(M6502ADCTest, ADCIndirectYCanAddWithCarry){
 
     TestIndY(data);
 }
+
+TEST_F(M6502ADCTest, ADCImmediateCanAddInDecimalMode){
+    cpu.P.D = true;
+
+    ADCTestData data{};
+    data.A = 0x12;
+    data.operand = 0x17;
+    data.Carry = false;
+
+    data.result = 0x29;
+    data.ExpectedC = false;
+    data.ExpectedN = false;
+    data.ExpectedV = false;
+    data.ExpectedZ = false;
+
+    TestIm(data);
+}
+
+TEST_F(M6502ADCTest, ADCImmediateCanAddInDecimalModeCanFixBCD){
+    cpu.P.D = true;
+
+    ADCTestData data{};
+    data.A = 0x09;
+    data.operand = 0x09;
+    data.Carry = false;
+
+    data.result = 0x18;
+    data.ExpectedC = false;
+    data.ExpectedN = false;
+    data.ExpectedV = false;
+    data.ExpectedZ = false;
+
+    TestIm(data);
+}
+
+TEST_F(M6502ADCTest, ADCImmediateCanAddInDecimalModeCanAddTo0){
+    cpu.P.D = true;
+
+    ADCTestData data{};
+    data.A = 0x99;
+    data.operand = 0x1;
+    data.Carry = false;
+
+    data.result = 0x00;
+    data.ExpectedC = true;
+    data.ExpectedN = false;
+    data.ExpectedV = false;
+    data.ExpectedZ = true;
+
+    TestIm(data);
+}

@@ -583,3 +583,37 @@ TEST_F(M6502SBCTest, SBCIndirectYCanSubstractWithCarry){
 
     TestIndY(data);
 }
+
+TEST_F(M6502SBCTest, SBCImmediateCanSubstractInDecimalMode){
+    cpu.P.D = 1;
+
+    SBCTestData data{};
+    data.A = 0x20;
+    data.operand = 0x05;
+    data.Carry = true;
+
+    data.result = 0x15;
+    data.ExpectedC = true;
+    data.ExpectedN = false;
+    data.ExpectedV = false;
+    data.ExpectedZ = false;
+
+    TestIm(data);
+}
+
+TEST_F(M6502SBCTest, SBCImmediateCanSubstractInDecimalModeTo99){
+    cpu.P.D = 1;
+
+    SBCTestData data{};
+    data.A = 0x00;
+    data.operand = 0x01;
+    data.Carry = true;
+
+    data.result = 0x99;
+    data.ExpectedC = false;
+    data.ExpectedN = true;
+    data.ExpectedV = true;
+    data.ExpectedZ = false;
+
+    TestIm(data);
+}

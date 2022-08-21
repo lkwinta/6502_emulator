@@ -131,3 +131,24 @@ TEST_F(M6502CPUTest, TestEveryInstructionProgramWithoutDecimalMode){
     }
     EXPECT_EQ(cpu.PC, 0x336d);
 }
+
+TEST_F(M6502CPUTest, TestEveryInstructionProgramWithDecimalMode){
+    mem.Initialise();
+
+    const size_t TOTAL_BYTES = 65526;
+
+    FILE* file = fopen("bin_programs/6502_functional_test_decimal_mode.bin", "rb");
+    size_t bytes_read = fread(&mem[0x000A], 1, TOTAL_BYTES, file);
+    fclose(file);
+
+    EXPECT_EQ(bytes_read, TOTAL_BYTES);
+
+    cpu.PC = 0x0400;
+
+    while ( true ){
+        cpu.Execute(1, mem);
+        if(cpu.PC == 0x3469)
+            break;
+    }
+    EXPECT_EQ(cpu.PC, 0x3469);
+}

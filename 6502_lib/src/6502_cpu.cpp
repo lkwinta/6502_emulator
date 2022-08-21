@@ -303,23 +303,54 @@ void MOS6502::CPU::PerformAddSubtractOnAccumulator(MOS6502::ADDRESSING_MODE mode
     else
         operand = Read8Bits(cycles, memory, GetAddress(mode, cycles, memory, true));
 
+    uint16_t result;
+
     if (P.D == 1) {
-        printf("UNSUPPORTED DECIMAL MODE");
-        throw std::runtime_error("UNSUPPORTED DECIMAL MODE");
+        int m = 1;
+
+        if(operation == MATH_OPERATION::SUBTRACT) {
+            m = -1;
+            P.C = !P.C;
+        } else if(operation != MATH_OPERATION::ADD)
+            throw std::runtime_error("INVALID MATH OPERATION FOR THIS METHOD");
+
+        uint8_t accumulatorLow = LOW_NYBBLE(A) + LOW_NYBBLE(operand)*m + P.C*m;
+        uint8_t accumulatorHigh = HIGH_NYBBLE(A) + HIGH_NYBBLE(operand)*m;
+
+        if(accumulatorLow > 9) {
+            accumulatorLow += 6 * m;
+            accumulatorLow &= 0xF;
+            accumulatorHigh += 1*m;
+        }
+
+        if(operation == MATH_OPERATION::ADD)
+            P.C = 0;
+        else
+            P.C = 1;
+
+        if(accumulatorHigh > 9) {
+            accumulatorHigh += 6 * m;
+            accumulatorHigh &= 0xF;
+            if(operation == MATH_OPERATION::ADD)
+                P.C = 1;
+            else
+                P.C = 0;
+        }
+
+        result = (accumulatorHigh << 4) + LOW_NYBBLE(accumulatorLow);
+    } else {
+        if(operation == MATH_OPERATION::SUBTRACT)
+            operand = operand ^ 0x00FF;
+        else if(operation != MATH_OPERATION::ADD)
+            throw std::runtime_error("INVALID MATH OPERATION FOR THIS METHOD");
+
+
+        result = A + operand + P.C;
+        P.C = (result & 0xFF00) > 0;
     }
 
-
-    if(operation == MATH_OPERATION::SUBTRACT)
-        operand = operand ^ 0x00FF;
-    else if(operation != MATH_OPERATION::ADD)
-        throw std::runtime_error("INVALID MATH OPERATION FOR THIS METHOD");
-
-
-    uint16_t result = A + operand + P.C;
-    P.C = (result & 0xFF00) > 0;
     P.V = ((!(MSB(A)^MSB(operand))) & (MSB(A)^MSB(uint8_t(result))));
     A = (result & 0xFF);
-
     SetStatusNZ(A);
 }
 

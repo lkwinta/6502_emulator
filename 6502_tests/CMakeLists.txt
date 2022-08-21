@@ -60,3 +60,4 @@ target_link_libraries(6502_tests 6502_lib gtest_main gmock_main)
 include_directories(${CMAKE_SOURCE_DIR}/6502_lib/headers)
 
 configure_file(6502_functional_test.bin ${CMAKE_BINARY_DIR}/6502_tests/bin_programs/6502_functional_test.bin COPYONLY)
+configure_file(6502_functional_test_decimal_mode.bin ${CMAKE_BINARY_DIR}/6502_tests/bin_programs/6502_functional_test_decimal_mode.bin COPYONLY)

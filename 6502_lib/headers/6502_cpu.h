@@ -14,6 +14,13 @@
 
 //returns most significant bit of 8 bit value
 #define MSB(a) (a >> 7)
+//returns least significant bit of 8 bit value
+#define LSB(a) (a & 0b00000000)
+
+/*returns low nybble of the byte*/
+#define LOW_NYBBLE(a) (a & 0b00001111)
+/*returns high nybble of the byte*/
+#define HIGH_NYBBLE(a) (a >> 4)
 
 namespace MOS6502 {
     class CPU {
