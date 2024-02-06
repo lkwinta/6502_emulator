@@ -13,7 +13,7 @@ To compile this project you need to have CMake and MinGw installed.
 In project 6502_emulator you can find ```main.cpp``` file. In this file you can write program by filing byte array called ```program```.
 
 First two bytes of the program contains memory location where program will be placed. 
-Program is loaded by static method ```CPU::LoadProgram(Memory &memory, const uint8_t *program, uint8_t programSize)```
+Program is loaded by static method ```CPU::LoadProgram(Bus &memory, const uint8_t *program, uint8_t programSize)```
 
 ### Simple program:
 ```asm

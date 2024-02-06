@@ -15,7 +15,7 @@ static void VerifyUnmodifiedFlags(const CPU& cpu, const CPU& CPUCopy){
 
 class M6502LSRTest : public testing::Test {
 public:
-    Memory mem{};
+    Bus mem{};
     CPU cpu{};
 
     virtual void SetUp(){

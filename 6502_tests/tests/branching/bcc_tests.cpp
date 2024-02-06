@@ -8,7 +8,7 @@ using namespace MOS6502;
 
 class M6502BCCTest : public testing::Test {
 public:
-    Memory mem{};
+    Bus mem{};
     CPU cpu;
 
     virtual void SetUp(){

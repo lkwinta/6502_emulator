@@ -6,7 +6,7 @@ using namespace MOS6502;
 
 int main(){
 
-    Memory mem{};
+    Bus mem{};
     CPU cpu{};
 
     /*

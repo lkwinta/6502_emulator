@@ -5,7 +5,7 @@ using namespace MOS6502;
 
 class M6502LDXTest : public testing::Test {
 public:
-    Memory mem{};
+    Bus mem{};
     CPU cpu{};
 
     virtual void SetUp(){

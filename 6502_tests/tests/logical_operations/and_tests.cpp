@@ -9,7 +9,7 @@ using namespace MOS6502;
 
 class M6502ANDTest : public testing::Test {
 public:
-    Memory mem{};
+    Bus mem{};
     CPU cpu{};
 
     virtual void SetUp(){

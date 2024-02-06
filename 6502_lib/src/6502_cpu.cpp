@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include "6502_cpu.h"
 
-void MOS6502::CPU::Reset(int32_t& cycles, Memory& memory) {
+void MOS6502::CPU::Reset(int32_t& cycles, Bus& memory) {
     PC = 0xFFFC;
 
     S = 0xFF;
@@ -20,23 +20,23 @@ MOS6502::CPU::CPU() {
     fillInstructionsLookupTable();
 }
 
-void MOS6502::CPU::Setup(Memory &memory, uint16_t resetVectorValue) {
+void MOS6502::CPU::Setup(Bus &memory, uint16_t resetVectorValue) {
     memory.Initialise();
     memory[0xFFFC] = resetVectorValue & 0xFF;
     memory[0xFFFD] = resetVectorValue >> 8;
 }
 
-uint16_t MOS6502::CPU::Fetch8Bits(int32_t& cycles, const Memory& memory){
+uint16_t MOS6502::CPU::Fetch8Bits(int32_t& cycles, const Bus& memory){
     uint8_t byte = memory[PC];
     PC++;
     cycles--;
     return byte;
 }
 
-uint16_t MOS6502::CPU::Fetch16Bits(int32_t& cycles, const Memory& memory){
-    uint8_t lowByte = memory.Data[PC];
+uint16_t MOS6502::CPU::Fetch16Bits(int32_t& cycles, const Bus& memory){
+    uint8_t lowByte = memory.RAM[PC];
     PC++;
-    uint8_t highByte = memory.Data[PC];
+    uint8_t highByte = memory.RAM[PC];
     PC++;
 
     cycles -= 2;
@@ -47,15 +47,15 @@ uint16_t MOS6502::CPU::Fetch16Bits(int32_t& cycles, const Memory& memory){
     return result;
 }
 
-uint8_t MOS6502::CPU::Read8Bits(int32_t& cycles, const Memory& memory, uint16_t address){
-    uint8_t byte = memory.Data[address];
+uint8_t MOS6502::CPU::Read8Bits(int32_t& cycles, const Bus& memory, uint16_t address){
+    uint8_t byte = memory.RAM[address];
     cycles--;
     return byte;
 }
 
-uint16_t MOS6502::CPU::Read16Bits(int32_t& cycles, const Memory& memory, uint16_t address){
-    uint8_t lowByte = memory.Data[address];
-    uint8_t highByte = memory.Data[address + 1];
+uint16_t MOS6502::CPU::Read16Bits(int32_t& cycles, const Bus& memory, uint16_t address){
+    uint8_t lowByte = memory.RAM[address];
+    uint8_t highByte = memory.RAM[address + 1];
 
     cycles -= 2;
 
@@ -65,78 +65,78 @@ uint16_t MOS6502::CPU::Read16Bits(int32_t& cycles, const Memory& memory, uint16_
     return result;
 }
 
-void MOS6502::CPU::Write8Bits(int32_t& cycles, Memory& memory, uint16_t address, uint8_t value){
+void MOS6502::CPU::Write8Bits(int32_t& cycles, Bus& memory, uint16_t address, uint8_t value){
     memory[address] = value;
     cycles--;
 }
 
-void MOS6502::CPU::Write16Bits(int32_t& cycles, Memory& memory, uint16_t address, uint16_t value){
+void MOS6502::CPU::Write16Bits(int32_t& cycles, Bus& memory, uint16_t address, uint16_t value){
     memory[address] = (value & 0xFF);
     memory[address + 1] = (value >> 8);
     cycles -= 2;
 }
 
-void MOS6502::CPU::StackPush8Bits(int32_t &cycles, MOS6502::Memory &memory, uint8_t value) {
+void MOS6502::CPU::StackPush8Bits(int32_t &cycles, MOS6502::Bus &memory, uint8_t value) {
     Write8Bits(cycles, memory, stackLocation + S, value);
     S -= 1;
 }
 
-void MOS6502::CPU::StackPush16Bits(int32_t &cycles, MOS6502::Memory &memory, uint16_t value) {
+void MOS6502::CPU::StackPush16Bits(int32_t &cycles, MOS6502::Bus &memory, uint16_t value) {
     Write16Bits(cycles, memory, stackLocation + S - 1, value);
     S -= 2;
 }
 
-uint8_t MOS6502::CPU::StackPop8Bits(int32_t &cycles, Memory& memory) {
+uint8_t MOS6502::CPU::StackPop8Bits(int32_t &cycles, Bus& memory) {
     S += 1;
     uint8_t value = Read8Bits(cycles, memory, stackLocation + S);
     return value;
 }
 
-uint16_t MOS6502::CPU::StackPop16Bits(int32_t &cycles, Memory& memory) {
+uint16_t MOS6502::CPU::StackPop16Bits(int32_t &cycles, Bus& memory) {
     S += 2;
     uint16_t value = Read16Bits(cycles, memory, stackLocation + S - 1);
     return value;
 }
 
 
-uint8_t MOS6502::CPU::getZeroPageAddress(int32_t& cycles, const Memory &memory){
+uint8_t MOS6502::CPU::getZeroPageAddress(int32_t& cycles, const Bus &memory){
     return Fetch8Bits(cycles, memory);
 }
 
-uint8_t MOS6502::CPU::getZeroPageAddressX(int32_t &cycles, const Memory &memory) {
+uint8_t MOS6502::CPU::getZeroPageAddressX(int32_t &cycles, const Bus &memory) {
     cycles--; // add X register to address
     return getZeroPageAddress(cycles, memory) + X;
 }
 
-uint8_t MOS6502::CPU::getZeroPageAddressY(int32_t &cycles, const Memory &memory) {
+uint8_t MOS6502::CPU::getZeroPageAddressY(int32_t &cycles, const Bus &memory) {
     cycles--; // add Y register to address
     return getZeroPageAddress(cycles, memory) + Y;
 }
 
-uint16_t MOS6502::CPU::getAbsoluteAddress(int32_t& cycles, const Memory& memory){
+uint16_t MOS6502::CPU::getAbsoluteAddress(int32_t& cycles, const Bus& memory){
     return Fetch16Bits(cycles, memory);
 }
 
-uint16_t MOS6502::CPU::getAbsoluteAddressX(int32_t& cycles, const Memory& memory, bool checkPageCrossing){
+uint16_t MOS6502::CPU::getAbsoluteAddressX(int32_t& cycles, const Bus& memory, bool checkPageCrossing){
     uint16_t absoluteAddress = getAbsoluteAddress(cycles, memory);
     if(checkPageCrossing &&(absoluteAddress & 0xFF) + X > 0xFF)
         cycles--; // page crossed
     return absoluteAddress + X;
 }
 
-uint16_t MOS6502::CPU::getAbsoluteAddressY(int32_t& cycles, const Memory& memory, bool checkPageCrossing){
+uint16_t MOS6502::CPU::getAbsoluteAddressY(int32_t& cycles, const Bus& memory, bool checkPageCrossing){
     uint16_t absoluteAddress = getAbsoluteAddress(cycles, memory);
     if(checkPageCrossing &&(absoluteAddress & 0xFF) + Y > 0xFF)
         cycles--; // page crossed
     return absoluteAddress + Y;
 }
 
-uint16_t MOS6502::CPU::getIndirectIndexedAddressX(int32_t &cycles, const MOS6502::Memory &memory) {
+uint16_t MOS6502::CPU::getIndirectIndexedAddressX(int32_t &cycles, const MOS6502::Bus &memory) {
     cycles--; // add X register to address
     return Read16Bits(cycles, memory, uint8_t(getZeroPageAddress(cycles, memory) + X));
 }
 
-uint16_t MOS6502::CPU::getIndexedIndirectAddressY(int32_t &cycles, const MOS6502::Memory &memory, bool checkPageCrossing) {
+uint16_t MOS6502::CPU::getIndexedIndirectAddressY(int32_t &cycles, const MOS6502::Bus &memory, bool checkPageCrossing) {
     uint16_t targetAddress = Read16Bits(cycles, memory, Fetch8Bits(cycles, memory));
     if(checkPageCrossing && (targetAddress & 0xFF) + Y >= 0xFF)
         cycles--; //page crossed
@@ -148,7 +148,7 @@ void MOS6502::CPU::SetStatusNZ(uint8_t& reg){
     P.N = (reg & NegativeBitFlag) != 0;
 }
 
-uint16_t MOS6502::CPU::GetAddress(ADDRESSING_MODE mode, int32_t& cycles, const Memory& memory, bool checkPageCrossing){
+uint16_t MOS6502::CPU::GetAddress(ADDRESSING_MODE mode, int32_t& cycles, const Bus& memory, bool checkPageCrossing){
     uint16_t address;
 
     switch(mode){
@@ -194,7 +194,7 @@ uint16_t MOS6502::CPU::GetAddress(ADDRESSING_MODE mode, int32_t& cycles, const M
     return address;
 }
 
-void MOS6502::CPU::LoadRegister(ADDRESSING_MODE mode, int32_t& cycles, const Memory& memory, uint8_t& reg){
+void MOS6502::CPU::LoadRegister(ADDRESSING_MODE mode, int32_t& cycles, const Bus& memory, uint8_t& reg){
    if(mode == IMMEDIATE)
        reg = Fetch8Bits(cycles, memory);
    else
@@ -202,7 +202,7 @@ void MOS6502::CPU::LoadRegister(ADDRESSING_MODE mode, int32_t& cycles, const Mem
     SetStatusNZ(reg);
 }
 
-void MOS6502::CPU::StoreRegister(ADDRESSING_MODE mode, int32_t &cycles, Memory &memory, uint8_t &reg) {
+void MOS6502::CPU::StoreRegister(ADDRESSING_MODE mode, int32_t &cycles, Bus &memory, uint8_t &reg) {
     Write8Bits(cycles, memory, GetAddress(mode, cycles, memory, false), reg);
     if(mode == ABSOLUTE_X || mode == ABSOLUTE_Y || mode == INDIRECT_Y)
         cycles--;
@@ -210,7 +210,7 @@ void MOS6502::CPU::StoreRegister(ADDRESSING_MODE mode, int32_t &cycles, Memory &
 
 
 void MOS6502::CPU::PerformLogicalOnAccumulator(ADDRESSING_MODE mode, MOS6502::CPU::LOGICAL_OPERATION operation, int32_t &cycles,
-                                               MOS6502::Memory &memory) {
+                                               MOS6502::Bus &memory) {
     uint8_t value;
     if(mode == IMMEDIATE)
         value = Fetch8Bits(cycles, memory);
@@ -248,7 +248,7 @@ void MOS6502::CPU::PerformLogicalOnAccumulator(ADDRESSING_MODE mode, MOS6502::CP
 
 void MOS6502::CPU::IncrementDecrementValue(MOS6502::ADDRESSING_MODE mode,
                                                     MOS6502::CPU::MATH_OPERATION operation, int32_t &cycles,
-                                                    MOS6502::Memory &memory) {
+                                                    MOS6502::Bus &memory) {
     if(mode == IMPLIED_X){
         if(operation == MATH_OPERATION::INCREMENT)
             X++;
@@ -296,7 +296,7 @@ void MOS6502::CPU::IncrementDecrementValue(MOS6502::ADDRESSING_MODE mode,
 // 1  1  0 | 1 |  1  |  0  |   1   |
 // 1  1  1 | 0 |  0  |  0  |   1   |
 
-void MOS6502::CPU::PerformAddSubtractOnAccumulator(MOS6502::ADDRESSING_MODE mode, MOS6502::CPU::MATH_OPERATION operation, int32_t &cycles, MOS6502::Memory &memory) {
+void MOS6502::CPU::PerformAddSubtractOnAccumulator(MOS6502::ADDRESSING_MODE mode, MOS6502::CPU::MATH_OPERATION operation, int32_t &cycles, MOS6502::Bus &memory) {
     uint16_t operand;
     if (mode == IMMEDIATE)
         operand = Fetch8Bits(cycles, memory);
@@ -354,7 +354,7 @@ void MOS6502::CPU::PerformAddSubtractOnAccumulator(MOS6502::ADDRESSING_MODE mode
     SetStatusNZ(A);
 }
 
-void MOS6502::CPU::BranchIf(int32_t &cycles, MOS6502::Memory &memory, bool flag, bool expectedState) {
+void MOS6502::CPU::BranchIf(int32_t &cycles, MOS6502::Bus &memory, bool flag, bool expectedState) {
     auto offset = static_cast<int8_t>(Fetch8Bits(cycles, memory));
 
     if(flag == expectedState){
@@ -365,7 +365,7 @@ void MOS6502::CPU::BranchIf(int32_t &cycles, MOS6502::Memory &memory, bool flag,
     }
 }
 
-void MOS6502::CPU::CompareWithRegister(MOS6502::ADDRESSING_MODE mode, int32_t &cycles, MOS6502::Memory &memory, uint8_t &reg) {
+void MOS6502::CPU::CompareWithRegister(MOS6502::ADDRESSING_MODE mode, int32_t &cycles, MOS6502::Bus &memory, uint8_t &reg) {
     uint8_t operand;
     if(mode == IMMEDIATE)
         operand = Fetch8Bits(cycles, memory);
@@ -378,7 +378,7 @@ void MOS6502::CPU::CompareWithRegister(MOS6502::ADDRESSING_MODE mode, int32_t &c
     P.C = (reg >= operand);
 }
 
-void MOS6502::CPU::ShiftValue(MOS6502::ADDRESSING_MODE mode, MOS6502::CPU::MATH_OPERATION operation, int32_t &cycles, MOS6502::Memory &memory) {
+void MOS6502::CPU::ShiftValue(MOS6502::ADDRESSING_MODE mode, MOS6502::CPU::MATH_OPERATION operation, int32_t &cycles, MOS6502::Bus &memory) {
     uint8_t operand;
     uint16_t address = 0;
 
@@ -429,7 +429,7 @@ MOS6502::instruction MOS6502::CPU::findInstructionInDataTable(MOS6502::INSTRUCTI
     throw std::runtime_error("INVALID INSTRUCTION");
 }
 
-int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){
+int32_t MOS6502::CPU::Execute(int32_t cycles, Bus& memory){
     int32_t totalCycles = cycles;
 
     while(cycles > 0){
@@ -445,7 +445,7 @@ int32_t MOS6502::CPU::Execute(int32_t cycles, Memory& memory){
     return totalCycles - cycles;
 }
 
-void MOS6502::CPU::ExecuteInfinite(MOS6502::Memory &memory) {
+void MOS6502::CPU::ExecuteInfinite(MOS6502::Bus &memory) {
 
     int32_t cyclesLeft = 1;
     uint8_t instruction = Fetch8Bits(cyclesLeft, memory);
